@@ -12,4 +12,3 @@ cd archive_files
 ```bash
 bash rebuild_data_files.sh
 ```
-Before running the bash script, make sure it is executable (you can run chmod +x rebuild_data_files.sh)
