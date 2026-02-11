@@ -20,8 +20,16 @@ After you have followed the two steps above, you should be setup for success wit
 ## Results
 We provide the code for all the figures and tables, or any other claims made in the paper. Specifically, we separate the code for the figures and tables in the first part (before the results) from the results, to make it more easy to follow. We organize the rest therefore in three parts: (1) figures and tables, (2) results for off the shelf LLMs, (3) results for aleth.
 ### Figures and tables
-#### Figures 2a_figure.py
+
+#### Figure 1_figure.py
+Assuming the virtual environment is activated and requirements have been installed, run: `python 1_figure.py`
+
+#### Figure 2a_figure.py
 Assuming the virtual environment is activated and requirements have been installed, run: `python 2a_figure.py`
+
+#### Figure 2b_figure.py
+Assuming the virtual environment is activated and requirements have been installed, run: `python 2b_figure.py`
+
 
 ### Results 1/2 Off the shelf LLMs
 To match the presentation of the paper, we provide the qualitative and quantitative results for the off the shelf LLM experiments (`results/off_the_shelf_llms/qualitative` and `results/off_the_shelf_llms/quantitative`).
