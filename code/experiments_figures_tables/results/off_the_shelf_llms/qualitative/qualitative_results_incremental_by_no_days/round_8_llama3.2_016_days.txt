@@ -1,0 +1,45 @@
+Here's a Python script that generates building sensor data with electrical metering for the specified building size and time span.
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Function to generate random energy consumption data
+def generate_energy_consumption(size_sqft):
+    # Assume an average power consumption of 0.3 kW/sqft based on typical commercial buildings
+    avg_power = 0.3/10000  # in W/sqft
+    
+    # Generate time series with 1-hour intervals starting from 01 January 2016
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=365*384)  # 10 years
+    
+    dates = []
+    energy_consumption = np.zeros(int((end_date-start_date).total_seconds() / 3600))  # in kWh
+    for n in range(int((end_date-start_date).total_seconds() / 3600)):
+        dt = start_date + timedelta(seconds=n*3600)
+        energy_consumption[n] = avg_power * size_sqft * (np.random.rand(1) - 0.5)  # Randomly vary consumption
+        dates.append(dt.strftime("%Y-%m-%d %H:00"))
+
+    return pd.Series(dates, index=energy_consumption), energy_consumption
+
+# Generate data
+size_sqft = 10000
+series, consumption_data = generate_energy_consumption(size_sqft)
+
+# Create dataframe and calculate total energy consumption in kWh
+df = pd.DataFrame(consumption_data, columns=['Energy_Consumption (kWh)']).reset_index()
+df.columns = ['Date', 'Energy_Consumption (kWh)']
+
+# Calculate total energy consumption in the given time span
+total_energy_consumption = df['Energy_Consumption (kWh)'].sum()
+
+print(f"Total Energy Consumption: {total_energy_consumption} kWh")
+print("\nBuilding Sensor Data:")
+for i in range(len(df)):
+    print(f"{df['Date'][i]}, {df['Energy_Consumption (kWh)'][i]}")
+```
+
+This script generates a pandas Series and DataFrame with energy consumption data, where each line is separated by a comma. The total energy consumption for the given time span is also calculated.
+
+Please note that the generated data contains random fluctuations in energy consumption due to the nature of power usage in buildings.

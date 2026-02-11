@@ -1,0 +1,24 @@
+import datetime
+import random
+
+# Define building characteristics
+building_area = 10000  # sq feet
+building_energy_efficiency = 0.8  # (out of 1)
+
+# Generate sensor data
+def generate_data(start_date, end_date):
+    measurements = []
+    for n in range(72):
+        date = start_date + datetime.timedelta(hours=n)
+        energy_consumption = building_area * 100 / 12 * building_energy_efficiency  # assuming average usage of 10 kWh/sqft/year
+        measurement = f"{date.strftime('%Y-%m-%d')},{energy_consumption:.2f}"
+        measurements.append(measurement)
+    return measurements
+
+start_date = datetime.datetime(2016, 1, 1)
+end_date = start_date + datetime.timedelta(hours=72)
+
+measurements = generate_data(start_date, end_date)
+
+for measurement in measurements:
+    print(measurement)

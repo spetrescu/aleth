@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Define the parameters
+building_area = 10000  # sq feet
+kwh_per_sqft = 0.1  # kWh/sqft (average value)
+time_start = '2016-01-01'
+time_end = '2016-12-31'
+
+# Calculate the total energy consumption for the building
+total_energy = building_area * kwh_per_sqft
+
+# Generate the time array
+times = pd.date_range(time_start, time_end, freq='H')
+
+# Generate random energy measurements at each hour
+energies = np.random.uniform(0, 10) * total_energy
+
+# Create a DataFrame with the data
+data = {
+    'Date': times,
+    'Energy (kWh)': energies
+}
+df = pd.DataFrame(data)
+
+print(df)

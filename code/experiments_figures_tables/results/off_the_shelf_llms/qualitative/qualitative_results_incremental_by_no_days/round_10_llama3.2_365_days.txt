@@ -1,0 +1,17 @@
+import pandas as pd
+import numpy as np
+
+start_date = '2016-01-01'
+end_date = '2024-12-31'
+
+data = []
+for hour in range(24):
+    for minute in range(60):
+        date = f'{start_date} {hour:02d}:{minute:02d}'
+        # Generate a random kWh value, but with an offset from the actual usage.
+        energy_consumed = np.random.normal(0.01, 0.1)
+        measurement = date + ', ' + str(int((energy_consumed) * 100))
+        data.append(measurement)
+
+df = pd.DataFrame(data, columns=['Date', 'Energy Consumption (kWh)'])
+print(df[:8760])

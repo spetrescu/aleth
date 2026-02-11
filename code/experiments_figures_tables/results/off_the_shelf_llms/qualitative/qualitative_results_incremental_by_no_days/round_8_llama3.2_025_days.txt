@@ -1,0 +1,26 @@
+import pandas as pd
+import numpy as np
+
+# Generate date range from 01/01/2016 to 11/30/2017 (600 days)
+start_date = '2016-01-01'
+end_date = pd.date_range(start=start_date, periods=600, freq='H')
+
+# Initialize empty list to store data
+data = []
+
+# Loop over each hour in the date range
+for i in range(len(end_date)):
+    # Calculate kWh usage for a 10000 sq ft building at 1-hr intervals
+    # Assuming an average power consumption of 10W/sqft
+    watts_per_sqft = 10 
+    total_watts = (watts_per_sqft * 10000) / 24 # convert to W/h
+    kWh_used = total_watts / 1000
+
+    # Append the data to the list as a string, comma-separated
+    if i == 0:
+        data.append(f"{start_date},{kWh_used}")
+    else:
+        data.append(f"{end_date[i-1].strftime('%Y-%m-%d')},{kWh_used}")
+
+# Print the data in CSV format
+print('\n'.join(data))

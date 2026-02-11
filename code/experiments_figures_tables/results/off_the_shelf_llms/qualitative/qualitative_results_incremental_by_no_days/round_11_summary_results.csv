@@ -1,0 +1,4 @@
+model,requested_days,expected_measurements,actual_measurements,response_time_s,endpoint_used,chars
+gpt-oss:20b,61,1464,0,7.285929,native:/api/generate,244
+llama3.1:8b,61,1464,26,6.22786,native:/api/generate,1624
+llama3.2,61,1464,2,2.596325,native:/api/generate,768

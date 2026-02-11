@@ -1,0 +1,17 @@
+import pandas as pd
+import numpy as np
+
+# Generate dates from 01/01/2016 to 12/31/2023 at 1-hour intervals
+start_date = '2016-01-01'
+end_date = '2023-12-31'
+
+dates = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate random electrical measurement values in kWh
+np.random.seed(42)  # for reproducibility
+measures = np.random.uniform(0.1, 10, size=len(dates)).round(2)
+
+# Create a DataFrame with the dates and electrical measurements
+df = pd.DataFrame({'Date': dates, 'Electrical Measurement (kWh)': measures})
+
+print(df.to_string(index=False))

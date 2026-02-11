@@ -1,0 +1,38 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Initialize list to store data
+data = []
+
+# Define start and end dates
+start_date = '01 January 2016'
+end_date = '31 December 2021'
+
+# Convert start date string to datetime format
+start_date_obj = pd.to_datetime(start_date)
+
+# Calculate total number of days from start to end date
+total_days = (pd.to_datetime(end_date) - start_date_obj).days + 1
+
+# Loop over each hour in the given range
+for i in range(total_days):
+    # Calculate current date and time
+    current_date = start_date_obj + timedelta(days=i)
+    
+    # Convert current date to string format 'YYYY-MM-DD HH:MM'
+    current_date_str = current_date.strftime('%Y-%m-%d %H:%M')
+    
+    # Generate electrical measurement in kWh (0.1 kWh for each hour in the given range)
+    if i < 240:
+        elec_measure = round((i / total_days) * 100,2)
+    else:
+        elec_measure = 100
+
+    # Add data to list
+    data.append((current_date_str,elec_measure))
+
+# Convert data into DataFrame for easier manipulation
+df = pd.DataFrame(data, columns=['Date', 'Electrical Measurement (kWh)'])
+
+# Print DataFrame
+print(df)

@@ -1,0 +1,18 @@
+import pandas as pd
+import numpy as np
+
+# Generate date range from 1 Jan 2016 to 31 Dec 2016
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+# Create an array of time steps (in hours) for the whole year
+time_steps = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate random electrical consumption data (kWh)
+consumption_data = np.random.uniform(1000, 50000, size=len(time_steps))
+
+# Create a pandas DataFrame with the date and electrical measurement
+data = pd.DataFrame({'Date': time_steps, 'Electrical Measurement (kWh)': consumption_data})
+
+# Print the data
+print(data.to_string(index=False))

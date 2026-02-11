@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy as np
+
+# Set start and end dates
+start_date = '2016-01-01'
+end_date = '2017-04-30'
+
+# Create a date range of 1 hour intervals
+date_range = pd.date_range(start=start_date, periods=72, freq='H')
+
+# Generate random energy consumption data in kWh
+energy_consumption = np.random.uniform(1000, 50000, size=len(date_range))
+
+# Combine the date and energy consumption into a DataFrame
+df = pd.DataFrame({'Date': date_range, 'Energy Consumption (kWh)': energy_consumption})
+
+# Convert the DataFrame to CSV format
+csv_data = df.to_csv(index=False)
+
+print(csv_data)

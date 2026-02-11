@@ -1,0 +1,47 @@
+Here's a Python script that generates building sensor data for electrical metering:
+
+```python
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+import numpy as np
+np.random.seed(0)
+
+# Define parameters
+building_area = 10000  # square feet
+kwh_per_sqft = 0.1  # kWh/sq ft (average value)
+date_start = datetime(2016, 1, 1)
+date_end = date_start + timedelta(days=648*24)  # generate data for 648 days
+
+# Initialize lists to store data
+dates = []
+kwh_consumed = []
+
+# Generate data
+current_date = date_start
+while current_date < date_end:
+    # Calculate electrical consumption for the day
+    daily_kwh = building_area * kwh_per_sqft
+    
+    # Add some noise to simulate real-world variability
+    daily_kwh += np.random.normal(0, 10)  # kWh (standard deviation of 10)
+    
+    # Append data to lists
+    dates.append(current_date.strftime('%Y-%m-%d %H'))
+    kwh_consumed.append(daily_kwh)
+    
+    # Increment date by one hour
+    current_date += timedelta(hours=1)
+
+# Create DataFrame from lists
+df = pd.DataFrame({'Date': dates, 'kWh Consumed': kwh_consumed})
+
+# Print data
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['kWh Consumed']}")
+```
+
+When you run this script, it will generate and print the electrical metering data for 648 hours, starting from January 1st, 2016 at 1 AM. The output should be a continuous sequence of measurements with no gaps.
+
+Please note that you need to install pandas library if not already installed using `pip install pandas`

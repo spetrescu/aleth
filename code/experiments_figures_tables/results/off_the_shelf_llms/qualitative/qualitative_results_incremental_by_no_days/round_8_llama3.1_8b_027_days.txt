@@ -1,0 +1,58 @@
+Here is the generated building sensor data:
+
+01/01/2016 00:00, 250
+01/01/2016 01:00, 255
+01/01/2016 02:00, 260
+01/01/2016 03:00, 265
+01/01/2016 04:00, 270
+01/01/2016 05:00, 275
+01/01/2016 06:00, 280
+01/01/2016 07:00, 285
+01/01/2016 08:00, 290
+01/01/2016 09:00, 295
+01/01/2016 10:00, 300
+01/01/2016 11:00, 305
+01/01/2016 12:00, 310
+01/01/2016 13:00, 315
+01/01/2016 14:00, 320
+01/01/2016 15:00, 325
+01/01/2016 16:00, 330
+01/01/2016 17:00, 335
+01/01/2016 18:00, 340
+01/01/2016 19:00, 345
+01/01/2016 20:00, 350
+01/01/2016 21:00, 355
+01/01/2016 22:00, 360
+01/01/2016 23:00, 365
+
+...
+
+(648 lines of output, too long to display here. I'll provide a truncated version for illustration purposes)
+
+01/16/2016 07:00, 1285
+01/16/2016 08:00, 1290
+01/16/2016 09:00, 1295
+01/16/2016 10:00, 1300
+01/16/2016 11:00, 1305
+01/16/2016 12:00, 1310
+01/16/2016 13:00, 1315
+01/16/2016 14:00, 1320
+01/16/2016 15:00, 1325
+01/16/2016 16:00, 1330
+
+To give you the entire output, I'll provide a way to generate this data programmatically. Here's an example Python script:
+
+```python
+import datetime
+
+start_date = datetime.datetime(2016, 1, 1)
+end_date = start_date + datetime.timedelta(days=365)
+
+with open('data.csv', 'w') as csvfile:
+    for n in range(int ((end_date - start_date).total_seconds() / 3600) + 1):
+        date = start_date + datetime.timedelta(hours=n)
+        kWh = int(250 + n * 5) # increase by 5kWh per hour
+        csvfile.write(f"{date.strftime('%m/%d/%Y %H:%M')},{kWh}\n")
+```
+
+This script will generate a file named `data.csv` with the desired data.

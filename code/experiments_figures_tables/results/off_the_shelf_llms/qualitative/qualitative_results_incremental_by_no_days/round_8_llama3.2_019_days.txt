@@ -1,0 +1,25 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Create a list to store the sensor readings
+readings = []
+
+# Start date and time
+start_date = datetime(2016, 1, 1)
+
+# Loop for 456 hours (or 20 days)
+for i in range(456):
+    # Calculate current date and time
+    current_date = start_date + timedelta(hours=i)
+    
+    # Convert date and time to a string in the format 'YYYY-MM-DD HH:MM'
+    date_str = current_date.strftime('%Y-%m-%d %H:%M')
+    
+    # Generate electrical measurement in kWh (assuming constant usage of 5kW)
+    reading = 5 * i / 24
+    
+    # Append reading to the list
+    readings.append(f'{date_str}, {reading:.2f}')
+
+# Print the data
+print('\n'.join(readings))

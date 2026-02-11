@@ -1,0 +1,18 @@
+import pandas as pd
+import numpy as np
+
+# Define dates and corresponding energy usage in kWh
+start_date = '2016-01-01'
+end_date = '2020-12-31'
+
+# Create a date range of 720 hours (1 hour per day for 5 years)
+date_range = pd.date_range(start=start_date, periods=720, freq='H')
+
+# Generate random energy usage in kWh between 500 and 1500
+energy_usage = np.random.uniform(500, 1500, size=len(date_range))
+
+# Create a pandas DataFrame with the data
+df = pd.DataFrame({'Date': date_range, 'Energy Usage (kWh)': energy_usage})
+
+# Print the DataFrame
+print(df.to_string(index=False))

@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy as np
+
+# Define parameters
+start_date = '01/01/2016'
+end_date = '01/02/2016'
+interval_hours = range(0, 24)
+
+# Generate date and time arrays
+date_time = [f"{d} {t}:00" for d in start_date.split('/') for t in interval_hours]
+
+# Generate measurements (in kWh) using a sine wave function
+measurements = np.sin(np.arange(len(date_time)) / 1440) * 100 + 50
+
+# Create DataFrame with date and time, and electrical measurement
+df = pd.DataFrame({'Date': date_time, 'ElectricityMeasurement (kWh)': measurements})
+
+# Set date column as datetime and print the DataFrame
+df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y %H:%M')
+print(df)

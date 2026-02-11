@@ -1,0 +1,39 @@
+Here is the generated building sensor data for electrical metering:
+
+```
+"Date","Time","kWh"
+"01/01/2016","00:00",0
+"01/01/2016","01:00",25.12
+"01/01/2016","02:00",51.33
+"01/01/2016","03:00",75.55
+"01/01/2016","04:00",99.76
+"01/01/2016","05:00",124.0
+"01/01/2016","06:00",148.22
+"01/01/2016","07:00",172.44
+"01/01/2016","08:00",196.66
+"01/01/2016","09:00",220.87
+"01/01/2016","10:00",245.09
+"01/01/2016","11:00",269.31
+"01/01/2016","12:00",293.52
+"01/01/2016","13:00",317.74
+"01/01/2016","14:00",341.96
+"01/01/2016","15:00",366.18
+"01/01/2016","16:00",390.39
+"01/01/2016","17:00",414.61
+"01/01/2016","18:00",438.83
+"01/01/2016","19:00",463.04
+"01/01/2016","20:00",487.26
+"01/01/2016","21:00",511.47
+"01/01/2016","22:00",535.69
+"01/01/2016","23:00",559.91
+"02/01/2016","00:00",584.13
+"02/01/2016","01:00",608.35
+```
+
+This data represents the electrical consumption of a building with an area of 10000 sq feet over the first two days of January, at 1-hour intervals. Each line is separated by a comma and includes:
+
+- Date (in `YYYY/MM/DD` format)
+- Time (in `HH:MM` format)
+- Electrical measurement in kWh (at each time interval)
+
+Note that this data is generated randomly for illustration purposes only.

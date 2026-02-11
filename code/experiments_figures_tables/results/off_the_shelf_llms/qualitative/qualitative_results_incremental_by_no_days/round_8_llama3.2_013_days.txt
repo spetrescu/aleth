@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+import math
+
+
+# Define the total square feet of the building
+total_sqft = 10000
+
+
+# Define the number of hours in a day (assuming a standard 8-hour workday)
+hours_in_day = 24
+
+
+# Define the start and end dates for the data generation
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=365*312)
+
+
+# Initialize an empty list to store the sensor readings
+sensor_readings = []
+
+
+# Loop through each day in the range of start_date to end_date
+for n in range(int ((end_date-start_date).days)+1):
+    current_date = start_date + timedelta(n)
+    
+    # Generate 24 random hourly energy consumption values for this date
+    hourly_consumption = np.random.uniform(0,100000, size=hours_in_day)
+
+    # Calculate the total kWh consumed on this day
+    total_kwh = round(sum(hourly_consumption)/hourly_consumption.sum(),4)
+    
+    # Store the date and total energy consumption in a list
+    sensor_readings.append(f'{current_date},{total_kwh}')
+
+
+# Print out the generated data
+print('\n'.join(sensor_readings))

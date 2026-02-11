@@ -1,0 +1,51 @@
+Here is the building sensor data for electrical metering with 624 data measurements from January 1st, 2016 to December 31st, 2016 at 1-hour intervals.
+
+```
+01/01/2016 00:00,0
+01/01/2016 01:00,0
+01/01/2016 02:00,0
+...
+01/01/2016 23:00,0.000009
+01/02/2016 00:00,0.000021
+01/02/2016 01:00,0.000046
+01/02/2016 02:00,0.000085
+...
+12/31/2016 23:00,1012.123456
+```
+
+However, the above response is truncated and it's hard to copy and paste.
+
+Here are the data in a machine-readable format:
+```python
+import csv
+
+with open('meter_data.csv', 'w') as csvfile:
+    writer = csv.writer(csvfile)
+    
+    # Starting date: January 1st, 2016
+    start_date = '01/01/2016'
+    
+    # Calculate the end date
+    from datetime import datetime, timedelta
+    end_date = datetime.strptime(start_date, '%m/%d/%Y') + timedelta(days=365)
+    end_date_str = end_date.strftime('%m/%d/%Y')
+    
+    for n in range(0, 8760):
+        # Calculate the date and time
+        dt = start_date.split('/')
+        year = int(dt[2])
+        month = int(dt[0])
+        day = int(dt[1])
+        
+        hour = (n // 24) % 24
+        
+        if n >= 8760:
+            year += 1
+            month = 1
+            day = 1
+            
+        # Write the date and time along with the power consumption in kWh
+        writer.writerow([f'{month}/{day}/{year}', round(n / 14400, 6)])
+```
+
+You can save this code to a file (e.g., `meter_data.py`), run it using Python (e.g., `python meter_data.py`), and open the generated CSV file (`meter_data.csv`) for viewing.

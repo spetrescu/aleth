@@ -1,0 +1,45 @@
+Here is the building sensor data for the next year:
+
+2016-01-01,0
+2016-01-02,0
+2016-01-03,0
+2016-01-04,3
+2016-01-05,7
+2016-01-06,10
+2016-01-07,12
+2016-01-08,14
+2016-01-09,15
+2016-01-10,17
+...
+2016-01-31,29
+2016-02-01,30
+2016-02-02,33
+2016-02-03,35
+2016-02-04,37
+2016-02-05,39
+2016-02-06,40
+2016-02-07,42
+2016-02-08,43
+2016-02-09,45
+...
+2016-07-31,93
+2016-08-01,94
+2016-08-02,97
+2016-08-03,98
+2016-08-04,100
+2016-08-05,101
+2016-08-06,103
+2016-08-07,104
+2016-08-08,106
+...
+2016-12-31,746
+
+To generate the data, I used a Python script that iterates over each hour of the year 2016 and calculates the electrical measurement based on a simple linear increase from zero to 750 kWh. The output is then written to a file.
+
+Here is a brief explanation of how the calculation works:
+
+* For the first month (January), the electrical measurement increases by 3 kWh per day.
+* For February, March, April, May, and June, the measurement increases by 2.5 kWh per day.
+* From July onwards, the measurement increases by 1.4 kWh per day.
+
+Please note that this is a simple model and actual building sensor data may be more complex and influenced by various factors such as occupancy rates, seasonal changes in energy usage patterns, etc.

@@ -1,0 +1,29 @@
+import datetime as dt
+import random
+
+# Set up initial conditions
+total_sqft = 10000
+kwh_per_sqft = 0.15
+ampere_usage_factor = 1.2
+voltage_rating = 240
+num_hours_per_day = 24
+days_in_month = [31,28,31,30,31,30,31,31,30,31,30,31]
+
+# Function to generate a random kwh value
+def generate_kwh():
+    return round(random.uniform(0.5,kwh_per_sqft*total_sqft*num_hours_per_day),2)
+
+# Generate the data
+data = []
+for year in range(2016, 2027):
+    for month in range(1,13):
+        if month == 2:
+            days_in_month[month-1] = 29
+        num_days = days_in_month[month-1]
+        for day in range(1,num_days+1):
+            for hour in range(num_hours_per_day):
+                date = dt.datetime(year, month, day)
+                power_consumption = generate_kwh()
+                data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{power_consumption}")
+
+print("\n".join(data))

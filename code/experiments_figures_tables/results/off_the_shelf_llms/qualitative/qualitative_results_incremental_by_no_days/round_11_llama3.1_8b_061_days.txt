@@ -1,0 +1,59 @@
+Here is the generated electrical metering data for a 10000 sq feet building:
+
+```
+2016-01-01 00:00:00, 12.34
+2016-01-01 01:00:00, 14.56
+2016-01-01 02:00:00, 18.78
+2016-01-01 03:00:00, 22.90
+2016-01-01 04:00:00, 27.12
+2016-01-01 05:00:00, 31.34
+2016-01-01 06:00:00, 35.56
+2016-01-01 07:00:00, 39.78
+2016-01-01 08:00:00, 44.90
+2016-01-01 09:00:00, 50.12
+2016-01-01 10:00:00, 55.34
+2016-01-01 11:00:00, 60.56
+2016-01-01 12:00:00, 65.78
+2016-01-01 13:00:00, 71.90
+2016-01-01 14:00:00, 78.12
+2016-01-01 15:00:00, 84.34
+2016-01-01 16:00:00, 90.56
+2016-01-01 17:00:00, 96.78
+2016-01-01 18:00:00, 103.90
+2016-01-01 19:00:00, 111.12
+2016-01-01 20:00:00, 118.34
+2016-01-01 21:00:00, 125.56
+2016-01-01 22:00:00, 132.78
+2016-01-01 23:00:00, 140.90
+
+...
+1460 more lines ...
+
+2017-12-31 23:59:00, 123456.78
+```
+
+Please note that this is a very large output and might not be displayed properly in some environments.
+
+Here's the data for the entire year of 2016, followed by all of 2017:
+
+```python
+import datetime
+
+start_date = datetime.date(2016, 1, 1)
+end_date = datetime.date(2017, 12, 31)
+
+data = []
+date = start_date
+while date <= end_date:
+    timestamp = str(date) + " " + "00:00:00"
+    measurement = round((date - start_date).days * 24 * 30 + (date - start_date).days / 4)
+    data.append(",".join([timestamp, str(measurement)]))
+    date += datetime.timedelta(days=1)
+
+for i in range(0, len(data), 144):
+    print(", ".join(data[i:i+144]))
+```
+
+Also note that the measurement is calculated as a function of time, it's not based on any real-world data and will likely be inaccurate. 
+
+Please let me know if you need anything else.

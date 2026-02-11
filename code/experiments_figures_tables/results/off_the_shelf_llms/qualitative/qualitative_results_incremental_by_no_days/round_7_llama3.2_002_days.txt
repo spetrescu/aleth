@@ -1,0 +1,18 @@
+import datetime
+import numpy as np
+
+# Total square footage of the building (in kW)
+total_sqft = 10000 / 10
+
+# Date range to generate data for
+start_date = '01/01/2016'
+end_date = '01/02/2017'
+
+# Generate date range
+date_range = [start_date + ' ' + str(i) for i in range(0, 48*24)]
+
+# Generate electrical consumption measurements (kWh)
+consumption = np.random.randint(10000, size=48)  # Assume average usage of 10 kW
+
+# Convert to kWh and print data
+print('\n'.join([f"{date}, {consumption[i]/1000:.2f}" for i, date in enumerate(date_range)]))

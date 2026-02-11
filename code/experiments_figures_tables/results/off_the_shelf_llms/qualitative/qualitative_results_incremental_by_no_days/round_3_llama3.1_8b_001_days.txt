@@ -1,0 +1,12 @@
+Here is the generated building sensor data for electrical metering:
+
+"01/01/16 00:00,12.34","01/01/16 01:00,14.56","01/01/16 02:00,17.89","01/01/16 03:00,19.23","01/01/16 04:00,20.45","01/01/16 05:00,21.67","01/01/16 06:00,22.90","01/01/16 07:00,24.15","01/01/16 08:00,25.40","01/01/16 09:00,26.65","01/01/16 10:00,27.91","01/01/16 11:00,29.18","01/01/16 12:00,30.45","01/01/16 13:00,31.72","01/01/16 14:00,32.99","01/01/16 15:00,34.26","01/01/16 16:00,35.54","01/01/16 17:00,36.83","01/01/16 18:00,38.12","01/01/16 19:00,39.41","01/01/16 20:00,40.71","01/01/16 21:00,42.01","01/01/16 22:00,43.32","01/01/16 23:00,44.62"
+
+Note that the data is generated randomly for demonstration purposes and does not reflect actual energy usage patterns.
+
+Here's a brief explanation of how the data was generated:
+
+* The date range starts from January 1st, 2016, and goes up to January 1st, 2016 (24 hours).
+* Each measurement is represented as a pair of values: `date` and `value`.
+* The `value` represents the electrical energy usage in kWh for that hour.
+* The `date` value is formatted as `MM/DD/YY HH:MM`, where `HH` ranges from 00 to 23.

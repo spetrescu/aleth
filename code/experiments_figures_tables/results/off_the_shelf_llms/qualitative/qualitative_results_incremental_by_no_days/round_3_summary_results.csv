@@ -1,0 +1,10 @@
+model,requested_days,expected_measurements,actual_measurements,chars
+gpt-oss:20b,1,24,24,603
+llama3.1:8b,1,24,2,1129
+deepseek-r1,1,24,24,570
+gpt-oss:20b,2,48,48,1197
+llama3.1:8b,2,48,29,1057
+deepseek-r1,2,48,48,1293
+gpt-oss:20b,3,72,72,1943
+llama3.1:8b,3,72,54,1600
+deepseek-r1,3,72,384,8593

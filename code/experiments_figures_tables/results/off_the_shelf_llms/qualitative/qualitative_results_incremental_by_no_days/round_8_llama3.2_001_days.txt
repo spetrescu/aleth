@@ -1,0 +1,27 @@
+Here is a Python script that generates building sensor data for electrical metering:
+```python
+import datetime
+
+# Set initial date and meter reading
+start_date = datetime.date(2016, 1, 1)
+meter_reading = 0
+
+# Function to generate building sensor data
+def generate_sensor_data():
+    global start_date, meter_reading
+
+    # Iterate over each hour from January 1st, 2016 to January 31st, 2016
+    for i in range(24):
+        date = start_date + datetime.timedelta(hours=i)
+        meter_reading += (i % 24) * 0.01  # simulate a daily energy consumption pattern
+
+        print(f"{date.strftime('%Y-%m-%d %H:%M')}:{i}, {meter_reading:.2f} kWh")
+
+# Generate sensor data
+generate_sensor_data()
+```
+This script generates 24 hourly meter readings for each hour from January 1st, 2016 to January 31st, 2016. The `meter_reading` variable is incremented by a small amount at each iteration, simulating a daily energy consumption pattern.
+
+Note: This script does not account for any actual electrical meter data or building characteristics. It's just a simple simulation.
+
+You can run this script to generate the sensor data, and it will print out 24 lines of data with date and time in the format "YYYY-MM-DD HH:MM" followed by the corresponding electrical measurement in kWh.

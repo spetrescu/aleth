@@ -1,0 +1,13 @@
+import pandas as pd
+import numpy as np
+
+# Create an array of dates from 01/01/2016 to 12/31/2016 with a 1-hour interval
+dates = pd.date_range('1/1/2016', periods=504, freq='H')
+
+# Generate random electrical meter measurements in kWh for each hour
+meter_measurements = np.random.uniform(1000, 50000, size=len(dates)).round(3)
+
+# Create a DataFrame with the date and corresponding electrical measurement
+df = pd.DataFrame({'Date': dates, 'Electrical Measurement (kWh)': meter_measurements})
+
+print(df.to_string(index=False))

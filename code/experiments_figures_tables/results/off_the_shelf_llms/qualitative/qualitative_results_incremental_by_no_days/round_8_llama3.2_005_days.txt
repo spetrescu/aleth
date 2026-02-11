@@ -1,0 +1,57 @@
+Here is a Python script that generates building sensor data for electrical metering:
+
+```python
+import datetime
+import random
+
+# Total square feet of the building
+building_size_sqft = 10000
+
+# Start date and time
+start_date = datetime.date(2016, 1, 1)
+
+# Time interval in hours
+time_interval_hours = 1
+
+# Number of data measurements
+num_measurements = 120
+
+# Initialize a list to store the sensor data
+sensor_data = []
+
+# Generate data for each measurement
+for i in range(num_measurements):
+    # Calculate date and time based on current loop iteration
+    if start_date.month == 12:
+        end_month = 1
+        end_year = start_date.year + (i - num_measurements + 1) // 12
+        new_year = start_date.year + ((i - num_measurements + 1) % 12)
+    else:
+        end_month = start_date.month + 1
+        end_year = start_date.year + i // 12
+        new_year = start_date.year + (i % 12)
+    
+    date = datetime.date(end_year, end_month, 1)
+
+    # Generate random energy consumption in kWh
+    energy_consumption_kwh = round(random.uniform(0.01, 10), 2)
+
+    # Calculate energy consumption for the current time interval
+    if i == num_measurements - 1:
+        end_time = datetime.datetime(new_year, end_month, 1, 23, 59, 59)
+    else:
+        end_time = datetime.datetime(new_year, end_month, 1, time_interval_hours * (i + 1), 0, 0)
+
+    energy_consumption_kwh_time_interval = round(energy_consumption_kwh * (end_time - datetime.datetime(date.year, date.month, 1)).total_seconds() / 3600, 2)
+    
+    # Append data to the list
+    sensor_data.append(f"{date},{energy_consumption_kwh_time_interval}")
+
+# Print the generated data
+for measurement in sensor_data:
+    print(measurement)
+```
+
+This script generates random energy consumption for each time interval, based on a uniform distribution between 0.01 and 10 kWh. It also calculates the total energy consumption up to the end of each month.
+
+Please note that this is just a simple simulation and does not take into account real-world factors such as varying demand patterns or seasonal changes.

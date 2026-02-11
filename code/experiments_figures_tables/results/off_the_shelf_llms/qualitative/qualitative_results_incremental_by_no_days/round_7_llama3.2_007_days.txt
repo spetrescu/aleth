@@ -1,0 +1,18 @@
+import pandas as pd
+import numpy as np
+
+# Set the start and end dates
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+# Generate a date range with 1-hour intervals
+date_range = pd.date_range(start=start_date, periods=168, freq='H')
+
+# Calculate the electrical energy consumption in kWh for each hour
+energy_consumption = np.random.uniform(0, 10000, size=len(date_range))
+
+# Create a DataFrame to store the data
+df = pd.DataFrame({'Date': date_range, 'Energy Consumption (kWh)': energy_consumption})
+
+# Print the data
+print(df.to_string(index=False))

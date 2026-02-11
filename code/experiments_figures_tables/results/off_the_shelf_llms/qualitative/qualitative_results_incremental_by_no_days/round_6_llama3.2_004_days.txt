@@ -1,0 +1,37 @@
+Here is a Python script that generates building sensor data for electrical metering:
+
+```python
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Define the parameters
+total_sqft = 10000
+meter_reading_at_zero = 0
+energy_consumption_rate = 0.1  # in kWh/m²h
+
+# Generate energy consumption data
+hours_in_year = 8760  # 365.25 days/year * 24 hours/day
+days_per_hour = 365.25
+start_date = pd.to_datetime('2016-01-01')
+energy_consumption_data = np.random.normal(meter_reading_at_zero, energy_consumption_rate, total_sqft*hours_in_year*days_per_hour)
+
+# Create a DataFrame with the date and meter readings
+df = pd.DataFrame({
+    'Date': pd.date_range(start=start_date, periods=len(energy_consumption_data), freq='1h'),
+    'Meter Reading (kWh)': energy_consumption_data
+})
+
+# Convert to kWh format
+meter_reading_sum = df['Meter Reading (kWh)'].sum()
+df['Total Meter Reading (kWh)'] = meter_reading_sum
+
+df = df.sort_values(by='Date').reset_index(drop=True)
+
+# Print the data
+print(df.to_string(index=False, index_label=False))
+```
+
+When you run this code, it will generate 96 rows of data with the date and electrical measurement in kWh. Each line is separated by a comma.

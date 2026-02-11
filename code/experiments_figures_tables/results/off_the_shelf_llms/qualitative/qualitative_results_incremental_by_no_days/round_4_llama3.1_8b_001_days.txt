@@ -1,0 +1,28 @@
+Here is the sensor data for the electrical metering in the building:
+
+"01/01/2016 00:00, 23.42"
+"01/01/2016 01:00, 26.19"
+"01/01/2016 02:00, 29.45"
+"01/01/2016 03:00, 27.82"
+"01/01/2016 04:00, 25.98"
+"01/01/2016 05:00, 24.65"
+"01/01/2016 06:00, 23.91"
+"01/01/2016 07:00, 27.13"
+"01/01/2016 08:00, 30.56"
+"01/01/2016 09:00, 33.32"
+"01/01/2016 10:00, 31.79"
+"01/01/2016 11:00, 29.63"
+"01/01/2016 12:00, 28.45"
+"01/01/2016 13:00, 26.19"
+"01/01/2016 14:00, 25.42"
+"01/01/2016 15:00, 24.92"
+"01/01/2016 16:00, 23.98"
+"01/01/2016 17:00, 28.35"
+"01/01/2016 18:00, 32.19"
+"01/01/2016 19:00, 34.65"
+"01/01/2016 20:00, 33.42"
+"01/01/2016 21:00, 30.98"
+
+Note that I've generated random values for the electrical measurements in kWh, assuming an average consumption of around 25-30 kWh per hour. In reality, this would depend on various factors such as lighting, HVAC usage, and other equipment loads within the building.
+
+If you'd like to generate more data or use a different dataset, please let me know!

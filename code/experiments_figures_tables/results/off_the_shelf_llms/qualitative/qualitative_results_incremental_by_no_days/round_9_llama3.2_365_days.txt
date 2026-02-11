@@ -1,0 +1,39 @@
+import datetime
+import random
+
+def generate_building_sensor_data():
+    # Define constants
+    building_size_sqft = 10000
+    meters_in_sqft = 8.45
+    meter_power_factor = 1.0
+    initial_current = 0.0
+    initial_voltage = 240.0
+    
+    # Calculate the total number of hours in a year
+    num_hours_per_year = 8760
+
+    # Initialize lists to store date and measurement data
+    dates = []
+    measurements_kwh = []
+
+    for hour in range(num_hours_per_year):
+        date = (datetime.datetime(2016, 1, 1) + datetime.timedelta(hours=hour)).date()
+        
+        # Calculate total power consumed by the building in watts
+        meters_consumed = building_size_sqft * meters_in_sqft / 1000.0
+        current = initial_current + random.uniform(-5.0, 5.0)
+        voltage = initial_voltage + random.uniform(-10.0, 10.0)
+        total_power = (current * meter_power_factor) * voltage
+        
+        # Calculate energy consumption in kWh
+        if total_power != 0:
+            measurement_kwh = total_power / 1000.0
+        else:
+            measurement_kwh = 0.0
+            
+        dates.append(date)
+        measurements_kwh.append(measurement_kwh)
+
+    return [date + "," + str(measurement) for date, measurement in zip(dates, measurements_kwh)]
+
+print("\n".join(generate_building_sensor_data()))

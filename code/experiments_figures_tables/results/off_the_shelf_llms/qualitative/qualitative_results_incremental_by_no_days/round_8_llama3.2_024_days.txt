@@ -1,0 +1,19 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Set the start date and create a list to store the measurements
+start_date = '2016-01-01'
+measurements = []
+
+while len(measurements) < 576:
+    # Convert the current date to a datetime object
+    current_date = pd.to_datetime(start_date)
+    
+    # Generate electricity consumption for the given hour (1-hour intervals)
+    kWh = round(10000 * 0.0001 + random.uniform(-0.01, 0.01),2)
+    measurements.append(current_date.strftime('%Y-%m-%d') + ',' + str(kwh))
+    
+    # Move to the next day
+    current_date += timedelta(hours=1)
+
+print('\n'.join(measurements))

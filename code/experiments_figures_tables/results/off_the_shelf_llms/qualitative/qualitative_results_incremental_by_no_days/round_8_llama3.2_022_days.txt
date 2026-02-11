@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+
+# Set the start and end dates for the dataset
+start_date = '2016-01-01'
+end_date = '2022-12-31'
+
+# Create an empty list to store the data
+data = []
+
+# Loop through each hour from 1am to 11pm
+for i in range(24):
+    # Calculate the date and time for this hour
+    dt = pd.to_datetime(start_date) + pd.Timedelta(hours=i)
+    
+    # Generate a random kWh reading between 0-1000 (approximate)
+    readings = np.random.randint(500, 1500, size=len(data))
+    
+    # Add each measurement to the list
+    data.extend([(dt.strftime('%Y-%m-%d %H:%M'), r) for r in readings])
+
+# Create a DataFrame from the data
+df = pd.DataFrame(data, columns=['Date', 'kWh'])
+
+# Set the date column as the index
+df.set_index('Date', inplace=True)
+
+# Print the first 10 rows of the dataframe
+print(df.head(10))

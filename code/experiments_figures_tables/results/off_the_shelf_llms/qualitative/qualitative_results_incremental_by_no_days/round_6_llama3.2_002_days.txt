@@ -1,0 +1,31 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Define start and end dates
+start_date = '2016-01-01'
+end_date = '2016-01-08'
+
+# Create a list to store the data
+data = []
+
+# Generate data for each hour in the specified range
+current_date = pd.to_datetime(start_date)
+for i in range(48):
+    # Calculate the date and time for this hour
+    if current_date == start_date:
+        date_time = datetime(current_date.year, current_date.month, current_date.day, 0, 0, 0) - timedelta(hours=i)
+    else:
+        date_time = current_date + pd.DateOffset(hours=1)
+    
+    # Calculate the energy consumption in kWh
+    # For simplicity, assume an average energy consumption of 50 W per sqft
+    total_sqft = 10000
+    avg_power_consumption_w = 50
+    energy_consumption_kwh = (avg_power_consumption_w * total_sqft) / 1000
+    
+    # Append the data to the list
+    data.append((date_time.strftime('%Y-%m-%d %H:%M'), energy_consumption_kwh))
+
+# Create a DataFrame from the data and print it
+df = pd.DataFrame(data, columns=['Date_Time', 'Energy_Consumption_kWh'])
+print(df)

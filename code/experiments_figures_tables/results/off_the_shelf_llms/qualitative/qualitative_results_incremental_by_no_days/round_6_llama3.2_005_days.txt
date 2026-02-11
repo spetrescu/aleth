@@ -1,0 +1,23 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Create an empty list to store the data
+data = []
+
+# Define the start and end dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=120)
+
+# Generate the data for each hour in between
+for n in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(n)
+    # Calculate the kWh usage
+    # Assuming a base rate of $0.12 per kWh and an average usage of 200 kVA
+    base_rate = 0.12  # $/kWh
+    avg_usage = 200  # kVA
+    kwh_usage = (avg_usage * 3600) / 1000  # convert kVA to kWh
+    data.append(f"{date.strftime('%Y-%m-%d')},{n},{base_rate * kwh_usage:.2f}")
+
+# Convert the list to a DataFrame and print it
+df = pd.DataFrame(data, columns=['Date', 'Time', 'kWh Usage (USD)'])
+print(df)

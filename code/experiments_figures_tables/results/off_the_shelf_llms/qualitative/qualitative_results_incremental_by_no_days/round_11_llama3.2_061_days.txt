@@ -1,0 +1,26 @@
+import datetime
+import random
+
+# Initialize empty list to store data
+data = []
+
+# Define a function to generate random electrical metering data
+def generate_data(start_date):
+    start_time = start_date.time()
+    current_time = start_time
+    
+    for _ in range(1464):  # Generate 1464 measurements
+        date_str = (start_date + datetime.timedelta(minutes=int(current_time.hour*60))).strftime('%Y-%m-%d')
+        
+        # Randomly generate kWh values between 0 and 1000
+        kWh = random.randint(0, 1000)
+        
+        data.append((date_str, kWh))
+        
+        current_time += datetime.timedelta(hours=1)
+
+# Start generating data from 01 January 2016 at 1:00 AM
+start_date = datetime.date(2016, 1, 1)
+generate_data(start_date)  
+
+print(*data, sep=",")

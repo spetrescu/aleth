@@ -1,0 +1,22 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set a date range with a step size of 1 hour
+start_date = '2016-01-01'
+end_date = start_date
+step_size = timedelta(hours=1)
+
+data = []
+while end_date - start_date >= step_size:
+    current_date = start_date + step_size
+    # Assuming the electrical metering for this specific building is 10000 sq feet,
+    # we can generate a random value for kWh.
+    # This is just an example and actual values will depend on various factors like usage patterns, location,
+    # etc. Real-time energy consumption data might require more complex calculations or integration with utility company APIs.
+    measurement = round(np.random.uniform(0, 100), 2)
+    data.append([current_date.strftime('%Y-%m-%d'), str(measurement)])
+    end_date += step_size
+
+df = pd.DataFrame(data, columns=['Date', 'Electrical Measurement (kWh)'])
+print(df)

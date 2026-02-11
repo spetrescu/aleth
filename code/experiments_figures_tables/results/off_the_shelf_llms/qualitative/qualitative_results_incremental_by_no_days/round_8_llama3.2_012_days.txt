@@ -1,0 +1,27 @@
+Here's a Python script using pandas and numpy libraries to generate building sensor data.
+
+```python
+import pandas as pd
+import numpy as np
+
+# Generate date range from 01 January 2016 to 31 December 2022 at 1-hour intervals
+start_date = '2016-01-01'
+end_date = '2022-12-31'
+
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Function to generate random electrical measurement values in kWh for each date
+def generate_electrical_measurement():
+    return np.random.rand(len(date_range)) * 100
+
+# Generate data and store it in a pandas DataFrame
+df = pd.DataFrame({'Date': date_range})
+df['Electrical Measurement (kWh)'] = generate_electrical_measurement()
+
+# Print the generated data
+print(df)
+```
+
+When you run this script, it will output the entire span of building sensor data for the specified period.
+
+Let me know if you need any further assistance.
