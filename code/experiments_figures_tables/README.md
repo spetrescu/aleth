@@ -24,5 +24,10 @@ We provide the code for all the figures and tables, or any other claims made in 
 Assuming the virtual environment is activated and requirements have been installed, run: `python 2a_figure.py`
 
 ### Results 1/2 Off the shelf LLMs
+To match the presentation of the paper, we provide the qualitative and quantitative results for the off the shelf LLM experiments (`results/off_the_shelf_llms/qualitative` and `results/off_the_shelf_llms/quantitative`).
 
+#### Figures 5a and 5b
+This figure in the paper was one example of how we tested the sheer data ouptut capability of off-the-shelf LLMs. To do so, we ran: 
+1. `results/off_the_shelf_llms/qualitative/test_data_volume_output_capability.py` (this will generate data for 1-31 days for 3 models; you can run this if you want to reproduce the data itself, however, given the time it takes, we already provide the results in output txt files which can be found in `buildsys_github_submissions/submission_76/code/experiments_figures_tables/results/off_the_shelf_llms/qualitative/qualitative_results_incremental_by_no_days`). Therefore, to plot the results directly and reproduce Figure 5a and 5b, run the command below.
+2. `results/off_the_shelf_llms/qualitative/plot_output_capability_fig5a_5b.py` (this will reproduce the visualization in the paper - Figure 5a and Figure 5b)
 ### Results 2/2 aleth
