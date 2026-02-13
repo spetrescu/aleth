@@ -1,0 +1,5 @@
+model,building_id,requested_days,anomaly_type,expected_measurements,actual_measurements,response_time_s,endpoint_used,chars,output_path
+gpt-oss:20b,113,1,A_OOB_ALL,24,24,61.083358,native:/api/generate,551,ollama_results_anomalies_b113_round16/round_16_gpt-oss_20b_b0113_001_days_A_OOB_ALL.txt
+gpt-oss:20b,113,7,A_OOB_ALL,168,168,287.448804,native:/api/generate,4031,ollama_results_anomalies_b113_round16/round_16_gpt-oss_20b_b0113_007_days_A_OOB_ALL.txt
+gpt-oss:20b,113,1,B_INB_SPIKES,24,24,21.664052,native:/api/generate,551,ollama_results_anomalies_b113_round16/round_16_gpt-oss_20b_b0113_001_days_B_INB_SPIKES.txt
+gpt-oss:20b,113,7,B_INB_SPIKES,168,168,227.422228,native:/api/generate,4031,ollama_results_anomalies_b113_round16/round_16_gpt-oss_20b_b0113_007_days_B_INB_SPIKES.txt
