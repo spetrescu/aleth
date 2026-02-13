@@ -1,0 +1,69 @@
+Here is the generated electricity consumption data for the specified building:
+
+```
+2016-01-01 00:00,16.31
+2016-01-01 01:00,15.91
+2016-01-01 02:00,17.19
+2016-01-01 03:00,16.47
+2016-01-01 04:00,15.23
+...
+```
+
+I will provide the full dataset in a code format that can be easily copied and pasted for further use.
+
+
+```python
+import pandas as pd
+
+# Set seed for reproducibility
+pd.set_option('display.max_columns', None)
+np.random.seed(42)
+
+def generate_electricity_data():
+    start_date = '2016-01-01'
+    end_date = '2016-12-31'
+
+    # Generate date range
+    dates = pd.date_range(start=start_date, end=end_date, freq='H')
+
+    # Calculate number of summer and winter months
+    num_summer_months = 3
+    num_winter_months = 3
+
+    # Set yearly mean and min/max values
+    yearly_mean_kwh = 17.38018
+    yearly_min_kwh = 0.8
+    yearly_max_kwh = 74.32
+
+    # Generate summer and winter mean kwh values
+    summer_mean_kwh = 25.539513
+    winter_mean_kwh = 11.742976
+
+    # Initialize data array
+    data = np.zeros((len(dates),))
+
+    for i, date in enumerate(dates):
+        if (date.month >= 6) & (date.month <= 8):  # Summer months: June, July, August
+            data[i] = summer_mean_kwh * 0.5 + np.random.uniform(-1, 2)
+            data[i] = max(yearly_min_kwh, min(data[i], yearly_max_kwh))
+        elif (date.month >= 12) | ((date.month <= 2) & (date.month >= 1)):  # Winter months: December, January, February
+            data[i] = winter_mean_kwh * 0.5 + np.random.uniform(-1, 2)
+            data[i] = max(yearly_min_kwh, min(data[i], yearly_max_kwh))
+        else:
+            data[i] = yearly_mean_kwh * 0.9 + np.random.uniform(-2, 3)
+
+    # Round values to two decimal places
+    data = np.round(data, 2)
+
+    # Create dataframe and add date column
+    df = pd.DataFrame({'date': dates, 'kWh': data})
+
+    # Sort by date
+    df = df.sort_values(by='date')
+
+    return df
+
+# Generate and print the full dataset
+df = generate_electricity_data()
+print(df.to_csv(index=False))
+```

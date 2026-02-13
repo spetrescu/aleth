@@ -1,0 +1,50 @@
+Here is a Python script that generates synthetic electricity consumption data for the specified building:
+
+```python
+import datetime
+import random
+from dateutil import tz
+
+# Define constants
+YEARLY_MEAN_KWH = 6.4528236
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 18.1
+SUMMER_MEAN_KWH = 6.342618
+WINTER_MEAN_KWH = 6.7815933
+
+# Generate synthetic data for 2016
+def generate_data():
+    # Initialize list to store results
+    result = []
+
+    # Loop through each hour in the year 2016
+    now = datetime.datetime(2016, 1, 1)
+    while len(result) < 504:
+        day_of_year = now.timetuple().tm_yday
+
+        if (now.month == 6 or now.month == 7 or now.month == 8) and not (now.month in [12] and now.day >= 25):
+            # Summer months, use mean kWh
+            consumption = SUMMER_MEAN_KWH * random.random()
+        elif (now.month == 12 and now.day >= 25) and not ((now.month in [1, 2]) and now.day >= 1):
+            # Winter months, use mean kWh
+            consumption = WINTER_MEAN_KWH * random.random()
+        else:
+            # Other months, use yearly mean kWh
+            consumption = YEARLY_MEAN_KWH * random.random()
+
+        # Ensure value is within the specified range
+        consumption = max(YEARLY_MIN_KWH, min(consumption, YEARLY_MAX_KWH))
+
+        # Append to result list
+        result.append(f"{now.strftime('%Y-%m-%d %H:%M')}, {consumption:.6f}")
+
+        now += datetime.timedelta(hours=1)
+
+    return '\n'.join(result)
+
+print(generate_data())
+```
+
+This script generates synthetic electricity consumption data for the specified building, following the constraints you provided. The output consists of 504 lines of text in the format "YYYY-MM-DD HH:MM,VALUE", where VALUE is a random number between `YEARLY_MIN_KWH` and `YEARLY_MAX_KWH`, or averaged according to the summer or winter months.
+
+Please note that due to the randomness introduced by `random.random()`, this output may not be exactly representative of real-world data. If you want more realistic data, consider using other methods such as simulating actual usage patterns or incorporating seasonal fluctuations in a more sophisticated way.

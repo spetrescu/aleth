@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 140
+PRIMARY_USE = "Office"
+SQUARE_FEET = 50020
+YEARLY_MEAN_KWH = 31.697405
+YEARLY_MIN_KWH = 8.0204
+YEARLY_MAX_KWH = 61.0
+SUMMER_MEAN_KWH = 32.27265
+WINTER_MEAN_KWH = 30.24863
+
+# Generate date range for 288 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=288*24)
+
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Create lists to store the generated data
+values = []
+dates = []
+
+# Function to generate random values within the given kWh range
+def generate_random_values():
+    for _ in range(288):
+        # Generate a random value between yearly_min_kwh and yearly_max_kwh
+        value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+        
+        # If it's summer, generate a random value around summer_mean_kwh
+        if start_date.month >= 6:
+            value = np.random.normal(SUMMER_MEAN_KWH, SUMMER_MEAN_KWH/10)
+        # If it's winter, generate a random value around winter_mean_kwh
+        elif start_date.month <= 2:
+            value = np.random.normal(WINTER_MEAN_KWH, WINTER_MEAN_KWH/10)
+
+        values.append(value)
+
+        # Append the current date to the dates list
+        dates.append(start_date)
+        
+        # Move to the next hour
+        start_date += timedelta(hours=1)
+
+# Generate random data
+generate_random_values()
+
+# Create lists for printing output
+output_dates = [f"{date.strftime('%Y-%m-%d %H:%M')}" for date in dates]
+output_values = ["{:.10f}".format(value) for value in values]
+
+# Print the output
+for date, value in zip(output_dates, output_values):
+    print(f"{date}, {value}")

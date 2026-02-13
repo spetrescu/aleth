@@ -1,0 +1,59 @@
+Here's a Python script to generate the electricity consumption data for the specified building:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 105
+primary_use = "Education"
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Initialize output file
+with open("electricity_consumption.csv", "w") as f:
+    for i in range(360):
+        # Determine season based on day of the year
+        if (i + 1) % 365 >= 183 and (i + 1) % 365 <= 266:  # June-August
+            mean_kwh = summer_mean_kwh
+        elif (i + 1) % 365 >= 267 and (i + 1) % 365 <= 359:  # September-November
+            if i < 120:  # First three months of winter
+                mean_kwh = winter_mean_kwh * 0.75  # Reduce by 25% to simulate start of winter
+            else:
+                mean_kwh = winter_mean_kwh
+        elif (i + 1) % 365 >= 360 and (i + 1) % 365 <= 365:  # December-February
+            if i < 91:  # First three months of winter
+                mean_kwh = winter_mean_kwh * 0.75  # Reduce by 25% to simulate start of winter
+            else:
+                mean_kwh = winter_mean_kwh
+        else:  # March-May and December-January
+            mean_kwh = yearly_mean_kwh
+
+        # Generate random fluctuations within the range of min and max values
+        fluctuation = (random.uniform(yearly_min_kwh, yearly_max_kwh) - yearly_mean_kwh) / 10 * 1000
+        kwh = round(mean_kwh + fluctuation)
+
+        # Ensure value is not below min or above max
+        if kwh < yearly_min_kwh:
+            kwh = yearly_min_kwh
+        elif kwh > yearly_max_kwh:
+            kwh = yearly_max_kwh
+
+        # Create date and time string
+        dt = datetime(2016, 1 + i // 365, (i % 365) + 1, 0)
+        day_str = dt.strftime("%Y-%m-%d")
+        hour_str = dt.strftime("%H:%M")
+
+        # Output to file
+        f.write(f"{day_str} {hour_str}, {kwh}\n")
+
+print("Electricity consumption data generated.")
+```
+
+This script uses Python's random module to generate realistic fluctuations in electricity consumption around the average values. It then writes each hour of the year to a CSV file with the date and time of that hour, followed by the corresponding kWh value.
+
+Note: The generated dataset includes both winter months with reduced mean kWh due to heating demands, as well as non-winter months where the full yearly_mean_kwh is used.

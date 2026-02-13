@@ -1,0 +1,39 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_consumption_data(building_id):
+    # Define constants
+    num_measurements = 576
+    yearly_mean_kwh = 17.38018
+    yearly_min_kwh = 0.8
+    yearly_max_kwh = 74.32
+    summer_mean_kwh = 25.539513
+    winter_mean_kwh = 11.742976
+
+    # Generate dates and kWh values
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=num_measurements-1)
+
+    for n in range(num_measurements):
+        date = start_date + timedelta(days=n)
+        month = date.strftime('%m')
+
+        if (month == '06' or month == '07' or month == '08') and n < num_measurements//4:
+            # Summer months
+            value = round(random.uniform(0, summer_mean_kwh), 3)
+        elif (month == '12' or month == '01' or month == '02') and n >= num_measurements*3/4:
+            # Winter months
+            value = round(random.uniform(0, winter_mean_kwh), 3)
+        else:
+            # Other months
+            value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+
+        if (month == '06' or month == '07' or month == '08') and n < num_measurements//4:
+            value = round(value * summer_mean_kwh / sum([random.uniform(0, 1) for _ in range(num_measurements)]))
+        elif (month == '12' or month == '01' or month == '02') and n >= num_measurements*3/4:
+            value = round(value * winter_mean_kwh / sum([random.uniform(0, 1) for _ in range(num_measurements)]))
+
+        print(f"{date.strftime('%Y-%m-%d %H:%M')}, {value}")
+
+# Generate data
+generate_electricity_consumption_data(272)

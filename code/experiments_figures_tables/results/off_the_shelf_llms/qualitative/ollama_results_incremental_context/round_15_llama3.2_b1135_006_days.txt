@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define time intervals and data range
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+# Generate dates and corresponding random consumption values within specified ranges
+dates = []
+consumption_values = []
+
+for i in range(int ((end_date - start_date).days / 24)):
+    date = (datetime.strptime(start_date, '%Y-%m-%d') + timedelta(days=i)).strftime('%Y-%m-%d')
+    
+    if 'Jun' in date or 'Jul' or 'Aug' in date:
+        avg_consumption = np.random.uniform(255.0, 270.5)
+    else:
+        avg_consumption = np.random.uniform(235.0, 265.5)
+
+    consumption = round(np.random.normal(avg_consumption, yearly_mean_kwh * 0.05), 3)
+
+    # Ensure values are within min and max kWh
+    if consumption < yearly_min_kwh:
+        consumption = yearly_min_kwh + np.round((consumption - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh) * (yearly_max_kwh - yearly_min_kwh))
+    elif consumption > yearly_max_kwh:
+        consumption = yearly_max_kwh - np.round((consumption - yearly_max_kwh) / (yearly_max_kwh - yearly_min_kwh) * (yearly_max_kwh - yearly_min_kwh))
+
+    dates.append(date)
+    consumption_values.append(consumption)
+
+# Create dataframe and convert to required format
+df = pd.DataFrame({'DATE': dates, 'VALUE': consumption_values})
+
+for i in range(len(df)):
+    date_str = f"{df.loc[i,'DATE']}"
+    value_str = str(round(df.loc[i,'VALUE'],3))
+    
+    print(f"{date_str} {value_str}")

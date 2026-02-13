@@ -1,0 +1,44 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Initial data for the building
+building_id = 113
+primary_use = "Education"
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Generate data for each day in the given timeframe
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=336)
+
+data = []
+
+for n in range(int ((end_date - start_date).days)):
+    current_date = start_date + timedelta(n)
+    
+    # Randomly select a value from the given kwh ranges
+    if (current_date.month >=6) & (current_date.month <=8):
+        # Summer months
+        kwh_value = summer_mean_kwh * 0.9 + yearly_min_kwh*(1 - 0.9)
+        
+    elif (current_date.month >=12) & (current_date.month <=2):
+        # Winter months
+        kwh_value = winter_mean_kwh * 0.9 + yearly_min_kwh * (1- 0.9)
+
+    else:
+        # Non-winter, non-summer months
+        kwh_value = yearly_mean_kwh
+    
+    # Ensure the generated value is within the valid range
+    if kwh_value > yearly_max_kwh:
+        kwh_value = yearly_max_kwh
+    elif kwh_value < yearly_min_kwh:
+        kwh_value = yearly_min_kwh
+
+    data.append((current_date.strftime('%Y-%m-%d %H:%M'), kwh_value))
+
+print('\n'.join(map(lambda x: f'{x[0]} {x[1]}', data)))

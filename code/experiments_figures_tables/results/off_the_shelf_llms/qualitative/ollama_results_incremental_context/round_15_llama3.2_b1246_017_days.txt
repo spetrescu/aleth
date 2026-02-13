@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1246
+primary_use = 'Office'
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 408 measurements.
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=408)
+
+data = []
+
+while start_date <= end_date:
+    if (datetime(2016, 3, 20).month == 3 and 
+        datetime(2016, 4, 1).month >= 4 and 
+        datetime(2016, 5, 1).month >= 5):
+        # Summer month
+        value = np.random.normal(summer_mean_kwh, yearly_max_kwh/100)
+    elif (datetime(2016, 12, 1).month == 12 and 
+          datetime(2017, 1, 1).month == 1 and 
+          datetime(2017, 2, 1).month == 2):
+        # Winter month
+        value = np.random.normal(winter_mean_kwh, yearly_max_kwh/100)
+    else:
+        # Other months
+        value = np.random.normal(yearly_mean_kwh, yearly_max_kwh/100)
+
+    if value < yearly_min_kwh or value > yearly_max_kwh:
+        value = np.clip(value, yearly_min_kwh, yearly_max_kwh)
+
+    data.append((start_date.strftime('%Y-%m-%d %H:%M'), value))
+
+    start_date += timedelta(hours=1)
+
+# Convert the list of tuples to a pandas DataFrame
+df = pd.DataFrame(data, columns=['Date', 'Value'])
+
+print(df.to_csv(index=False))

@@ -1,0 +1,59 @@
+Here is a Python solution for generating synthetic electricity meter readings:
+
+```python
+import pandas as pd
+from datetime import date, timedelta
+import numpy as np
+
+# Constants and metadata
+BUILDING_ID = 1086
+PRIMARY_USE = "Office"
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER_MEAN_KWH = 393.1739
+WINTER_MEAN_KWH = 218.81273
+
+# Start date and end date for the generated data
+START_DATE = date(2016, 1, 1)
+END_DATE = START_DATE + timedelta(days=696)
+
+# Generate synthetic electricity meter readings at 1-hour intervals
+data = []
+current_date = START_DATE
+while current_date <= END_DATE:
+    # Determine whether it's a summer or winter month
+    if (current_date.month >= 6) and (current_date.month <= 8):
+        mean_kwh = SUMMER_MEAN_KWH
+    elif (current_date.month >= 12) or ((current_date.month == 1) or (current_date.month == 2)):
+        mean_kwh = WINTER_MEAN_KWH
+    else:
+        # If it's not a summer or winter month, use the yearly mean
+        mean_kwh = YEARLY_MEAN_KWH
+
+    # Generate a random value between the minimum and maximum possible values
+    kwh = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    if (current_date.month >= 6) and (current_date.month <= 8):
+        # In summer months, ensure the value is not too low or high compared to the mean
+        kwh = max(kwh, SUMMER_MEAN_KWH * 0.9)
+        kwh = min(kwh, SUMMER_MEAN_KWH * 1.1)
+
+    data.append({
+        'date': current_date.strftime('%Y-%m-%d'),
+        'value': kwh
+    })
+
+    # Increment the date by one hour
+    current_date += timedelta(hours=1)
+
+# Convert data to CSV format and print
+for row in data:
+    print(f"{row['date']} {row['value']}")
+```
+
+This script will generate 696 lines of output, each in the format "YYYY-MM-DD HH:MM,VALUE". The values are synthetic but realistic and consistent with the summary statistics you provided. The summer months average around `SUMMER_MEAN_KWH`, while the winter months average around `WINTER_MEAN_KWH`. The values never go below `YEARLY_MIN_KWH` or above `YEARLY_MAX_KWH`.
+
+Note that this script assumes that the hours are 1-hour intervals starting from January 1st, 2016. If you need to adjust the start date or interval length, you can modify the script accordingly.
+
+Also note that due to the nature of the random number generation, you may not get exactly the same output if you run the script multiple times. However, the values should be consistent with the provided summary statistics and will generally follow a similar distribution.

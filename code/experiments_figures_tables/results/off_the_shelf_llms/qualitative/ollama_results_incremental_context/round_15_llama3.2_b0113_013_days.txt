@@ -1,0 +1,45 @@
+import random
+from datetime import datetime, timedelta, timezone
+import pytz
+
+# Set up a consistent timezone for the dates and times
+pytz.timezone('America/New_York')
+
+def generate_electricity_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh, summer_mean_kwh, winter_mean_kwh):
+    # Create a list to store our measurements
+    measurements = []
+
+    # Initialize the current date to January 1st of the year we start generating data for
+    today = datetime(2016, 1, 1, tzinfo=timezone.utc)
+
+    # We'll be generating data from 01/01/2016 until 12/31/2016
+    while len(measurements) < 312:
+        # Generate a random time within the current day's range
+        hour = random.randint(0, 23)
+        minute = random.randint(0, 59)
+
+        # Format our current date and time for output
+        dt_str = today.strftime("%Y-%m-%d %H:%M")
+
+        # Randomly decide whether to generate a high or low value for the meter reading
+        if (today.month in [6, 7, 8] and today.day >= 1) or \
+           (today.month in [12, 1, 2] and today.day <= 28):
+            # During summer months we will generate readings around the average value of summer_mean_kwh
+            reading = round(random.gauss(summer_mean_kwh, yearly_max_kwh - 2 * summer_mean_kwh), 3)
+        else:
+            # Otherwise during winter months we will generate readings around the average value of winter_mean_kwh
+            reading = round(random.gauss(winter_mean_kwh, yearly_max_kwh - 2 * winter_mean_kwh), 3)
+
+        # Ensure that our generated reading is within the allowed range
+        if reading < yearly_min_kwh or reading > yearly_max_kwh:
+            continue
+
+        # Add this measurement to our list of measurements
+        measurements.append(f"{dt_str}, {reading}")
+
+        # Move on to the next day
+        today += timedelta(hours=1)
+
+    return '\n'.join(measurements)
+
+print(generate_electricity_data(113, "Education", 100481, 363.97446, 159.643, 679.25, 365.49576, 361.4717))

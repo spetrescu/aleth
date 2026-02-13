@@ -1,0 +1,51 @@
+Here is a Python script that generates synthetic electricity consumption data for the specified building:
+
+```python
+import datetime
+import random
+
+def generate_electricity_consumption_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh, summer_mean_kwh, winter_mean_kwh):
+    # Define date ranges and their respective consumption averages
+    dates = []
+    consumption_averages = {
+        'summer': (6*summer_mean_kwh, 1),
+        'winter': (6*winter_mean_kwh, 2)
+    }
+
+    start_date = datetime.date(2016, 1, 1)
+    end_date = datetime.date(2016, 12, 31)
+
+    # Loop through each day
+    for n in range(int((end_date - start_date).days)):
+        date = start_date + datetime.timedelta(n)
+        if random.random() < 0.7:  # 70% chance of summer usage
+            consumption_average, season_factor = consumption_averages['summer']
+        else:
+            consumption_average, season_factor = consumption_averages['winter']
+
+        # Generate a value within the defined range
+        value = round(consumption_average + random.gauss(0, (yearly_max_kwh - yearly_min_kwh)/10), 3)
+
+        # Ensure value is within min and max kWH usage for this date
+        if value < yearly_min_kwh or value > yearly_max_kwh:
+            continue
+
+        consumption_averages['summer'][0] -= (consumption_average - random.gauss(0, (yearly_max_kwh - yearly_min_kwh)/10))
+        consumption_averages['winter'][0] -= (consumption_average - random.gauss(0, (yearly_max_kwh - yearly_min_kwh)/10))
+
+        # Calculate the time of day
+        hour = datetime.datetime.combine(date, datetime.time()).hour
+
+        # If this is a summer month (Jun-Aug), set season_factor to 1; otherwise, set it to 2.
+        if date.month in [6,7,8]:
+            season_factor = 1
+
+        # Append the data
+        dates.append(f'{date.strftime("%Y-%m-%d")}')
+        print(f'{date.strftime("%Y-%m-%d %H:%M")} {value}')
+
+# Call the function with building metadata and annual summary statistics.
+generate_electricity_consumption_data(155, 'Office', 51688, yearly_mean_kwh=81.997604, yearly_min_kwh=23.5, yearly_max_kwh=159.0, summer_mean_kwh=73.1753, winter_mean_kwh=91.38757)
+```
+
+This Python script will generate the synthetic electricity consumption data based on the provided building metadata and annual summary statistics.

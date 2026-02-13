@@ -1,0 +1,41 @@
+import random
+from datetime import timedelta, datetime
+
+# Constants
+BUILDING_ID = 11
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 49073
+YEARLY_MEAN_KWH = 296.39252
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 1052.0
+SUMMER_MEAN_KWH = 486.43784
+WINTER_MEAN_KWH = 162.72496
+
+# Generate electricity consumption data
+def generate_electricity_data():
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=120*365)
+
+    while start_date < end_date:
+        # Randomly select whether it's summer or winter month
+        if (start_date.month >= 6 and start_date.month <= 8) or \
+           (start_date.month == 12):
+            usage_value = random.gauss(SUMMER_MEAN_KWH, 100)
+        else:
+            usage_value = random.gauss(WINTER_MEAN_KWH, 100)
+
+        # Ensure value is within range
+        usage_value = max(YEARLY_MIN_KWH, min(usage_value, YEARLY_MAX_KWH))
+
+        # Create line of output
+        date_str = start_date.strftime('%Y-%m-%d %H:%M')
+        print(f"{date_str}, {usage_value:.6f}")
+
+        # Increment to next day
+        if (start_date.month == 12 and start_date.day > 31) or \
+           (start_date.month < 12 and start_date.day > 28):
+            start_date = start_date.replace(day=1)
+        else:
+            start_date = start_date + timedelta(days=1)
+
+generate_electricity_data()

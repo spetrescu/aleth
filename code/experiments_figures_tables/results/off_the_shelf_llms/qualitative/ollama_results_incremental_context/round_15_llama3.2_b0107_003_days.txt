@@ -1,0 +1,67 @@
+Here is a Python script to generate the synthetic electricity consumption data:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+def generate_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                   summer_mean_kwh, winter_mean_kwh, start_date, num_measurements):
+    # Set up the dates and date ranges for summer and winter months
+    now = datetime.now()
+    end_date = (datetime.now() + timedelta(days=365*2)).strftime("%Y-%m-%d")
+    start_date_str = start_date.strftime("%Y-%m-%d")
+
+    summer_dates = [str((now - timedelta(days=i)).date()) for i in range(int((start_date - datetime(2016,1,1)).days/365)*3 + 1)]
+    winter_dates = [str((now - timedelta(days=i)).date()) for i in range(int((end_date - datetime(2016,1,1)).days/365)*2 + 1)]
+
+    # Initialize the lists to store date values and corresponding electricity consumption
+    dates = []
+    values = []
+
+    # Generate data for each hour from start_date to end_date
+    current_time = start_date + timedelta(hours=0)
+    while len(dates) < num_measurements:
+        if (current_time - datetime(2016,1,1)).days >= 365 * 2:  # winter
+            dates.append(current_time.strftime("%Y-%m-%d %H:%M"))
+            value = random.uniform(winter_min_kwh, winter_max_kwh)
+        else:
+            dates.append(current_time.strftime("%Y-%m-%d %H:%M"))
+            value = random.uniform(summer_min_kwh, summer_max_kwh)
+
+        # If current date is in a month with higher mean kWh
+        if (current_time - datetime(2016,1,1)).days >= 365 * 2 and (current_time.month-12)%3 == 0:
+            value = random.uniform(summer_mean_kwh - 10, summer_mean_kwh + 10)
+        elif current_time.month < 8:
+            value = random.uniform(winter_mean_kwh - 10, winter_mean_kwh + 10)
+
+        values.append(value)
+
+        # Increment the time by one hour
+        current_time += timedelta(hours=1)
+
+    return dates, values
+
+# Set up building metadata
+building_id = 107
+primary_use = "Education"
+square_feet = 97532
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Set up start date and number of measurements
+start_date = datetime(2016,1,1)
+num_measurements = 72
+
+# Generate data
+dates, values = generate_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh,
+                              yearly_max_kwh, summer_mean_kwh, winter_mean_kwh, start_date, num_measurements)
+
+# Print the output
+for i in range(len(dates)):
+    print(f"{dates[i]}, {values[i]}")
+```
+
+This script will generate synthetic electricity consumption data for the specified building and date range.

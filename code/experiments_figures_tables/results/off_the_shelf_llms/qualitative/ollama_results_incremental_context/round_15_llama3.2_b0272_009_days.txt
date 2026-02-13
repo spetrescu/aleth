@@ -1,0 +1,57 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 272
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 4583
+YEARLY_MEAN_KWH = 17.38018
+YEARLY_MIN_KWH = 0.8
+YEARLY_MAX_KWH = 74.32
+SUMMER_MEAN_KWH = 25.539513
+WINTER_MEAN_KWH = 11.742976
+
+# Generate electricity consumption data
+data = []
+start_date = datetime(2016, 1, 1)
+while len(data) < 216:
+    date = start_date
+    while True:
+        # Determine if it's summer or winter month
+        month = date.month
+        if (month >= 6 and month <= 8):
+            avg_kwh = SUMMER_MEAN_KWH
+        elif (month >= 12 and month <= 2):
+            avg_kwh = WINTER_MEAN_KWH
+        else:
+            # For other months, average around yearly_mean_kwh
+            avg_kwh = YEARLY_MEAN_KWH
+        
+        # Generate random kwh value within the range [avg_kwh - (avg_kwh * 0.1), avg_kwh + (avg_kwh * 0.1)]
+        kwh_value = round(random.uniform(avg_kwh - (avg_kwh * 0.1), avg_kwh + (avg_kwh * 0.1)), 4)
+        
+        # Ensure kwh value is within the allowed range
+        if kwh_value < YEARLY_MIN_KWH:
+            kwh_value = YEARLY_MIN_KWH
+        elif kwh_value > YEARLY_MAX_KWH:
+            kwh_value = YEARLY_MAX_KWH
+        
+        # Append data to list
+        data.append((date.strftime('%Y-%m-%d %H:%M'), kwh_value))
+        
+        # Increment date by 1 hour
+        if date.minute < 59:
+            date = date + timedelta(hours=1)
+        else:
+            date = datetime(2016, 1, 1) + timedelta(days=(date.day - 1) * 365 + (date.month - 1) // 12)
+    
+    # If no data is generated in the last 24 hours, try to generate it again
+    if start_date == datetime(2016, 1, 1):
+        continue
+    
+    # Increment date by 1 day
+    start_date += timedelta(days=1)
+
+# Print data
+for value in data:
+    print(f"{value[0]},{value[1]}")

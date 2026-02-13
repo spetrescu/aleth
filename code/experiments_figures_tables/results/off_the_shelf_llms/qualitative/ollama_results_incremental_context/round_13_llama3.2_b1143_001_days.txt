@@ -1,0 +1,37 @@
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1143
+primary_use = 'Office'
+square_feet = 96612
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+# Number of measurements
+num_measurements = 24
+
+# Generate electricity consumption data (kWh) at 1-hour intervals
+def generate_data():
+    for i in range(num_measurements):
+        # Determine time of year based on day of the month
+        if datetime.now().month == 6 or datetime.now().month == 7 or datetime.now().month == 8:
+            kwh = round(random.gauss(summer_mean_kwh, yearly_max_kwh / 5))
+        else:
+            kwh = round(random.gauss(winter_mean_kwh, yearly_max_kwh / 5))
+
+        # Ensure value is within valid range
+        if kwh < yearly_min_kwh or kwh > yearly_max_kwh:
+            kwh = random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+        # Format and print data
+        date = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
+        hour = i % 24
+        formatted_date = f"{date} {hour:02d}:00"
+        print(f"{formatted_date}, {kwh}")
+
+# Run the generator
+generate_data()

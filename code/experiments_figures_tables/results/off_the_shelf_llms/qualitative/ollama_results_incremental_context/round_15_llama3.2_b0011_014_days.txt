@@ -1,0 +1,23 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Generate dates for 336 measurements
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+dates = [start_date + ' ' + str(i) for i in range(0, int((end_date - start_date).total_seconds() / (3600 * 24)) + 1)]
+
+# Generate electricity consumption data
+data = []
+for date in dates:
+    hour = int(datetime.strptime(date, '%Y-%m-%d %H:%M').hour)
+    if 'Jun' in date or 'Jul' in date or 'Aug' in date: # Summer months (June-August)
+        value = np.random.uniform(0.05 * 486.43784, 1.05 * 486.43784) + 486.43784
+    else: # Winter months (Dec-Feb)
+        value = np.random.uniform(0.05 * 162.72496, 1.05 * 162.72496) + 162.72496
+    data.append((date + ' ' + str(hour), round(value, 6)))
+
+# Output the electricity consumption data
+for row in data:
+    print(row[0] + ', ' + str(row[1]))

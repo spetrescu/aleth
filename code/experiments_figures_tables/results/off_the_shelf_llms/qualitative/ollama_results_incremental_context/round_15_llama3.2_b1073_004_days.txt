@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+def generate_electricity_consumption_data():
+    # Calculate total yearly kWh based on summer and winter means
+    yearly_mean_kwh = 179.21414
+    
+    # Create a date range from January 1st to December 31st
+    start_date = datetime(2016, 1, 1)
+    end_date = datetime(2016, 12, 31)
+    
+    dates = [start_date + timedelta(hours=i) for i in range((end_date-start_date).days*24)]
+    
+    # Create lists to store kWh values and corresponding timestamps
+    kwh_values = []
+    timestamps = []
+    
+    # Loop over the date range to generate random hourly consumption data
+    for i, date in enumerate(dates):
+        if (date.month == 6 or date.month == 7 or date.month == 8) and (date.day >= 1 and date.day <= 31): #Summer months
+            kwh_values.append(np.random.normal(summer_mean_kwh, yearly_mean_kwh/12)) # Normalize to range [yearly_min_kwh, yearly_max_kwh]
+        elif (date.month in [12,1,2] and date.day >= 1 and date.day <= 31): #Winter months
+            kwh_values.append(np.random.normal(winter_mean_kwh, yearly_mean_kwh/12))# Normalize to range [yearly_min_kwh, yearly_max_kwh]
+        else:
+            kwh_values.append(yearly_mean_kwh)
+    
+    # Ensure all values are within the valid range and normalize
+    for i in range(len(kwh_values)):
+        while kwh_values[i] < yearly_min_kwh or kwh_values[i] > yearly_max_kwh:
+            if np.random.rand() < 0.5: # More likely to increase than decrease value to ensure values don't go below minimum when decreased
+                kwh_values[i] += (yearly_max_kwh - yearly_min_kwh) * np.random.uniform(0,1)
+            else:
+                kwh_values[i] -= (yearly_max_kwh - yearly_min_kwh) * np.random.uniform(0,1)
+
+    # Append values to lists and format as required
+    for i in range(len(dates)):
+        timestamps.append(f"{dates[i].strftime('%Y-%m-%d %H:%M')},{kwh_values[i]}")
+
+    return '\n'.join(timestamps)
+
+
+# Generate electricity consumption data
+data = generate_electricity_consumption_data()
+
+print(data)

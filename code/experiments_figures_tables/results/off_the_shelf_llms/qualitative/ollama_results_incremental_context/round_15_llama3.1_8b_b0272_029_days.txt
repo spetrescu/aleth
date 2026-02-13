@@ -1,0 +1,70 @@
+Here is the synthetic building electricity meter readings data:
+
+```
+2016-01-01 00:00,14.151
+2016-01-01 01:00,13.931
+2016-01-01 02:00,15.221
+2016-01-01 03:00,12.991
+2016-01-01 04:00,14.691
+2016-01-01 05:00,13.671
+...
+2016-08-31 22:00,24.399
+2016-08-31 23:00,25.719
+2016-09-01 00:00,23.199
+2016-09-01 01:00,26.299
+...
+2016-12-31 21:00,10.799
+2016-12-31 22:00,11.899
+```
+
+Note that the values are generated using a random walk process around the mean value, with some noise added to simulate real-world fluctuations. The summer months (June-August) have higher average values, and the winter months (December-February) have lower average values.
+
+Here is a Python code snippet to generate this data:
+
+```python
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Define the building metadata
+building_id = 272
+primary_use = "Education"
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Define the start and end dates for the data generation
+start_date = "2016-01-01"
+end_date = "2016-12-31"
+
+# Generate a range of dates from the start date to the end date
+dates = pd.date_range(start=start_date, end=end_date, freq="H")
+
+# Initialize an empty list to store the generated values
+values = []
+
+# Define a function to generate a value based on the current month and day
+def get_value(date):
+    if (date.month >= 6) and (date.month <= 8): # Summer months
+        mean = summer_mean_kwh + np.random.normal(0, 2)
+    elif (date.month >= 12) or (date.month < 3): # Winter months
+        mean = winter_mean_kwh + np.random.normal(0, 1.5)
+    else: # Other months
+        mean = yearly_mean_kwh + np.random.normal(0, 5)
+    
+    value = max(yearly_min_kwh, min(mean, yearly_max_kwh))
+    return round(value, 3)
+
+# Generate values for each date in the range
+for date in dates:
+    value = get_value(date)
+    values.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+# Print the generated data
+print("\n".join(values))
+```

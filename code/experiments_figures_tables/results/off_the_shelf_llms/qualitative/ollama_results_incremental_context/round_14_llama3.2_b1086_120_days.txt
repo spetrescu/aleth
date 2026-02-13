@@ -1,0 +1,31 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Create a date range from 01 January 2016 to 31 December 2021 (2880 days)
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=2880 - 1) # subtract one day because we don't need the last value
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate random data for each hour in the date range
+data = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(date_range))
+
+# Calculate the mean and min values for summer and winter months
+summer_mean = 393.1739
+winter_mean = 218.81273
+
+# Adjust data according to season
+for i in range(len(data)):
+    date_i = date_range[i]
+    if (date_i.month == 6 or date_i.month == 7 or date_i.month == 8): # summer months
+        data[i] = np.random.uniform(summer_mean - 10, summer_mean + 10)
+    elif (date_i.month in [12,1,2]): # winter months
+        data[i] = np.random.uniform(winter_mean - 10, winter_mean + 10)
+
+# Create the dataset string
+dataset = '\n'.join(f"{date_i.strftime('%Y-%m-%d %H:%M')}, {data[i]:.3f}" for i, date_i in enumerate(date_range))
+
+print(dataset)

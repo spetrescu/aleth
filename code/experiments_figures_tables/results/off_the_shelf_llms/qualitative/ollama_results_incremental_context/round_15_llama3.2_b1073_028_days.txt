@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize an empty list to store the electricity consumption data
+data = []
+
+# Define the start and end dates for the simulation
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=672)
+
+# Calculate the number of measurements per hour
+hourly_measurements = int((end_date - start_date).total_seconds() / 3600) + 1
+
+# Generate the electricity consumption data
+for i in range(hourly_measurements):
+    # Convert the current date to a string
+    current_date_str = (start_date + timedelta(seconds=i*3600)).strftime('%Y-%m-%d')
+    
+    # Calculate the average kWh based on whether it's summer or winter
+    avg_kwh = 179.21414  # This is set as the default value
+    
+    # Check if the month is in the summer season (June, July, August)
+    if current_date_str[5:7] == '06':
+        # Adjust average kWh to summer_mean_kwh during these months
+        avg_kwh = 118.158516
+        
+    elif current_date_str[5:7] == '12':
+        # Adjust average kWh to winter_mean_kwh during these months
+        avg_kwh = 230.26053
+    
+    # Add the data point to the list, rounding values to avoid truncation
+    data.append(f'{current_date_str} {round(avg_kwh)}')
+
+# Print the electricity consumption data
+for row in data:
+    print(row)

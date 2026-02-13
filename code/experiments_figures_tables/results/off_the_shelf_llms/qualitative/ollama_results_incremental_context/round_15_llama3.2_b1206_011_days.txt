@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(42)
+
+# Define the building metadata and annual summary statistics
+building_metadata = {
+    'building_id': [1206],
+    'primary_use': ['Office'],
+    'square_feet': [99946],
+    'yearly_mean_kwh': [87.59102],
+    'yearly_min_kwh': [0.0],
+    'yearly_max_kwh': [153.733],
+    'summer_mean_kwh': [88.61049],
+    'winter_mean_kwh': [91.04132]
+}
+
+# Calculate the number of hours in a year
+hours_in_year = 8760
+
+# Generate random values for electricity consumption at 1-hour intervals
+consumption_values = np.random.uniform(building_metadata['yearly_min_kwh'], building_metadata['yearly_max_kwh'], size=(hours_in_year,))
+
+# Resample the values to match the summary statistics
+consumption_values_resampled = pd.Series(consumption_values)
+consumption_values_resampled.resample('H').mean()
+
+# Split the year into summer and winter months
+summer_months = [6, 7, 8]
+winter_months = [12, 1, 2]
+
+# Generate random values for electricity consumption in summer and winter months
+summer_consumption_values = np.random.uniform(building_metadata['summer_mean_kwh'], size=len(summer_months)*hours_in_year)
+winter_consumption_values = np.random.uniform(building_metadata['winter_mean_kwh'], size=len(winter_months)*hours_in_year)
+
+# Resample the values to match the summary statistics
+summer_consumption_values_resampled = pd.Series(summer_consumption_values).resample('H').mean()
+winter_consumption_values_resampled = pd.Series(winter_consumption_values).resample('H').mean()
+
+# Interleave the summer and winter consumption values
+consumption_values_final = np.concatenate((np.repeat(winter_consumption_values_resampled, len(summer_months)),
+                                          summer_consumption_values_resampled))
+
+# Convert the numpy array to a pandas DataFrame
+consumption_data = pd.DataFrame({'time': range(len(consumption_values_final)), 'kWh': consumption_values_final})
+
+# Round the kWh values and limit them within the summary statistics
+consumption_data['kWh'] = np.round(consumption_data['kWh'].clip(lower=building_metadata['yearly_min_kwh'], upper=building_metadata['yearly_max_kwh']), decimals=3)
+
+# Sort by time
+consumption_data = consumption_data.sort_values(by='time')
+
+# Print the electricity consumption data
+for index, row in consumption_data.iterrows():
+    print(f"{row['time'][:10]} {row['kWh']}")

@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Constants
+ BUILDING_ID = 155
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 51688
+YEARLY_MEAN_KWH = 81.997604
+YEARLY_MIN_KWH = 23.5
+YEARLY_MAX_KWH = 159.0
+SUMMER_MEAN_KWH = 73.1753
+WINTER_MEAN_KWH = 91.38757
+
+# Total number of hours in a year
+HOURS_IN_YEAR = 8760
+
+# Generate data for each hour in the building
+data = []
+start_date = datetime(2016, 1, 1)
+for i in range(HOURS_IN_YEAR):
+    day_of_year = start_date.timetuple().tm_yday
+    if (day_of_year >= 183 and day_of_year <= 266) or (day_of_year > 365): # June to August
+        data.append((start_date.strftime('%Y-%m-%d %H:%M'), SUMMER_MEAN_KWH + np.random.normal(0, YEARLY_MEAN_KWH / HOURS_IN_YEAR)))
+    else: # December to February
+        data.append((start_date.strftime('%Y-%m-%d %H:%M'), WINTER_MEAN_KWH + np.random.normal(0, YEARLY_MEAN_KWH / HOURS_IN_YEAR)))
+    start_date += timedelta(hours=1)
+
+# Add some random variation in the consumption
+for i in range(len(data)):
+    value = data[i][1]
+    if np.random.rand() < 0.2:
+        data[i] = (data[i][0], max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH)))
+
+# Ensure that we have exactly 696 measurements
+if len(data) < 696:
+    # Fill in the remaining hours with the mean consumption for the corresponding month
+    months = {
+        'Dec': WINTER_MEAN_KWH,
+        'Jan': (YEARLY_MIN_KWH + YEARLY_MAX_KWH) / 2,
+        'Feb': WINTER_MEAN_KWH,
+        'Jun': SUMMER_MEAN_KWH,
+        'Jul': SUMMER_MEAN_KWH,
+        'Aug': SUMMER_MEAN_KWH
+    }
+    for i in range(len(data), 696):
+        month = datetime(i % 365, 1, 1).strftime('%b')
+        data.append((datetime(i % 365, 12, 1).strftime('%Y-%m-%d %H:%M'), months[month]))
+
+# Sort the data
+data.sort()
+
+# Print the data
+for value in data:
+    print(f"{value[0]} {value[1]}")

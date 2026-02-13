@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants
+building_id = 1206
+primary_use = "Office"
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+total_days = 365 * 2  # accounting for both summer and winter
+num_measurements = 144
+
+# Generate random values within the specified ranges
+def generate_random_value():
+    return round(random.uniform(yearly_min_kwh, yearly_max_kwh), 4)
+
+# Initialize data with the first measurement at 01/01/2016
+data = f"2016-01-01 00:00, {generate_random_value()}"
+
+# Generate remaining measurements
+for i in range(1, num_measurements):
+    day = (i / num_measurements) * total_days + 1  # generate a date between the first and last measurement
+    hour = i % 24  # generate an hour within each day
+    
+    if day < 120:  # winter months
+        value = round(summer_mean_kwh, 4)
+    else:
+        value = round(winter_mean_kwh, 4)
+
+    date_str = (datetime(2016, 1, 1) + timedelta(days=day - 1)).strftime("%Y-%m-%d %H:%M")
+    data += f", {date_str}, {value}"
+
+print(data)

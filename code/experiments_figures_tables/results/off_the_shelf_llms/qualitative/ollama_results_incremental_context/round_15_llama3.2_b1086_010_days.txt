@@ -1,0 +1,40 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_data():
+    # Initialize variables
+    building_id = 1086
+    primary_use = "Office"
+    square_feet = 143973
+    yearly_mean_kwh = 296.72125
+    yearly_min_kwh = 85.275
+    yearly_max_kwh = 595.904
+    summer_mean_kwh = 393.1739
+    winter_mean_kwh = 218.81273
+    start_date = datetime(2016, 1, 1)
+
+    # Generate data for each hour
+    while len([datetime(2016, x, 1) for x in range(1, 241)]) < 240:
+        current_day = (start_date - timedelta(days=start_date.weekday())).day
+        if current_day > 31 or current_day < 1:
+            start_date += timedelta(days=31)
+            continue
+
+        date_str = datetime.strftime(start_date, "%Y-%m-%d")
+        value = random.gauss(yearly_mean_kwh, yearly_max_kwh - yearly_min_kwh) + \
+                (summer_mean_kwh - yearly_mean_kwh) * (
+                    1 if current_day >= 1 and current_day <= 8 or
+                     current_day > 31 else
+                        0.25 if current_day > 31 else
+                            0.5
+                ) + \
+                (winter_mean_kwh - yearly_mean_kwh) * (
+                    1 if current_day >= 9 and current_day <= 31 or
+                     current_day < 1 else
+                        0.25 if current_day < 1 else
+                            0.5
+                )
+        start_date += timedelta(hours=1)
+        print(f"{date_str} {start_date.strftime('%H:%M')}, {value:.6f}")
+
+generate_electricity_data()

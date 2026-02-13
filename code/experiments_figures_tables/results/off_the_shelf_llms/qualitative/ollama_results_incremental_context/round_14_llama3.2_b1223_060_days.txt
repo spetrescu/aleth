@@ -1,0 +1,31 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Set a seed for reproducibility
+seed = 42
+pd.seed(seed)
+
+def generate_data():
+    # Initialize an empty list to store data
+    data = []
+
+    # Generate data for each hour from Jan 1st, 2016 until Feb 29th, 2016
+    start_date = pd.to_datetime('2016-01-01')
+    end_date = pd.to_datetime('2016-02-29')
+
+    current_date = start_date
+
+    while current_date <= end_date:
+        # Choose a random value from the range of yearly_min_kwh to yearly_max_kwh
+        value = round(pd.RandomState(seed).randint(yearly_min_kwh, yearly_max_kwh), 4)
+        
+        data.append((current_date.strftime('%Y-%m-%d %H:%M'), value))
+        
+        # Add one hour to the current date and repeat the process until Feb 29th
+        current_date += timedelta(hours=1)
+
+    return data
+
+data = generate_data()
+for row in data:
+    print(f"{row[0]},{row[1]}")

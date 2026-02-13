@@ -1,0 +1,58 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Create a date range for 744 measurements starting from January 1, 2016
+start_date = '2016-01-01'
+end_date = start_date
+date_range = [start_date + timedelta(hours=i) for i in range(0, 1440*744)]
+
+# Initialize lists to store the data
+yearly_data = []
+summer_data = []
+winter_data = []
+
+# Calculate the mean and std of yearly data
+mean_yearly = 234.75676
+std_yearly = (591-0.0405)/23
+
+# Generate yearly data
+for _ in range(744):
+    yearly_value = mean_yearly + std_yearly * ((abs(round(random.uniform(-1, 1))) * 2 - 1))
+    if yearly_value < 0:
+        yearly_value = 0
+    elif yearly_value > 591.0:
+        yearly_value = 591.0
+    yearly_data.append(yearly_value)
+
+# Calculate the mean and std of summer data
+mean_summer = 212.6387
+std_summer = (591-212)/16
+
+# Generate summer data
+for _ in range(744):
+    summer_value = mean_summer + std_summer * ((abs(round(random.uniform(-1, 1))) * 2 - 1))
+    if summer_value < 0:
+        summer_value = 0
+    elif summer_value > 591.0:
+        summer_value = 591.0
+    summer_data.append(summer_value)
+
+# Calculate the mean and std of winter data
+mean_winter = 265.17035
+std_winter = (591-265)/23
+
+# Generate winter data
+for _ in range(744):
+    winter_value = mean_winter + std_winter * ((abs(round(random.uniform(-1, 1))) * 2 - 1))
+    if winter_value < 0:
+        winter_value = 0
+    elif winter_value > 591.0:
+        winter_value = 591.0
+    winter_data.append(winter_value)
+
+import random
+
+# Combine data into a list of lines
+lines = [f"{date} {value}" for date, value in zip(date_range, yearly_data + summer_data + winter_data)]
+
+print('\n'.join(lines))

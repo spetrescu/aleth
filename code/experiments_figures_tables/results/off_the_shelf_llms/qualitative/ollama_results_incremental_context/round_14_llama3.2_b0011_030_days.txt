@@ -1,0 +1,34 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define time intervals and month names
+time_intervals = [f"{i*6:02d}-06-{i*6+1:02d}" for i in range(11, 19)]
+month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+# Generate date and time values
+dates = pd.date_range(start="01/01/2016", periods=720, freq='H')
+
+# Create a DataFrame with random values
+df = pd.DataFrame({'Date': dates,
+                   'Value': np.random.uniform(yearley_mean_kwh, yearly_max_kwh, 720)})
+
+# Filter values within the specified ranges
+df['Value'] = df.apply(lambda row: 
+                       (row['Value'] >= yearly_min_kwh and row['Value'] <= yearly_max_kwh), axis=1)
+
+# Adjust summer and winter months
+for i in range(11):
+    if month_names[i] in ["Jun", "Jul", "Aug"]:
+        mask = df.index.strftime("%Y-%m-%d").isin(time_intervals[i])
+        df.loc[mask, 'Value'] = np.random.uniform(summer_mean_kwh, yearly_max_kwh)
+    else:
+        mask = df.index.strftime("%Y-%m-%d").isin(time_intervals[i])
+        df.loc[mask, 'Value'] = np.random.uniform(winter_mean_kwh, yearly_max_kwh)
+
+# Print the result
+for index, row in df.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d %H:%M')}, {row['Value']}")

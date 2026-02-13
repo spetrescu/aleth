@@ -1,0 +1,45 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+SUMMARY_STATS = {
+    'yearly_mean_kwh': 296.72125,
+    'yearly_min_kwh': 85.275,
+    'yearly_max_kwh': 595.904,
+    'summer_mean_kwh': 393.1739,
+    'winter_mean_kwh': 218.81273
+}
+
+# Initialize date range and list to store data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=528)
+
+data = []
+
+while start_date <= end_date:
+    # Randomly choose between summer and winter mean based on month
+    if (start_date.month == 6 or start_date.month == 7 or start_date.month == 8) \
+            and (start_date.month != 12):
+        mean_kwh = SUMMARY_STATS['summer_mean_kwh']
+    else:
+        mean_kwh = SUMMARY_STATS['winter_mean_kwh']
+
+    # Generate random variation within acceptable range
+    value = round(mean_kwh + (random.uniform(-SUMMARY_STATS['yearly_min_kwh'],
+                                            SUMMARY_STATS['yearly_max_kwh']) * 0.01), 4)
+
+    # Ensure value is within bounds
+    if value < SUMMARY_STATS['yearly_min_kwh']:
+        value = SUMMARY_STATS['yearly_min_kwh']
+    elif value > SUMMARY STATS['yearly_max_kwh']:
+        value = SUMMARY_STATS['yearly_max_kwh']
+
+    data.append(f"{start_date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+    # Increment date
+    if start_date.month == 12:
+        start_date = start_date.replace(year=start_date.year + 1, month=1)
+    else:
+        start_date += timedelta(days=1)
+
+print('\n'.join(data))

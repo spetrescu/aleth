@@ -1,0 +1,44 @@
+import random
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+random.seed(0)
+
+building_id = 1143
+primary_use = "Office"
+square_feet = 96612
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=336)
+
+# Create a list to store the readings
+readings = []
+
+# Generate readings for each hour
+for n in range(int ((end_date - start_date).days)):
+    dt = start_date + timedelta(n)
+    month = dt.month
+    value = 0
+    
+    if (month >= 6 and month <= 8):  # Summer months
+        value = summer_mean_kwh * random.uniform(0.9, 1.1)
+    elif (month >= 12 and month <= 2):  # Winter months
+        value = winter_mean_kwh * random.uniform(0.9, 1.1)
+    else:  # Other months
+        value = yearly_mean_kwh * random.uniform(0.8, 1.2)
+
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    readings.append((dt.strftime("%Y-%m-%d %H:%M"), round(value, 3)))
+
+# Print the readings
+for reading in readings:
+    print(reading[0] + " " + str(reading[1]))

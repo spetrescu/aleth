@@ -1,0 +1,49 @@
+import random
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+random.seed(42)
+
+def generate_electricity_data(building_id, primary_use, square_feet,
+                              yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                              summer_mean_kwh, winter_mean_kwh, days):
+    data = []
+
+    # Generate data for each day
+    for i in range(days):
+        date_str = (datetime(2016, 1, 1) + timedelta(days=i)).strftime('%Y-%m-%d')
+        
+        # Randomly select whether to be summer or winter
+        season = random.choice(['summer', 'winter'])
+        if season == 'summer':
+            mean_kwh = summer_mean_kwh
+        else:
+            mean_kwh = winter_mean_kwh
+        
+        # Generate a value between yearly_min_kwh and yearly_max_kwh for this day
+        kwh = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+        
+        if season == 'summer':
+            # Randomly adjust the generated kWh based on summer_mean_kwh
+            adjustment_factor = random.uniform(0.8, 1.2)
+            kwh *= adjustment_factor
+        else:
+            # Randomly adjust the generated kWh based on winter_mean_kwh
+            adjustment_factor = random.uniform(0.6, 1.4)
+            kwh *= adjustment_factor
+        
+        # Ensure that the value is not below mean_kwh
+        kwh = max(mean_kwh, kwh)
+
+        data.append((date_str, f'{kwh:.3f}'))
+
+    return data
+
+# Generate electricity consumption data for building 11
+data = generate_electricity_data(11, 'Education', 49073,
+                                296.39252, 0.000, 1052.0,
+                                486.43784, 162.72496, 648)
+
+# Print the generated data in the required format
+for day in data:
+    print(f'{day[0]} {day[1]}\n')

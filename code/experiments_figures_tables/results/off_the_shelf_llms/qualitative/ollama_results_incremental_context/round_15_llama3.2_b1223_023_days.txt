@@ -1,0 +1,33 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_data(building_id, primary_use, square_feet, yearly_mean_kwh,
+                              yearly_min_kwh, yearly_max_kwh, summer_mean_kwh,
+                              winter_mean_kwh, num_measurements):
+    # Generate the date range for which we want to generate data
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=num_measurements - 1)
+
+    while start_date <= end_date:
+        if (start_date.month in [6, 7, 8] and 
+            winter_mean_kwh > random.random() * 100):
+            # If we are in summer but it's still cold enough to use more energy
+            energy_usage = int(winter_mean_kwh + random.uniform(0.5 - 10 * (winter_mean_kwh - summer_mean_kwh), 10))
+        elif start_date.month in [12, 1, 2] and 
+             summer_mean_kwh > random.random() * 100:
+            # If we are in winter but it's still warm enough to use more energy
+            energy_usage = int(summer_mean_kwh + random.uniform(0.5 - 10 * (summer_mean_kwh - yearly_mean_kwh), 10))
+        else:
+            # Otherwise, use the mean usage for the month
+            if start_date.month in [6, 7, 8]:
+                energy_usage = int(summer_mean_kwh + random.uniform(0.5 - 10 * (summer_mean_kwh - yearly_mean_kwh), 10))
+            else:
+                energy_usage = int(yearly_mean_kwh + random.uniform(-1 * 15 * (yearly_mean_kwh - winter_mean_kwh), 1 * 15 * (yearly_mean_kwh - winter_mean_kwh)))
+
+        # Ensure the usage is within the valid range
+        if yearly_min_kwh <= energy_usage <= yearly_max_kwh:
+            print(f"{start_date.strftime('%Y-%m-%d %H:%M')}, {energy_usage}")
+        start_date += timedelta(hours=1)
+
+generate_electricity_data(1223, 'Office', 52141, 76.72134, 0.0, 174.64, 81.22173,
+                          83.83176, 552)

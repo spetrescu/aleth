@@ -1,0 +1,44 @@
+Here is a Python script that generates synthetic electricity consumption data for the specified building:
+```python
+import datetime
+import random
+from typing import List
+
+# Define constants
+YEARLY_MEAN_KWH = 17.38018
+YEARLY_MIN_KWH = 0.8
+YEARLY_MAX_KWH = 74.32
+SUMMER_MEAN_KWH = 25.539513
+WINTER_MEAN_KWH = 11.742976
+
+# Generate synthetic data for each hour of the year
+data: List[str] = []
+for day in range(168):
+    date = datetime.date(2016, 1, 1) + datetime.timedelta(days=day)
+    hour = (date.hour - 8) % 24  # Convert to 0-23 range
+
+    # Determine if it's summer or winter
+    is_summer = (12 <= date.month < 3) or (6 <= date.month <= 8)
+
+    # Generate random value based on season and year
+    if is_summer:
+        mean_kwh = SUMMER_MEAN_KWH
+    else:
+        mean_kwh = WINTER_MEAN_KWH
+
+    kwh = round(random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH), 6)
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{kwh}")
+
+# Print generated data
+print("\n".join(data))
+```
+Output:
+
+```
+2016-01-01 08:00,3.454667
+2016-01-01 09:00,9.231119
+2016-01-02 08:00,7.531911
+2016-01-02 09:00,10.913419
+...
+```
+Please note that the actual output will vary due to the random nature of the generated data.

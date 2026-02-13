@@ -1,0 +1,46 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Generate a date range for 648 hours
+start_time = '2016-01-01 00:00'
+end_time = '2017-07-31 23:59'
+
+date_range = []
+for n in range(int((end_time - start_time).total_seconds() / (60 * 60)) + 1):
+    date_range.append(start_time + timedelta(hours=n))
+
+df = pd.DataFrame({'Date': date_range, 'Value': [31.697405] * len(date_range)})
+
+# Adjust values based on time of day
+for i in range(len(df)):
+    hour = df.iloc[i]['Date'].hour
+    if (hour >= 8 and hour < 18):
+        df.loc[i, 'Value'] *= 1.1
+    elif (hour >= 20 or hour < 6):
+        df.loc[i, 'Value'] *= 0.9
+
+# Apply random variations within valid range
+df['Value'] = df.apply(lambda row: round(row['Value'] + (row['Value'] - yearly_mean_kwh) * 0.05, 3), axis=1)
+df = df.sort_values(by=['Date', 'Value'])
+
+# Limit to maximum value during winter months
+winter_month_start = pd.to_datetime('2016-12-01')
+winter_month_end = pd.to_datetime('2017-02-28')
+
+for i in range(len(df)):
+    month = int((pd.to_datetime(df.iloc[i]['Date']) - winter_month_start).days / 30) + 1
+    if (month == 1 or month == 2):
+        df.loc[i, 'Value'] = min(max(df.loc[i, 'Value'], yearly_min_kwh), yearly_max_kwh)
+
+# Limit to minimum value during summer months
+summer_month_start = pd.to_datetime('2016-06-01')
+summer_month_end = pd.to_datetime('2017-08-31')
+
+for i in range(len(df)):
+    month = int((pd.to_datetime(df.iloc[i]['Date']) - summer_month_start).days / 30) + 1
+    if (month == 6 or month == 7 or month == 8):
+        df.loc[i, 'Value'] = max(min(df.loc[i, 'Value'], yearly_max_kwh), yearly_min_kwh)
+
+# Format as required and output
+for index, row in df.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d %H:%M')}, {row['Value']}")

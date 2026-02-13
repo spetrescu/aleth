@@ -1,0 +1,51 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+building_id = 1135
+primary_use = 'Education'
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate electricity consumption data for 720 measurements
+data = []
+start_date = datetime(2016, 1, 1)
+for i in range(720):
+    # Calculate time of day (assuming 12-hour clock and equal time distribution throughout the year)
+    hour = (i % 288) / 24  # 288 hours in a week
+    date = start_date + timedelta(hours=int(hour * 24))
+    
+    # Randomly adjust value to be within yearly range, but not too far from mean
+    if datetime(date.year, 12, 31).month == winter_mean_kwh_month:
+        kwh = round(winter_mean_kwh + random.uniform(-10, 10), 3)
+    else:
+        kwh = round(yearly_mean_kwh + random.uniform(-20, 20), 3)
+
+    # Ensure value is within allowed range
+    if kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    elif kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+
+    data.append((date.strftime('%Y-%m-%d %H:%M'), kwh))
+
+# Filter out summer months (June, July, August)
+summer_months = [6, 7, 8]
+winter_months = [12]
+
+for i in range(720):
+    date_str, value = data[i]
+    
+    if int(date_str[5:7]) not in summer_months and int(date_str[5:7]) not in winter_months:
+        continue
+    else:
+        kwh = round(summer_mean_kwh if int(date_str[5:7]) in summer_months else winter_mean_kwh, 3)
+
+    data[i] = (date_str, kwh)
+
+for date_str, value in data:
+    print(f"{date_str}, {value}")

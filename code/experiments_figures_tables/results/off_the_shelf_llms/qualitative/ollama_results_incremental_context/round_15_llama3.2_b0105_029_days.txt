@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define dates and timestamps
+start_date = datetime(2016, 1, 1)
+timestamps = [start_date + timedelta(hours=t) for t in range(int((start_date - start_date.replace(hour=0)).total_seconds() / 3600 * 696))]
+
+# Create DataFrame with measurements
+data = {
+    'Timestamp': timestamps,
+    'Value': np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=696)
+}
+df = pd.DataFrame(data)
+
+# Filter out values outside of min and max kWh
+df = df[(df['Value'] >= yearly_min_kwh) & (df['Value'] <= yearly_max_kwh)]
+
+# Group by month and calculate average kWh for each day
+grouped_df = df.groupby(pd.Grouper(freq='D')).mean()
+
+# Convert the grouped DataFrame back to a regular DataFrame
+regular_df = grouped_df.reset_index()
+
+# Create the final dataset
+dataset = ''
+for index, row in regular_df.iterrows():
+    date_str = row['Timestamp'].strftime('%Y-%m-%d')
+    time_str = row['Timestamp'].strftime('%H:%M')
+    value = round(row['Value'], 3)
+    dataset += f'{date_str} {time_str},{value}\n'
+
+print(dataset.strip())

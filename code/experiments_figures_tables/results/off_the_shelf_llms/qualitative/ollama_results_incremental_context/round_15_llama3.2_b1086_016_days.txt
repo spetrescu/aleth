@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(123)
+
+# Initialize lists to store data
+year = 2016
+months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+days_in_month = [31,28,31,30,31,30,31,31,30,31,30,31]
+
+# Initialize lists to store data
+kwh_values = []
+dates = []
+
+for month in months:
+    for day in range(days_in_month[month-1]):
+        if (month == 6 or month == 7 or month == 8) and day > 10: # Summer months, skip first 10 days 
+            continue
+
+        # Randomly select kwh values
+        kwh = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+        
+        if (month in [6, 7, 8] and year == 2016): # summer months of 2016, adjust to mean value 
+            kwh = np.random.uniform(summer_mean_kwh - 50, summer_mean_kwh + 50)
+
+        if (month in [12, 1, 2] and year == 2016): # winter months of 2016, adjust to mean value 
+            kwh = np.random.uniform(winter_mean_kwh - 50, winter_mean_kwh + 50)
+        
+        if month in [3, 4, 5]: # spring months
+            kwh = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+        kwh_values.append(kwh)
+        dates.append(datetime.strptime(f'{year}-{month:02d}-{day+1}', '%Y-%m-%d') + timedelta(hours=np.random.randint(0, 24)))
+
+# Create dataframe
+df = pd.DataFrame({'DATE': dates, 'VALUE': kwh_values})
+
+# Filter out the first row (empty)
+df = df.iloc[1:].reset_index(drop=True)
+
+# Print dataframe
+for index, row in df.iterrows():
+    print(f'{row["DATE"].strftime("%Y-%m-%d %H:%M")},{row["VALUE"]}')

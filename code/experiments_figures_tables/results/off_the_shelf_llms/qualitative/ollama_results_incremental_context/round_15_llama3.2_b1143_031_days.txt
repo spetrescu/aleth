@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Generate dates and values
+start_date = '2016-01-01 00:00'
+end_date = '2017-12-31 23:59'
+
+dates = pd.date_range(start=start_date, end=end_date, freq='H')
+values = np.random.normal(yearsly_mean_kwh, yearly_min_kwh - yearsly_mean_kwh, len(dates))
+
+# Adjust values to not go below min or above max
+values = np.clip(values, yearsly_min_kwh, yearsly_max_kwh)
+
+summer_dates = pd.date_range(start='2016-06-01 00:00', end='2017-08-31 23:59', freq='H')
+winter_dates = pd.date_range(start='2016-12-01 00:00', end='2017-02-28 23:59', freq='H')
+
+for i, date in enumerate(dates):
+    if (date >= start_date and date < '2016-06-01') or (date > '2017-08-31'):
+        values[i] = np.random.normal(winter_mean_kwh, winter_min_kwh - winter_mean_kwh, 1)
+    elif (date >= '2016-06-01' and date <= '2017-08-31'):
+        values[i] = np.random.normal(summer_mean_kwh, summer_min_kwh - summer_mean_kwh, 1)
+
+# Ensure the values are consistent with yearly_mean_kwh for most dates
+values = np.clip(values, yearsly_min_kwh, yearsly_max_kwh)
+for i in range(len(dates)):
+    if (dates[i] >= '2016-06-01' and dates[i] <= '2017-08-31') or \
+       (dates[i] >= '2016-12-01' and dates[i] <= '2017-02-28'):
+        values[i] = np.clip(values[i], yearsly_min_kwh, yearsly_max_kwh)
+
+# Create a DataFrame
+df = pd.DataFrame({'Date': dates, 'Value': values})
+
+# Format output as required
+formatted_df = df.apply(lambda row: f"{row['Date'].strftime('%Y-%m-%d %H:%M')}, {row['Value']:.2f}", axis=1)
+
+print(formatted_df)

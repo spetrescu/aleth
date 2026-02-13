@@ -1,0 +1,52 @@
+Here is a Python script that generates synthetic building electricity meter readings:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Constants
+building_id = 11
+primary_use = "Education"
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+num_measurements = 456
+
+# Create a list to store the measurement values
+values = []
+
+# Generate measurements for each day
+for i in range(num_measurements):
+    # Calculate the hour of day (0-23) and month (0-11)
+    hour = i % 24
+    month = i // 24
+    
+    # Determine if it's summer or winter based on the month
+    is_summer = (month >= 5) and (month <= 8)
+
+    # Randomly adjust values to stay within min/max range for each type of meter
+    if is_summer:
+        value = int(yearly_mean_kwh + random.uniform(-10, 10))
+        # Adjust for seasonality
+        value = int(value * (1 - (month / 12) * 0.4)) if month > 5 else int(value)
+    else:
+        value = int(winter_mean_kwh + random.uniform(-5, 5))
+
+    # Ensure the value is within the valid range for this building
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Create a datetime object for the measurement date and time
+    date_time = (datetime(2016, month + 1, 1) + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')
+    values.append(f"{date_time}, {value}")
+
+# Print out the generated measurements
+for value in values:
+    print(value)
+```
+
+This script generates synthetic electricity consumption data for a building with the specified metadata and annual summary statistics. It does this by generating random values that stay within the valid range and are consistent with the summary stats, while also taking into account seasonality in the summer months.
+
+Please note that you may need to adjust the parameters of the `random.uniform` function calls based on your specific requirements for how "realistic" these values should be.

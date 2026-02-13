@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta, timezone
+
+def generate_electricity_consumption():
+    # Define constants
+    building_id = 107
+    primary_use = 'Education'
+    square_feet = 97532
+    yearly_mean_kwh = 234.75676
+    yearly_min_kwh = 0.0405
+    yearly_max_kwh = 591.0
+    summer_mean_kwh = 212.6387
+    winter_mean_kwh = 265.17035
+
+    # Generate electricity consumption data
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=456*24)  # Exactly 456 measurements at 1-hour intervals
+
+    for hour in range(int((end_date - start_date).total_seconds() / 3600)):
+        current_time = start_date + timedelta(hours=hour)
+
+        # Randomly generate consumption value between yearly_min_kwh and yearly_max_kwh
+        if (current_time.month < 6 or current_time.month > 8) and current_time.month != 3:  # Non-summer months
+            value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 10)
+        elif 6 <= current_time.month <= 8:
+            value = round(random.uniform(summer_mean_kwh, summer_mean_kwh+0.2), 10)  # Randomly adjust summer values to stay within range
+        else:  # March and April (transition months)
+            if random.random() < 0.5:
+                value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 10)
+            else:
+                value = round(random.uniform(summer_mean_kwh, summer_mean_kwh+0.2), 10)
+
+        # Print the current date and time along with the generated consumption value
+        print(f'{current_time.strftime("%Y-%m-%d %H:%M")},{value}')
+
+generate_electricity_consumption()

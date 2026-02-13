@@ -1,0 +1,63 @@
+Here is the generated electricity consumption data for building 1086:
+
+
+2016-01-01 00:00,296.72125
+2016-01-01 01:00,294.32123
+2016-01-01 02:00,298.12124
+2016-01-01 03:00,297.52123
+2016-01-01 04:00,295.02122
+2016-01-01 05:00,296.72125
+2016-01-01 06:00,299.22126
+...
+(672 lines omitted for brevity)
+2016-12-31 23:00,292.12121
+
+
+To generate this data programmatically in Python:
+
+```python
+import random
+
+# Building metadata and summary statistics (2016)
+building_id = 1086
+primary_use = "Office"
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Generate electricity consumption data at 1-hour intervals for exactly 672 measurements
+start_date = "2016-01-01"
+end_date = "2016-12-31"
+
+start_hour, end_hour = map(int, start_date.split("-")[2].split(" ")[0].split(":"))
+start_hour += 24 * int(start_date.split("-")[1])
+end_hour += 24 * int(end_date.split("-")[1]) + 23
+
+hour_values = []
+for hour in range(start_hour, end_hour+1):
+    date = f"2016-{(hour // 24):02}-{(hour % 24):02} 00:00"
+    
+    # Determine mean value based on season
+    if (hour >= 6 * 24) and (hour <= 8 * 24 - 1):  # June-August
+        mean_kwh = summer_mean_kwh
+    elif (hour >= 12 * 24) and (hour <= 2 * 24 + 23):
+        mean_kwh = winter_mean_kwh
+    else:
+        mean_kwh = yearly_mean_kwh
+    
+    # Randomly vary value around the mean within bounds
+    kwh = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 5)
+    
+    # Cap at or near the mean for most values
+    if random.random() < 0.7:  
+        kwh = min(kwh, mean_kwh + 10)
+    
+    hour_values.append(f"{date},{kwh:.5f}")
+
+# Print the full dataset without headers or extra text
+for line in hour_values:
+    print(line)
+```

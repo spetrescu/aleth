@@ -1,0 +1,67 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Calculate the mean hourly consumption based on yearly and seasonal data
+yearly_mean = 87.59102
+summer_mean = 88.61049
+winter_mean = 91.04132
+hourly_consumption = (yearly_mean + summer_mean + winter_mean) / 3
+
+# Generate a date range for the last month of each season
+last_month_dates = [
+    datetime(2016, 11, 1),
+    datetime(2017, 2, 28),  # March in UK is not exactly February to April but for simplicity lets say March (28th)
+    datetime(2017, 4, 30),
+    datetime(2017, 8, 31)  # August in UK usually ends at the end of month but sometimes the last hour is on next year's first day
+]
+
+# Generate the remaining dates evenly spaced within each month
+dates = [datetime(2016, i, 1) for i in range(1, 13)]
+for date in last_month_dates:
+    while True:
+        delta = timedelta(days=1)
+        new_date = date + delta
+        if (new_date - date).days > 30:  # Add a month to the end of season
+            dates.append(new_date)
+            break
+
+# Ensure there are enough days for our required 624 measurements
+if len(dates) < 624:
+    while len(dates) < 624:
+        new_dates = []
+        last_date = dates[-1]
+        delta = timedelta(days=1)
+        for _ in range(31):
+            if len(new_dates) == 625: break
+            new_dates.append(last_date + delta)
+
+        # Add these to the list of dates and remove the extra one
+        dates.extend(new_dates[:-1])
+
+# Calculate the hourly consumption at each interval
+consumption = np.random.normal(hourly_consumption, yearly_mean * 0.01)
+consumption = [max(consumption[0], min(consumption[0], year_mean)) for _ in range(624)]
+
+# Format the output as required
+output = []
+for i, date in enumerate(dates[:624]):
+    if date.month == 6:
+        summer_consumption = summer_mean
+    elif date.month in [12, 1, 2]:
+        winter_consumption = winter_mean
+    else:
+        summer_consumption = summer_mean
+        winter_consumption = winter_mean
+
+    output.append(f"{date.strftime('%Y-%m-%d')} {date.strftime('%H:%M')} {min(consumption[i], summer_consumption)}")
+    if date.month == 6:
+        consumption[i] = np.random.normal(summer_mean, summer_mean * 0.01)
+    elif date.month in [12, 1, 2]:
+        consumption[i] = np.random.normal(winter_mean, winter_mean * 0.01)
+
+# Output the data
+print('\n'.join(output))

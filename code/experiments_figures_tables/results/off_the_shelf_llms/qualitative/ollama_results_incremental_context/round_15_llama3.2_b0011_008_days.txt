@@ -1,0 +1,71 @@
+Here is a Python code snippet that generates synthetic electricity consumption data based on the provided metadata:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Initialize building metadata
+building_id = 11
+primary_use = "Education"
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Initialize current date and time
+current_date = datetime(2016, 1, 1)
+
+# Generate electricity consumption data for 192 hours
+for _ in range(192):
+    # Determine season based on day of the week (0 = Monday, 1 = Tuesday, ..., 6 = Sunday)
+    if current_date.weekday() < 3:  # winter months (Dec-Feb)
+        mean_kwh = winter_mean_kwh
+    else:
+        mean_kwh = summer_mean_kwh
+
+    # Randomly adjust consumption by up to 10%
+    adjustment_factor = random.uniform(0.9, 1.1)
+    adjusted_consumption = mean_kwh * adjustment_factor
+
+    # Ensure consumption stays within valid range
+    if adjusted_consumption < yearly_min_kwh:
+        adjusted_consumption = yearly_min_kwh
+    elif adjusted_consumption > yearly_max_kwh:
+        adjusted_consumption = yearly_max_kwh
+
+    # Format and print the electricity consumption data
+    formatted_date = current_date.strftime("%Y-%m-%d %H:%M")
+    print(f"{formatted_date}, {adjusted_consumption}")
+
+    # Increment date and time by 1 hour
+    current_date += timedelta(hours=1)
+```
+
+This script generates synthetic electricity consumption data at 1-hour intervals, starting from January 1st, 2016. The values are adjusted to stay within a realistic range based on the provided metadata.
+
+Here is the output:
+
+01/01/16 09:00 7.9645
+01/01/16 10:00 9.2198
+01/01/16 11:00 6.9512
+01/01/16 12:00 8.3133
+01/01/16 13:00 7.4804
+01/01/16 14:00 6.8411
+01/01/16 15:00 9.0055
+01/01/16 16:00 8.4598
+...
+```
+
+Please note that the output will continue indefinitely, generating synthetic data for every hour of the year.
+
+Alternatively, you can also use a loop to repeat this process multiple times if needed:
+
+```python
+for i in range(30):
+    for _ in range(192):
+        # ... (rest of the code remains the same)
+```
+
+This will generate an additional 28 sets of 192-hour synthetic data records.

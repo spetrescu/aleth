@@ -1,0 +1,46 @@
+import random
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate electricity consumption data for the next 24 hours
+def generate_consumption():
+    global building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh, summer_mean_kwh, winter_mean_kwh
+
+    # Initialize a list to store the consumption data
+    consumption_data = []
+
+    # Generate 24 hourly consumption values
+    for i in range(24):
+        date_time = datetime(2016,1,1) + timedelta(hours=i)
+
+        if (date_time.month > 7 and date_time.month < 10): # Summer months 
+            avg_consumption = summer_mean_kwh
+
+        elif (date_time.month >=10): #Winter months
+            avg_consumption = winter_mean_kwh
+        else:
+            # Average for the rest of the year, which is roughly the yearly mean
+            avg_consumption = yearly_mean_kwh
+
+        consumption_value = round(random.uniform(yearly_min_kwh, yearly_max_kwh),4)
+
+        while (consumption_value>avg_consumption):
+            consumption_value-= random.uniform(0.0001, 0.001)
+        #while (consumption_value<avg_consumption):
+         #   consumption_value+=random.uniform(0.0001, 0.001)
+
+        consumption_data.append((date_time.strftime('%Y-%m-%d %H:%M'), consumption_value))
+    return consumption_data
+
+data = generate_consumption()
+for date, value in data:
+    print(f"{date}, {value}")

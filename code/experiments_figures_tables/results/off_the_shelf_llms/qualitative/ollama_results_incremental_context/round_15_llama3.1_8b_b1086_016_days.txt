@@ -1,0 +1,47 @@
+To generate realistic electricity consumption data for the specified building, we'll use a Python script that incorporates some randomness while ensuring all values fall within the given constraints.
+
+Here's how you can achieve this:
+
+```python
+import random
+from datetime import timedelta
+
+# Define constants based on the input statistics
+BUILDING_ID = 1086
+PRIMARY_USE = "Office"
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER_MEAN_KWH = 393.1739
+WINTER_MEAN_KWH = 218.81273
+
+# Function to generate a random value around the yearly mean, considering min and max values
+def generate_random_kwh(mean, summer_months=(6, 7, 8), winter_months=(12, 1, 2)):
+    if (month := (int(time.strftime("%m")))) in summer_months:
+        return min(YEARLY_MAX_KWH, random.gauss(SUMMER_MEAN_KWH, SUMMER_MEAN_KWH * 0.05))
+    elif month in winter_months:
+        return min(YEARLY_MAX_KWH, random.gauss(WINTER_MEAN_KWH, WINTER_MEAN_KWH * 0.1))
+    else:  
+        return min(YEARLY_MAX_KWH, random.gauss(YEARLY_MEAN_KWH, YEARLY_MEAN_KWH * 0.05))
+
+# Generate electricity consumption data for the building
+start_date = "2016-01-01"
+end_date = (date := start_date) + timedelta(days=383)
+current_date = date
+
+for _ in range(384):
+    kwh_value = generate_random_kwh(YEARLY_MEAN_KWH)
+    
+    print(f"{current_date.strftime('%Y-%m-%d')} {':'.join([current_date.strftime('%H:%M'), str(kwh_value)])}")
+
+    # Move to the next hour
+    current_date += timedelta(hours=1)
+
+```
+
+This script uses a `random.gauss` function to generate values around the mean for each interval, with a higher variance in winter months (0.1) and lower variance in summer months (0.05). This allows it to stay within the yearly minimum and maximum values while still being somewhat realistic.
+
+Each hour's consumption is printed directly as per your requirement without any headers or extra text.
+
+Note that this script uses Python 3.x syntax for date manipulation, so make sure you're running a compatible version if you encounter issues.

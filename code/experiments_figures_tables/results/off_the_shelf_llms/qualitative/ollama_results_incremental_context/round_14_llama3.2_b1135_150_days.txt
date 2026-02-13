@@ -1,0 +1,51 @@
+Here is the Python code that generates the electricity consumption data according to the specified constraints:
+```
+import datetime
+import random
+
+building_id = 1135
+primary_use = "Education"
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate a date range for the last year (2016)
+start_date = datetime.date(2015, 12, 31)
+end_date = datetime.date(2017, 1, 1)
+
+# Create a list to store the generated data
+data = []
+
+# Loop over each hour in the date range
+for n in range(int ((end_date - start_date).days * 24)):
+    date = start_date + datetime.timedelta(n)
+    
+    # Randomly decide if it's summer or winter based on the month
+    if (date.month >= 6) and (date.month <= 8):
+        mean_kwh = summer_mean_kwh
+    elif (date.month >= 12) and (date.month <= 2):
+        mean_kwh = winter_mean_kwh
+    else:
+        # Otherwise, it's some other month with a value close to yearly_mean_kwh
+        mean_kwh = yearly_mean_kwh + random.uniform(-1.5, 1.5)
+    
+    # Generate the consumption for this hour randomly between min and max values
+    kwh = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 6)
+    
+    # Make sure it's within mean_kwh of yearly_mean_kwh to maintain consistency
+    if kwh > mean_kwh + yearly_mean_kwh / 5:
+        kwh = random.uniform(mean_kwh - (yearly_mean_kwh / 5) * random.random(), 
+                              mean_kwh + (yearly_mean_kwh / 5) * random.random())
+    
+    # Add the data to the list
+    data.append((date.strftime("%Y-%m-%d %H:%M"), kwh))
+
+# Output the generated data as lines of "YYYY-MM-DD HH:MM,VALUE"
+for line in data:
+    print(f"{line[0]},{line[1]}")
+```
+
+This script generates electricity consumption data for each hour in 2016. The value is chosen randomly within the specified range, but it's also constrained to be close to `yearly_mean_kwh`, with a random offset to avoid monotony.

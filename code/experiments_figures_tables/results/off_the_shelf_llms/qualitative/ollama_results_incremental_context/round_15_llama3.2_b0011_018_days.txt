@@ -1,0 +1,74 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define constants
+START_DATE = '2016-01-01'
+END_DATE = '2017-02-28'  # Exactly 432 measurements
+MONTHS = {
+    'Jun': range(6, 9),
+    'Dec': range(12, 15)
+}
+
+# Generate data for each month separately to maintain seasonal variation
+monthly_data = []
+
+for i in range(len(MONTHS)):
+    year = START_DATE.split('-')[0]
+    month = 'Jan' if i == 0 else 'Feb' if i == 1 else 'Mar'
+    
+    # Generate summer data (Jun-Aug)
+    start_date = f'{year}-{month[3:]}-01'
+    end_date = END_DATE
+    
+    # Calculate number of days
+    num_days_summer = sum([1 for month in MONTHS if month in ['Jun', 'Jul', 'Aug']])
+    date_range = pd.date_range(start_date, end_date, periods=num_days_summer)
+    
+    # Generate summer data values (kWh) based on yearly_mean_kwh
+    summer_data = np.random.uniform(0, 1052, size=len(date_range)) * 296.39252 / 100
+    
+    # Add to list
+    monthly_data.append({
+        'Date': date_range,
+        'Value': summer_data.tolist()
+    })
+
+# Generate winter data (Dec-Feb)
+start_date = f'2016-{END_DATE.split("-")[0]}-01'
+end_date = END_DATE
+
+num_days_winter = sum([1 for month in MONTHS if month in ['Jan', 'Feb']])
+date_range = pd.date_range(start_date, end_date, periods=num_days_winter)
+
+summer_data = np.random.uniform(0, 1052, size=len(date_range)) * 296.39252 / 100
+winter_data = np.random.uniform(0, 1052, size=len(date_range)) * 162.72496 / 100
+
+monthly_data.append({
+    'Date': date_range,
+    'Value': winter_data.tolist()
+})
+
+# Combine all data into one DataFrame
+df = pd.concat([pd.DataFrame(data) for data in monthly_data])
+
+# Fill NaN values with the mean of the column
+df['Value'].fillna(df['Value'].mean(), inplace=True)
+
+# Convert to datetime format and set it as the index
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+
+# Generate 432 measurements based on seasonal variation
+measurements = []
+for i in range(0, 432):
+    if i % len(MONTHS) == 0:
+        # Add summer data values (kWh)
+        measurements.append(f'{df.index[i // len(MONTHS)]} {np.random.uniform(df.loc[df.index[i // len(MONTHS)], "Value"]).round(3)}')
+    else:
+        # Add winter data values (kWh)
+        measurements.append(f'{df.index[i // len(MONTHS)]} {np.random.uniform(df.loc[df.index[(i+1) % len(MONTHS)], "Value"]).round(3)}')
+
+print("\n".join(measurements))

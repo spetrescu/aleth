@@ -1,0 +1,31 @@
+import random
+import datetime
+
+# Define constants
+building_id = 140
+primary_use = "Office"
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Generate data for each hour of the year
+for i in range(720):
+    current_date = (datetime.date(2016, 1, 1) + datetime.timedelta(days=i)).isoformat()
+    dates.append(current_date)
+    
+    # Randomly choose between summer and winter mean kWh based on season
+    if (i % 183) < 61:  # months from June to August are represented by 0-62 in a 365-day year
+        values.append(random.gauss(summer_mean_kwh, yearly_max_kwh/4))  
+    else:
+        values.append(random.gauss(winter_mean_kwh, yearly_min_kwh/5))
+
+# Print the data
+for date, value in zip(dates, values):
+    print(f"{date} {value:.3f}")

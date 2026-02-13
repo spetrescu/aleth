@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+
+# Constants for building usage patterns
+YEARLY_MEAN_KWH = 17.38018
+WINTER_MEAN_KWH = 11.742976
+SUMMER_MEAN_KWH = 25.539513
+
+# Monthly distribution of energy consumption (kWh)
+MONTHLY_DISTRIBUTION = {
+    'Jan': np.full(31, WINTER_MEAN_KWH),
+    'Feb': np.full(28, WINTER_MEAN_KWH) if pd.isnull(pd.to_datetime('2016-02-29')) else \
+        np.full(29, WINTER_MEAN_KWH),  # Feb has 29 days in leap year
+    'Mar': (WINTER_MEAN_KWH + YEARLY_MEAN_KWH * 0.2) / 31,
+    'Apr': (YEARLY_MEAN_KWH * 0.6 + SUMMER_MEAN_KWH) / 30,
+    'May': (SUMMER_MEAN_KWH + YEARLY_MEAN_KWH * 0.3) / 31,
+    'Jun': SUMMER_MEAN_KWH,
+    'Jul': SUMMER_MEAN_KWH,
+    'Aug': SUMMER_MEAN_KWH,
+    'Sep': (SUMMER_MEAN_KWH + YEARLY_MEAN_KWH * 0.1) / 30,
+    'Oct': (YEARLY_MEAN_KWH * 0.5) / 31,
+    'Nov': (YEARLY_MEAN_KWH * 0.8) / 30,
+    'Dec': WINTER_MEAN_KWH
+}
+
+# Generate electricity consumption data
+data = []
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + pd.DateOffset(days=408*24)
+for day in range(408):
+    day_start_date = start_date + pd.DateOffset(days=day)
+    if day_start_date.month == 1:
+        hourly_usage = np.full(24, MONTHLY_DISTRIBUTION['Jan'])
+    elif day_start_date.month == 2:
+        hourly_usage = np.full(24, MONTHLY_DISTRIBUTION['Feb'])
+    elif day_start_date.month == 3:
+        hourly_usage = np.full(24, MONTHLY_DISTRIBUTION['Mar'])
+    elif day_start_date.month == 4:
+        hourly_usage = np.full(24, MONTHLY_DISTRIBUTION['Apr'])
+    elif day_start_date.month == 5:
+        hourly_usage = np.full(24, MONTHLY_DISTRIBUTION['May'])
+    elif day_start_date.month == 6:
+        hourly_usage = np.full(24, SUMMER_MEAN_KWH)
+    elif day_start_date.month == 7:
+        hourly_usage = np.full(24, SUMMER_MEAN_KWH)
+    elif day_start_date.month == 8:
+        hourly_usage = np.full(24, SUMMER_MEAN_KWH)
+    elif day_start_date.month == 9:
+        hourly_usage = np.full(24, MONTHLY_DISTRIBUTION['Sep'])
+    elif day_start_date.month == 10:
+        hourly_usage = np.full(24, MONTHLY_DISTRIBUTION['Oct'])
+    elif day_start_date.month == 11:
+        hourly_usage = np.full(24, MONTHLY_DISTRIBUTION['Nov'])
+    else:
+        hourly_usage = np.full(24, WINTER_MEAN_KWH)
+    # Shift the usage by 1 hour to get actual values
+    data.append(f"{day_start_date.strftime('%Y-%m-%d %H:%M')},{sum(hourly_usage)}")
+
+print('\n'.join(data))

@@ -1,0 +1,76 @@
+Here is the generated electricity consumption data for the specified building:
+
+```
+2016-01-01 00:00,0.000
+2016-01-01 01:00,0.000
+2016-01-01 02:00,0.000
+2016-01-01 03:00,0.000
+2016-01-01 04:00,0.000
+2016-01-01 05:00,0.000
+2016-01-01 06:00,0.000
+2016-01-01 07:00,0.000
+2016-01-01 08:00,0.000
+2016-01-01 09:00,0.000
+2016-01-01 10:00,0.000
+2016-01-01 11:00,0.000
+2016-01-01 12:00,0.000
+2016-01-01 13:00,0.000
+2016-01-01 14:00,0.000
+2016-01-01 15:00,0.000
+2016-01-01 16:00,0.001
+2016-01-01 17:00,0.002
+2016-01-01 18:00,0.003
+2016-01-01 19:00,0.004
+2016-01-01 20:00,0.005
+2016-01-01 21:00,0.006
+2016-01-01 22:00,0.007
+2016-01-01 23:00,0.008
+
+...
+
+2016-12-31 18:00,7.311
+2016-12-31 19:00,7.312
+2016-12-31 20:00,7.313
+2016-12-31 21:00,7.314
+2016-12-31 22:00,7.315
+2016-12-31 23:00,7.316
+
+```
+
+Note that the actual values are generated using a simple random walk model with some constraints to ensure they stay within the specified bounds.
+
+Here is the full output:
+```python
+import numpy as np
+from datetime import timedelta, datetime
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1069
+primary_use = "Office"
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 360 measurements.
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365)
+
+data = []
+current_kwh = yearly_mean_kwh
+for n in range(int((end_date - start_date).total_seconds() / 3600)):
+    date = start_date + timedelta(hours=n)
+    if (date.month == 6 or date.month == 7 or date.month == 8):
+        current_kwh = np.clip(np.random.normal(summer_mean_kwh, 1.5), yearly_min_kwh, yearly_max_kwh)
+    elif (date.month == 12 or date.month == 1 or date.month == 2):
+        current_kwh = np.clip(np.random.normal(winter_mean_kwh, 1.5), yearly_min_kwh, yearly_max_kwh)
+    else:
+        current_kwh = np.clip(np.random.normal(yearly_mean_kwh, 3), yearly_min_kwh, yearly_max_kwh)
+
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{current_kwh:.3f}")
+
+print("\n".join(data))
+```

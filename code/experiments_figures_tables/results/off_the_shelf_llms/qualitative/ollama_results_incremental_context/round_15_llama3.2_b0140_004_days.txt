@@ -1,0 +1,33 @@
+import random
+import datetime
+
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+def generate_data(year, month):
+    if month in [6,7,8]:
+        mean_kwh = summer_mean_kwh
+    elif month in [12,1,2]:
+        mean_kwh = winter_mean_kwh
+    else:
+        mean_kwh = yearly_mean_kwh
+
+    data = []
+    for hour in range(24):
+        if random.random() < 0.05: # 5% chance of a value below min_kwh
+            value = int(random.uniform(yearly_min_kwh, (yearly_max_kwh+1)/10))
+        else:
+            value = round(mean_kwh + random.uniform(-mean_kwh/2, mean_kwh/2),6)
+        
+        data.append((datetime.datetime(year, month, 1) + datetime.timedelta(hours=hour)).strftime('%Y-%m-%d %H:%M') + ', ' + str(value))
+    return data
+
+data = []
+for year in range(2016, 2017):
+    for month in range(1,13):
+        data.extend(generate_data(year, month))
+
+print('\n'.join(data))

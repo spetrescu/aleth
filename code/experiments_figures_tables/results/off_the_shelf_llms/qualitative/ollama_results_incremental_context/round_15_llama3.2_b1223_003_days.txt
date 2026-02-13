@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Define building metadata and annual summary statistics
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Define time intervals for which we want to generate data
+start_date = "2016-01-01"
+end_date = "2016-12-31"
+
+# Initialize an empty list to store our data
+data = []
+
+# Generate 72 measurements with a mix of yearly and seasonal values
+for i in range(72):
+    # Calculate the date for this measurement
+    date = pd.to_datetime(start_date) + pd.DateOffset(minutes=i)
+    
+    # Randomly decide whether it's summer or winter based on the month
+    if (date.month >= 6 and date.month <= 8) or (date.month >= 12 and date.month <= 2):
+        kwh = np.random.normal(summer_mean_kwh, yearly_max_kwh/10)
+    else:
+        kwh = np.random.normal(yearly_mean_kwh, yearly_max_kwh/10)
+
+    # Make sure the value is within our bounds
+    if kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    elif kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+
+    # Add this measurement to our data
+    data.append(f"{date.strftime('%Y-%m-%d')} {kwh:.2f}")
+
+# Convert the list of strings into a pandas DataFrame and print it out
+df = pd.DataFrame(data, columns=['Date', 'Value'])
+print(df)

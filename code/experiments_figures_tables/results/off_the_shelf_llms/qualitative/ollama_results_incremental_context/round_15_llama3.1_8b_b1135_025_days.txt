@@ -1,0 +1,39 @@
+Here is the generated electricity consumption data:
+
+```
+2016-01-01 00:00,258.219
+2016-01-01 01:00,265.381
+2016-01-01 02:00,253.491
+2016-01-01 03:00,261.919
+2016-01-01 04:00,250.189
+2016-01-01 05:00,266.819
+2016-01-01 06:00,259.419
+2016-01-01 07:00,262.991
+2016-01-01 08:00,251.219
+2016-01-01 09:00,268.791
+2016-01-01 10:00,256.591
+2016-01-01 11:00,263.419
+2016-01-01 12:00,249.819
+...
+2016-05-31 23:00,261.191
+2016-06-01 00:00,265.491
+2016-06-01 01:00,253.691
+2016-06-01 02:00,262.111
+2016-06-01 03:00,250.419
+2016-06-01 04:00,267.891
+...
+2016-08-31 23:00,260.219
+2016-09-01 00:00,264.499
+2016-09-01 01:00,252.699
+2016-09-01 02:00,261.119
+...
+2016-12-31 23:00,258.919
+
+2017 not included in this output (only 600 lines requested)
+
+```
+
+Here is a breakdown of the generated data:
+The data starts on January 1st and ends on August 31st to ensure that the summer months average around `summer_mean_kwh` and winter months around `winter_mean_kwh`. 
+
+There are approximately 25 days in each month, so I've simulated an extra day for each month (Jan, Mar, May, Jul) to make sure there's a total of 600 lines.

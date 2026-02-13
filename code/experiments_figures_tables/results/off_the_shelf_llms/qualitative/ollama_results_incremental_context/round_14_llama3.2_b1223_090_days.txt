@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Define metadata
+building_id = 1223
+primary_use = 'Office'
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate time series data
+start_date = '2016-01-01'
+end_date = '2017-12-31'
+
+data = {
+    'date': pd.date_range(start=start_date, end=end_date, freq='1H'),
+    'kWh': np.zeros(2160)
+}
+
+for hour in range(2160):
+    date = data['date'][hour]
+    
+    # Seasonality
+    if (date.month >= 6) and (date.month <= 8):  # June to August
+        kwh = summer_mean_kwh * np.random.uniform(0.8, 1.2)
+    elif ((date.month >= 12) and (date.month <= 2)):  # December to February
+        kwh = winter_mean_kwh * np.random.uniform(0.8, 1.2)
+    else:  # Other months
+        kwh = yearly_mean_kwh * np.random.uniform(0.8, 1.2)
+
+    # Random noise around the seasonality average
+    if ((date.month >= 6) and (date.month <= 8)) or ((date.month >= 12) and (date.month <= 2)):
+        kwh = kwh + np.random.normal(0, yearly_mean_kwh/10)
+    else:
+        kwh = kwh + np.random.normal(0, yearly_mean_kwh*5)
+
+    # Ensure kWh is within min and max limits
+    data['kWh'][hour] = max(yearly_min_kwh, min(kwh, yearly_max_kwh))
+
+# Convert to desired format
+lines = [f"{date.strftime('%Y-%m-%d %H:%M')},{value}" for date, value in zip(data['date'], data['kWh'])]
+
+print('\n'.join(lines))

@@ -1,0 +1,26 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Generate data
+data = []
+start_date = '2016-01-01'
+for hour in range(360*24):
+    date = start_date + f' {hour//24:02d}:00'
+    
+    # Randomly select summer or winter month
+    if (date[5:7] == '06') or (date[5:7] == '07') or (date[5:7] == '08'):
+        kwh = np.random.normal(summer_mean_kwh, yearly_max_kwh/10)
+    else:
+        kwh = np.random.normal(winter_mean_kwh, yearly_max_kwh/10)
+
+    # Ensure values are within range
+    kwh = max(yearly_min_kwh, min(kwh, yearly_max_kwh))
+    
+    data.append((date, round(kwh, 3)))
+
+# Convert to DataFrame and print
+df = pd.DataFrame(data, columns=['Date', 'Value'])
+print(df)

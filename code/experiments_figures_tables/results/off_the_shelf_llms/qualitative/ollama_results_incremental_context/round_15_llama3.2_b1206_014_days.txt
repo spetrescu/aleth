@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Generate date range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=336)
+
+# Initialize lists to store data and corresponding dates
+data = []
+dates = []
+
+# Loop through each hour
+for n in range(int ((end_date - start_date).days)):
+    date = start_date + timedelta(n)
+
+    # Randomly select value from a normal distribution around yearly_mean_kwh
+    value = np.random.normal(yearly_mean_kwh, 10)
+    # Ensure the value doesn't go below yearly_min_kwh or above yearly_max_kwh
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+
+    if (date.month >=6) & (date.month <=8): 
+        # If summer month, average around summer_mean_kwh
+        value = np.random.normal(summer_mean_kwh, 10)
+        value = max(summer_min_kwh, min(value, summer_max_kwh))
+        
+    data.append(round(value,3))
+    
+    dates.append((date.strftime("%Y-%m-%d") + ' '+ str(date.strftime('%H:%M')).zfill(5)))
+
+# Print output
+for date, value in zip(dates, data):
+    print(f"{date},{value}")

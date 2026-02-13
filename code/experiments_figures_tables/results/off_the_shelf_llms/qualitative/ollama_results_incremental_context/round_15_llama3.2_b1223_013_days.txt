@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define the building metadata
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Calculate the total number of measurements
+num_measurements = 312
+
+# Generate time indices for the measurements
+time_indices = np.arange(0, num_measurements) + 1
+
+# Convert time indices to dates and times
+start_date = datetime(2016, 1, 1)
+dates = [start_date + timedelta(hours=i) for i in time_indices]
+
+# Generate values based on the building's usage patterns
+values = np.zeros(len(dates))
+
+for date in dates:
+    if (date - start_date).days // 30 % 4 == 0:  # April, June, September, November
+        values[date.index] = summer_mean_kwh * np.random.uniform(0.8, 1.2)
+    elif (date - start_date).days // 30 % 4 == 1:  # January, March, May, July
+        values[date.index] = winter_mean_kwh * np.random.uniform(0.8, 1.2)
+    else:
+        values[date.index] = yearly_mean_kwh + (yearly_max_kwh - yearly_mean_kwh) * np.random.uniform(-0.5, 0.5)
+
+# Ensure values are within the valid range
+values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+
+# Convert values to kWh and format as required
+formatted_values = [f"{date.strftime('%Y-%m-%d %H:%M')},{value:.4f}" for date, value in zip(dates, values)]
+
+print("\n".join(formatted_values))

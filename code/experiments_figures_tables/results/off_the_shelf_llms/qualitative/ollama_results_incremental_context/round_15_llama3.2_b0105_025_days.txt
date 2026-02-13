@@ -1,0 +1,47 @@
+import pandas as pd
+from datetime import timedelta, date
+
+# Constants
+BUILID = '105'
+YEARLY_MEAN_KWH = 78.12403
+YEARLY_MIN_KWH = 23.3036
+YEARLY_MAX_KWH = 173.945
+SUMMER_MEAN_KWH = 78.177864
+WINTER_MEAN_KWH = 76.68618
+
+# Function to generate a random value between min and max
+def get_random_value(min_val, max_val):
+    import random
+    return round(random.uniform(min_val, max_val), 6)
+
+# Create start date (01 January 2016)
+start_date = date(2016, 1, 1)
+
+# Generate dates from start date to end date with a step of one hour
+dates = [start_date + timedelta(hours=i) for i in range(int(600*24))]
+
+# Split into winter and summer months (December to February: Winter; June to August: Summer)
+winter_months = [d for d in dates if 12 <= d.month <= 2]
+summer_months = [d for d in dates if 6 <= d.month <= 8]
+
+# Generate random consumption values
+consumption_values = []
+for _ in range(600):
+    month_type = 'Winter' if d in winter_months else 'Summer'
+    month_mean = WINTER_MEAN_KWH if month_type == 'Winter' else SUMMER_MEAN_KWH
+    value = get_random_value(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    
+    # If winter or summer month, use mean consumption for the month.
+    if month_type == 'Winter':
+        value = round(value * WINTER_MEAN_KWH / 100, 6)
+    else:
+        value = round(value * SUMMER_MEAN_KWH / 100, 6)
+
+    consumption_values.append(value)
+
+# Combine dates and consumption values
+df = pd.DataFrame({'Date': dates, 'Consumption (kWh)': consumption_values})
+
+# Print the results as required
+for index, row in df.iterrows():
+    print(f'{row["Date"].strftime("%Y-%m-%d %H:%M")}, {row["Consumption (kWh)"]}')

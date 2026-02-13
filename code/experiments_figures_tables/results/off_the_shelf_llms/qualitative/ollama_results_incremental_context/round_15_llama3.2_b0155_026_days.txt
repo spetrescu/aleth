@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set the seed for reproducibility
+np.random.seed(42)
+
+# Define the dates and periods (yearly mean and winter/winter means)
+start_date = '2016-01-01'
+end_date = start_date + str(int(pd.to_datetime(end_date).day) % 10)
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate the data for each date in the range
+data = []
+for date in date_range:
+    if date >= '2016-06-01' and date <= '2016-08-31':
+        # Summer month
+        summer_mean_kwh = 73.1753
+        kwh = np.random.normal(summer_mean_kwh, 2)
+        kwh = max(np.round(kwh, decimals=4), yearly_min_kwh)
+        kwh = min(kwh, yearly_max_kwh)
+    elif date >= '2016-12-01' and date <= '2017-02-28':
+        # Winter month
+        winter_mean_kwh = 91.38757
+        kwh = np.random.normal(winter_mean_kwh, 2)
+        kwh = max(np.round(kwh, decimals=4), yearly_min_kwh)
+        kwh = min(kwh, yearly_max_kwh)
+    else:
+        # Other months (average kWh equals the yearly mean)
+        summer_mean_kwh = 73.1753
+        winter_mean_kwh = 91.38757
+        if date >= '2016-06-01' and date <= '2016-08-31':
+            kwh = np.random.normal(summer_mean_kwh, 2)
+        else:
+            kwh = np.random.normal(winter_mean_kwh, 2)
+        
+    # Apply constraints for consistency
+    kwh = max(np.round(kwh, decimals=4), yearly_min_kwh)
+    kwh = min(kwh, yearly_max_kwh)
+
+    data.append(f'{date.strftime("%Y-%m-%d %H:%M")},{kwh}')
+
+print('\n'.join(data))

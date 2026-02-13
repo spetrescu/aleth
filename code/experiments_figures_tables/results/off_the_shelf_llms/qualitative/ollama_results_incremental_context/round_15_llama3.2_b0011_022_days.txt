@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Constants
+year = 2016
+days_per_year = 365.25
+hours_per_day = 24
+buildings = [11]
+building_id = buildings[0]
+
+# Generate the data
+data = []
+
+start_date = datetime(year, 1, 1)
+while len(data) < 528:
+    # Calculate the date and time
+    dt = start_date + timedelta(hours=start_date.hour, minutes=start_date.minute, seconds=start_date.second)
+    
+    # Check if it's a valid day based on yearly mean kWh usage
+    if (dt.month in [6,7,8] and np.random.rand() < 0.7) or (dt.month in [12,1,2] and np.random.rand() < 0.3):
+        if dt.month in [6,7,8]:
+            value = summer_mean_kwh + np.random.normal(0, yearleyanmeankwh*0.1)
+        else:
+            value = winter_mean_kwh + np.random.normal(0, yearleyanmeankwh*0.1)
+    else:
+        if np.random.rand() < 0.7:
+            value = yearly_mean_kwh + np.random.normal(0, yearleyanmeankwh*0.05)
+        else:
+            value = yearly_min_kwh + np.random.normal(0, (yearleyanmeankwh - yearly_min_kwh)*0.1)
+
+    # Clip the value to stay within yearly max kWh
+    if value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    # Clip the value to stay above yearly min kWh
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+
+    # Add it to the data
+    data.append((dt.strftime("%Y-%m-%d %H:%M"), value))
+
+# Print the data
+for d in data:
+    print(f"{d[0]},{d[1]:.8f}")

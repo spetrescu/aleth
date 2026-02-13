@@ -1,0 +1,50 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import random
+
+# Set the start and end dates for the data generation
+start_date = '2016-01-01 00:00'
+end_date = (datetime(2016,1,31) + timedelta(minutes=59)).strftime('%Y-%m-%d %H:%M')
+
+# Create a DataFrame with empty values
+data = pd.DataFrame(columns=['date','value'])
+
+# Generate random dates and values based on the constraints provided
+for i in range(int((end_date - start_date).total_seconds() / 3600)):
+    date = datetime.strptime(start_date, '%Y-%m-%d %H:%M') + timedelta(minutes=i)
+    year = date.year
+    month = date.month
+
+    # Generate a random value for summer months (Jun-Aug)
+    if 6 <= month <= 8:
+        value = round(random.uniform(195, 225), 3)  # Summer mean kwh around 212.6387
+    
+    # Generate a random value for winter months (Dec-Feb)
+    elif 12 <= month <= 2:
+        value = round(random.uniform(250, 290), 3)  # Winter mean kwh around 265.17035
+
+    # For other months, generate a value based on the yearly mean
+    else:
+        if year == 2016:  # Ensure value is within allowed range
+            value = round(random.uniform(0, 234), 3)
+        
+        # For subsequent years, use previous year's mean as an estimate
+        else:
+            previous_mean_kwh = data.loc[data['date'].dt.year == (year - 1), 'value'].mean()
+            if year == 2017:  # Ensure value is within allowed range
+                value = round(random.uniform(195, 225), 3)
+            elif year == 2018:
+                value = round(previous_mean_kwh, 3)
+
+    # Add a new row to the DataFrame with the generated date and value
+    data.loc[len(data)] = [date.strftime('%Y-%m-%d %H:%M'), value]
+
+# Extract only the date and value columns from the DataFrame
+data = data[['date','value']]
+
+# Round the values to 3 decimal places for readability
+data['value'] = data['value'].round(3)
+
+# Print the generated data
+for index, row in data.iterrows():
+    print(f"{row['date']}, {row['value']}")

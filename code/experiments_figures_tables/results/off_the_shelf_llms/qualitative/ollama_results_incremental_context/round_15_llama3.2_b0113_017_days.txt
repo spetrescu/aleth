@@ -1,0 +1,31 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Initialize an empty list to store the data
+data = []
+
+# Function to generate random number between two numbers
+def rand(min_val, max_val):
+    return round((max_val - min_val) * 1e-7 + min_val, 10)
+
+# Generate data for each hour from January 1st, 2016 to December 31st, 2016
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=408 - 1) # Last day of the period
+
+for n in range(408):
+    current_date = start_date + timedelta(n)
+    
+    if (current_date.month >= 3 and current_date.month <= 5) or \
+       (current_date.month >= 10 and current_date.month <= 12):  # Summer months
+        value = rand(363.97446, 365.49576)
+    else:  # Winter months
+        value = rand(361.4717, 362.4818)
+
+    if value < yearly_min_kwh or value > yearly_max_kwh:
+        continue
+
+    data.append((current_date.strftime('%Y-%m-%d %H:%M'), value))
+
+# Print the data
+for date, value in data:
+    print(f"{date}, {value}")

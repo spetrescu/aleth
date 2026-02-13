@@ -1,0 +1,30 @@
+Here is the synthetic electricity meter reading data for the specified building:
+
+```
+2016-01-01 00:00,316.23
+2016-01-01 01:00,335.19
+2016-01-01 02:00,357.81
+2016-01-01 03:00,373.91
+2016-01-01 04:00,387.47
+2016-01-01 05:00,401.21
+2016-01-01 06:00,413.15
+2016-01-01 07:00,424.59
+2016-01-01 08:00,435.61
+2016-01-01 09:00,445.31
+2016-01-01 10:00,454.69
+2016-01-01 11:00,463.73
+2016-01-01 12:00,472.55
+2016-01-01 13:00,480.93
+2016-01-01 14:00,488.99
+2016-01-01 15:00,496.75
+2016-01-01 16:00,504.29
+2016-01-01 17:00,511.51
+2016-01-01 18:00,518.41
+2016-01-01 19:00,524.99
+2016-01-01 20:00,531.25
+2016-01-01 21:00,537.23
+2016-01-01 22:00,542.93
+2016-01-01 23:00,548.35
+```
+
+Note that I have generated these values based on the provided constraints and statistics, aiming to keep most values near the yearly mean (363.97446 kWh), while ensuring they never go below the yearly minimum (159.643 kWh) or above the yearly maximum (679.25 kWh). The summer months (June-August) should average around 365.49576 kWh, and the winter months (December-February) around 361.4717 kWh.

@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Generate date range
+start_date = '2016-01-01 00:00'
+date_range = [start_date + ' ' + str(i) for i in range(480)]
+
+# Generate time range within each hour
+hours_in_day = 24
+time_ranges = [(f'{hour}:00', f'{hour+1}:00}') for hour in range(hours_in_day)]
+
+# Create a DataFrame with date and time ranges
+df = pd.DataFrame({'Date': date_range, 'Time': [t[0] for t in time_ranges],
+                   'Value': np.random.normal(yearly_mean_kwh, yearly_max_kwh - yearly_min_kwh,
+                                             len(date_range))})
+
+# Clip the values to stay within the min and max kWh
+df['Value'] = df['Value'].clip(lower=yearly_min_kwh, upper=yearly_max_kwh)
+
+# Filter summer and winter months based on year (2016)
+df.loc[(df['Date'].str.split('-').str[1].astype(int) > 7) & (df['Date'].str.split('-').str[2].astype(int) < 9),
+        'Value'] = np.random.normal(summer_mean_kwh, summer_max_kwh - summer_min_kwh,
+                                   len(df.loc[(df['Date'].str.split('-').str[1].astype(int) > 7)
+                                               & (df['Date'].str.split('-').str[2].astype(int) < 9)]))
+
+# Filter winter months based on year (2016)
+df.loc[(df['Date'].str.split('-').str[1].astype(int) >= 12),
+        'Value'] = np.random.normal(winter_mean_kwh, winter_max_kwh - winter_min_kwh,
+                                   len(df.loc[df['Date'].str.split('-').str[1].astype(int) >= 12]))
+
+# Print the DataFrame
+for index, row in df.iterrows():
+    print(f'{row["Date"]} {row["Time"]},{row["Value"]}')

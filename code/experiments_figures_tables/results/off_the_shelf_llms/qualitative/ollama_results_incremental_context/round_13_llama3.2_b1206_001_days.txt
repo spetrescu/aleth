@@ -1,0 +1,58 @@
+import random
+from datetime import datetime, timedelta
+import dateutil.relativedelta
+
+# Define the building metadata and annual summary statistics
+building_id = 1206
+primary_use = "Office"
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Define the start date and end date for the dataset
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365 * 24)
+
+# Initialize an empty list to store the data
+data = []
+
+# Loop through each hour from start_date to end_date
+for n in range(int ((end_date - start_date).days)):
+    date = start_date + timedelta(n days)
+    year, month, day = date.year, date.month, date.day
+    
+    # If it's a summer month, use summer_mean_kwh as the baseline value
+    if (year == 2016 and 
+        (month in [6,7,8] or 
+         (month == 9 and dateutil.relativedelta.relativedelta(date.year,date.month,date.day).months // 3) % 4 == 0)):
+        baseline_value = summer_mean_kwh
+    # If it's a winter month, use winter_mean_kwh as the baseline value
+    elif (year == 2016 and 
+          (month in [12,1,2] or 
+           (month == 3 and dateutil.relativedelta.relativedelta(date.year,date.month,date.day).months // 3) % 4 == 0)):
+        baseline_value = winter_mean_kwh
+    # Otherwise, use yearly_mean_kwh as the baseline value
+    else:
+        baseline_value = yearly_mean_kwh
+    
+    # Add some randomness to the data
+    random_factor = round(random.uniform(-10, 10),5)
+    
+    # Calculate the kWh value by adding a normal distribution of factors around the baseline
+    value = baseline_value + random_factor
+
+    # Ensure that we're never below yearly_min_kwh or above yearly_max_kwh
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+        
+    # Add a line to the data list with the calculated date and kWh value
+    data.append(f"{date.strftime('%Y-%m-%d')} {date.time()},{value}")
+
+# Print the full dataset
+for line in data:
+    print(line)

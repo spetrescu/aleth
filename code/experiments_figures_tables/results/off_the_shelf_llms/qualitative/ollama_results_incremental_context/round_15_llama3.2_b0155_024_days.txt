@@ -1,0 +1,49 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import random
+
+# Set seed for reproducibility
+random.seed(42)
+
+# Initialize lists to store the data
+years = []
+months = []
+days = []
+hours = []
+values = []
+
+# Loop through 576 measurements
+for i in range(576):
+    # Calculate date and time for this measurement
+    year = (i // 8760) + 2016  # 8760 hours per non-leap year, adjust for years after 2016
+    month = ((i % 8760) // 24) + 1
+    day = (i % 24) + 1
+    hour = i % 24
+
+    # Convert to date and time strings
+    dt = datetime(year, month, day)
+    date_str = dt.strftime("%Y-%m-%d")
+    time_str = dt.strftime("%H:%M")
+
+    # Calculate kWh value based on seasonality and year
+    if (year == 2016 or year % 4 == 0) and month in [12, 1, 2]:
+        value = round(random.uniform(90.5, 100), 3)
+    elif month >= 6:
+        value = round(random.uniform(70, 80), 3)
+    else:
+        value = round(random.uniform(60, 75), 3)
+
+    # Ensure values are within range
+    if value < yearly_min_kwh or value > yearly_max_kwh:
+        continue
+
+    # Append data to lists
+    years.append(year)
+    months.append(month)
+    days.append(day)
+    hours.append(hour)
+    values.append(value)
+
+# Convert data to DataFrame and print
+df = pd.DataFrame({'Date': date_str, 'Time': time_str, 'Value (kWh)': value})
+print(df)

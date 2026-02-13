@@ -1,0 +1,39 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 1223
+PRIMARY_USE = "Office"
+SQUARE_FEET = 52141
+YEARLY_MEAN_KWH = 76.72134
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 174.64
+SUMMER_MEAN_KWH = 81.22173
+WINTER_MEAN_KWH = 83.83176
+
+# Generate time series data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=264*365) # 264 days at year rate
+time_series_data = []
+
+for n in range(int((end_date-start_date).days)):
+    current_date = start_date + timedelta(n)
+    
+    if (current_date.month >= 6 and current_date.month <= 8):  # Summer months
+        hourly_kwh = SUMMER_MEAN_KWH 
+    elif (current_date.month >= 12 and current_date.month <= 2):  # Winter months
+        hourly_kwh = WINTER_MEAN_KWH
+    else:  # Other months
+        hourly_kwh = YEARLY_MEAN_KWH
+    
+    time_series_data.append((current_date.strftime("%Y-%m-%d %H:%M"), round(hourly_kwh,4)))
+
+# Convert data to DataFrame and format as required
+df = pd.DataFrame(time_series_data, columns=["Date", "Value"])
+
+# Format the output to match the desired format
+formatted_output = ""
+for index, row in df.iterrows():
+    formatted_output += f"{row['Date']}, {row['Value']}\n"
+
+print(formatted_output)

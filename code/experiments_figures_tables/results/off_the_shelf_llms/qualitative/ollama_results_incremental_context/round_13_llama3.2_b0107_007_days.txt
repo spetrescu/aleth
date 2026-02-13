@@ -1,0 +1,39 @@
+import random
+from datetime import datetime, timedelta
+
+# Define the time range for generating data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=168)
+
+# Define the average kWh values
+yearly_mean_kwh = 234.75676
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Initialize a list to store the generated data
+data = []
+
+for n in range(168):
+    date = start_date + timedelta(days=n)
+    
+    # Convert date to string format "YYYY-MM-DD"
+    day_str = date.strftime("%Y-%m-%d")
+    
+    # Generate random value within the allowed kWh ranges
+    if (day_str[5:7] == '06' or day_str[5:7] == '07' or day_str[5:7] == '08') and \
+       (day_str[9:11] in ['12', '01', '02']):
+
+        kWh = winter_mean_kwh + random.uniform(-20, 20)
+    elif (day_str[5:7] in ['06', '07', '08']) and day_str[9:11] not in ['12', '01', '02']:
+        
+        kWh = summer_mean_kwh + random.uniform(-20, 20)
+
+    # Ensure value is within the yearly min and max kWh limits
+    if kWh < yearly_min_kwh:
+        kWh = yearly_min_kwh
+    elif kWh > yearly_max_kwh:
+        kWh = yearly_max_kwh
+
+    data.append(f"{day_str} {date.time()}: {kWh:.6f}")
+
+print('\n'.join(data))

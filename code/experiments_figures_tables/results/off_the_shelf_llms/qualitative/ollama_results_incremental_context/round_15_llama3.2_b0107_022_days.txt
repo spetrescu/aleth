@@ -1,0 +1,43 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_consumption_data(building_id):
+    # Initialize summary statistics
+    yearly_mean_kwh = 234.75676
+    yearly_min_kwh = 0.0405
+    yearly_max_kwh = 591.0
+    summer_mean_kwh = 212.6387
+    winter_mean_kwh = 265.17035
+
+    # Initialize list to store data
+    data = []
+
+    # Loop through each hour from January 1st, 2016 to December 31st, 2016
+    for i in range(528):
+        # Calculate the date and time of this measurement
+        date = datetime(2016, 1, 1) + timedelta(days=i)
+        
+        # Randomly decide if it's summer or winter based on seasonality
+        seasonal_mean_kwh = random.uniform(summer_mean_kwh, winter_mean_kwh)
+        seasonal_type = "summer" if random.random() < 0.5 else "winter"
+
+        # Generate a value that falls within the range [yearly_min_kwh, yearly_max_kwh]
+        value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 6)
+
+        # If it's summer or winter, adjust the value to match seasonal mean
+        if seasonal_type == "summer":
+            value = round(value * (1 + random.uniform(0.8, 1.2)), 6)
+        elif seasonal_type == "winter":
+            value = round(value * (1 - random.uniform(0.8, 1.2)), 6)
+
+        # Add the measurement to the data list
+        data.append(f"{date.strftime('%Y-%m-%d %H:%M')} {value}")
+
+    return data
+
+# Generate and print electricity consumption data for building 107
+building_id = 107
+data = generate_electricity_consumption_data(building_id)
+
+for line in data:
+    print(line)

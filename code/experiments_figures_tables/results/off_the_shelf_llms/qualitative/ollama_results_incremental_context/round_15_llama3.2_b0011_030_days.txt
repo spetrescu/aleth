@@ -1,0 +1,56 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_meter_readings(building_id):
+    # Initialize list to store meter readings
+    readings = []
+
+    # Define start and end dates for 720 measurements
+    start_date = '2016-01-01'
+    end_date = '2016-12-31'
+
+    # Calculate total seconds in 720 hours
+    total_seconds = 720 * 3600
+
+    current_date = datetime.strptime(start_date, '%Y-%m-%d')
+    while total_seconds > 0:
+        # Generate a random hour within the allowed range for each measurement
+        hour = random.uniform(0, 24)
+
+        # Determine whether it's summer or winter based on date
+        if (current_date.month >= 6 and current_date.month <= 8) or \
+           (current_date.month == 3 and current_date.month == 9):
+            kwh_value = random.gauss(summer_mean_kwh, 20)
+        else:
+            kwh_value = round(random.gauss(winter_mean_kwh, 20))
+
+        # Ensure that the generated value is within allowed range
+        while kwh_value < yearly_min_kwh or kwh_value > yearly_max_kwh:
+            if current_date.month >= 6 and current_date.month <= 8 or \
+               current_date.month == 3 and current_date.month == 9:
+                kwh_value = round(random.gauss(summer_mean_kwh, 20))
+            else:
+                kwh_value = round(random.gauss(winter_mean_kwh, 20))
+
+        # Append the reading to list
+        readings.append(str(current_date.strftime('%Y-%m-%d')) + ' ' +
+                        str(int(hour)).zfill(2) + ', ' + str(round(kwh_value)))
+
+        # Update total seconds and current date for next iteration
+        remaining_seconds = int(total_seconds - 3600)
+        current_date += timedelta(seconds=remaining_seconds)
+
+    return readings
+
+# Summary statistics
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Generate electricity consumption data
+buildings = [11]
+readings = generate_meter_readings(building_id=buildings[0])
+for reading in readings:
+    print(reading)

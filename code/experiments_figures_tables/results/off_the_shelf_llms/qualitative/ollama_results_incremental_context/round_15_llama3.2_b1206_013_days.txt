@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define building metadata and annual summary statistics
+building_id = 1206
+primary_use = 'Office'
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Define the time period and number of measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*10) # 312 days
+num_measurements = 312
+
+# Generate dates for the measurements
+dates = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize lists to store the values and date strings
+values = []
+
+for i in range(num_measurements):
+    date_str = dates[i].strftime('%Y-%m-%d %H:%M')
+    # Randomly select a value within the allowed range for each hour
+    if (dates[i].month < 6 or dates[i].month > 8): # summer months
+        value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    else: # winter months
+        value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    values.append(value)
+
+# Print the date strings and corresponding values
+for i in range(num_measurements):
+    print(f"{dates[i].strftime('%Y-%m-%d %H:%M')},{values[i]:.5f}")

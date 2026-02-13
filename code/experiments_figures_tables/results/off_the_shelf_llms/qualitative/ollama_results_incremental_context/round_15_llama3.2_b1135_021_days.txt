@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Generate date and time values for 504 hours starting from January 1st, 2016
+date_start = datetime(2016, 1, 1)
+dates = [date_start + timedelta(hours=i) for i in range(504)]
+
+# Randomly generate electricity consumption values within the allowed ranges
+consumption_values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(dates))
+
+# Separate values into summer and winter months based on the day of the month
+df = pd.DataFrame({'date': dates, 'value': consumption_values})
+df['month'] = df['date'].dt.month
+
+summer_months = df[(df['month'] >= 6) & (df['month'] <= 8)]
+winter_months = df[(df['month'] >= 12) & (df['month'] <= 2)]
+
+# Ensure that summer values are closer to the mean of summer_mean_kwh and winter values
+summer_values = np.clip(summer_months['value'], df.loc[summer_months, 'winter_mean_kwh'].min(), 
+                        df.loc[summer_months, 'winter_mean_kwh'].mean() + (df.loc[summer_months, 'winter_mean_kwh'] - 
+                                                                            df.loc[summer_months, 'winter_mean_kwh'].mean()) * 0.5)
+winter_values = np.clip(winter_months['value'], df.loc[winter_months, 'yearly_min_kwh'].min(), 
+                       df.loc[winter_months, 'yearly_max_kwh'].max())
+
+# Combine the summer and winter values
+df['value'] = np.where(df['month'] >= 6, summer_values, winter_values)
+
+print('\n'.join(f'{date.strftime("%Y-%m-%d %H:%M")}, {value:.5f' for date, value in zip(df['date'], df['value'])}))

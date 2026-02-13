@@ -1,0 +1,54 @@
+Here is a Python code snippet using NumPy to generate synthetic building electricity meter readings:
+
+```python
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Define parameters
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate dates for the next 528 hours
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=527) # to get exactly 528 readings
+
+# Initialize array to hold values
+values = np.zeros(528)
+
+# Loop over each hour and generate a value based on season (summer or winter)
+for i in range(0, 528):
+    current_date = start_date + timedelta(hours=i)
+    
+    if (current_date.month >= 6) & (current_date.month <= 8): # summer months
+        values[i] = np.clip(np.random.normal(summer_mean_kwh, 10), yearly_min_kwh, yearly_max_kwh)
+    elif (current_date.month >= 12) | ((current_date.month == 1) | (current_date.month == 2)): # winter months
+        values[i] = np.clip(np.random.normal(winter_mean_kwh, 15), yearly_min_kwh, yearly_max_kwh)
+    else: # other months
+        values[i] = np.clip(np.random.normal(yearly_mean_kwh, 5), yearly_min_kwh, yearly_max_kwh)
+
+# Round the values to one decimal place and create output string
+output = []
+for i in range(0, 528):
+    value = round(values[i],1)
+    output.append("{:4d}-{:02d}-{:02d} {:02d}:{:02d},{}\n".format(start_date.year,start_date.month,start_date.day,i % 24, (i // 24) % 60,value))
+
+# Print the full dataset
+print("".join(output))
+```
+
+The provided Python script first imports necessary libraries. Then it defines parameters for building metadata and statistics from the given annual summary.
+
+Next, it generates synthetic electricity meter readings based on season: summer or winter months with respective mean consumption values (73.1753 kWh and 91.38757 kWh), and other months with the yearly mean (81.997604 kWh).
+
+The `np.clip()` function is used to ensure that generated values do not exceed or fall below specified limits (yearly_min_kwh = 23.5, yearly_max_kwh = 159.0).
+
+Finally, it formats output into required lines of "YYYY-MM-DD HH:MM,VALUE" and prints the full dataset.
+
+This code will produce exactly 528 readings as requested.

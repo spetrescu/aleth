@@ -1,0 +1,30 @@
+import random
+from datetime import timedelta, datetime
+
+# Define constants
+BUILDING_ID = 1143
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 96612
+YEARLY_MEAN_KWH = 79.257515
+YEARLY_MIN_KWH = 25.0
+YEARLY_MAX_KWH = 187.0
+SUMMER_MEAN_KWH = 85.378174
+WINTER_MEAN_KWH = 74.83288
+
+# Set up the generator
+def generate_kwh():
+    yearly_mean = random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    summer_mean = random.uniform(SUMMER_MIN_KWH, SUMMER_MAX_KWH)
+    winter_mean = random.uniform(WINTER_MIN_KWH, WINTER_MAX_KWH)
+
+    for i in range(480):
+        if (datetime.now() + timedelta(days=i)).month in [6, 7, 8]: # Summer
+            yield f"{(datetime.now() + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')}, {summer_mean}"
+        elif (datetime.now() + timedelta(days=i)).month in [12, 1, 2]: # Winter
+            yield f"{(datetime.now() + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')}, {winter_mean}"
+        else:
+            yield f"{(datetime.now() + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')}, {yearly_mean}"
+
+# Generate the data
+for line in generate_kwh():
+    print(line)

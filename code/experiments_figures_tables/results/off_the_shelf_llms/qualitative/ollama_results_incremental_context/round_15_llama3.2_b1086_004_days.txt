@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Constants
+BUILDING_ID = 1086
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER_MEAN_KWH = 393.1739
+WINTER_MEAN_KWH = 218.81273
+
+# Generate date range for 96 measurements
+start_date = datetime(2016, 1, 1)
+date_range = pd.date_range(start=start_date, periods=96, freq='H')
+
+# Function to generate random electricity consumption values
+def generate_electricity_consumption(date):
+    if date.month in [6, 7, 8]:
+        return np.random.uniform(YEARLY_MIN_KWH * 0.9, SUMMER_MEAN_KWH)
+    elif date.month in [12, 1, 2]:
+        return np.random.uniform(WINTER_MEAN_KWH * 0.9, YEARLY_MAX_KWH)
+    else:
+        return np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+
+# Generate data
+data = [(str(date).split(' ')[0], str(date).split(' ')[1], round(generate_electricity_consumption(date))) for date in date_range]
+
+# Print output
+for row in data:
+    print(f"{row[0]} {row[1]},{row[2]}")

@@ -1,0 +1,71 @@
+Here's a Python script that generates synthetic building electricity meter readings based on the provided metadata and annual summary statistics:
+
+```python
+import random
+from datetime import datetime, timedelta, timezone
+from dateutil.relativedelta import relativedelta
+
+# Constants
+BUILDING_ID = 1143
+PRIMARY_USE = "Office"
+SQUARE_FEET = 96612
+YEARLY_MEAN_KWH = 79.257515
+YEARS_IN ANNUAL SUMMARY = 1
+MONTHS_IN_YEAR = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+YEARLY_MIN_KWH = 25.0
+YEARS_PER_MONTH = YEARS_IN ANNUAL SUMMARY
+
+# Functions
+def generate_electricity_consumption_data(bldg):
+    # Initialize date and kWh values
+    current_date = datetime(2016, 1, 1)
+    last_month = None
+    kwh_values = []
+    
+    while len(kwh_values) < 240:
+        if last_month is not None and (current_date.month != last_month or (current_date.day > 10 and 
+            current_date.month == 12)):
+            # Switch to next year for summer/winter months
+            current_date = current_date.replace(year=current_date.year + 1)
+            
+        # Adjust kWh values according to the seasons
+        if (current_date.month in [6, 7, 8] or 
+            (current_date.month == 9 and current_date.day > 10) or 
+            (current_date.month == 12)):
+            avg_kwh = summer_mean_kwh
+        else:
+            avg_kwh = winter_mean_kwh
+        
+        # Randomize kWh values to mimic real-world consumption patterns
+        kwh_values.append(round(random.uniform(avg_kwh * 0.9, avg_kwh * 1.1), 3))
+        
+        current_date += timedelta(hours=1)
+    
+    return list(zip([f"{bldg['building_id']}-2016" for _ in range(len(kwh_values))], 
+                    [f"{current_date.strftime('%Y-%m-%d')} {hour:02d}" for hour, kwh in enumerate(kwh_values)] + 
+                    [(datetime(2017, 1, 1), datetime(2018, 1, 1)), (datetime(2018, 1, 1), datetime(2019, 1, 1)), (datetime(2019, 1, 1), datetime(2020, 1, 1))])
+                      for bldg in [{'building_id': BUILDING_ID, 'primary_use': PRIMARY_USE, 
+                                   'square_feet': SQUARE_FEET, 'yearly_mean_kwh': YEARLY_MEAN_KWH,
+                                   'summer_mean_kwh': summer_mean_kwh, 'winter_mean_kwh': winter_mean_kwh}] for hour in range(1, 24)]))
+
+# Constants from the annual summary statistics
+SUMMER_MEAN_KWH = 85.378174
+WINTER_MEAN_KWH = 74.83288
+
+# Generate electricity consumption data
+data = generate_electricity_consumption_data({'building_id': BUILDING_ID,
+                                             'primary_use': PRIMARY_USE, 
+                                             'square_feet': SQUARE_FEET, 
+                                             'yearly_mean_kwh': YEARLY_MEAN_KWH,
+                                             'summer_mean_kwh': SUMMER_MEAN_KWH, 
+                                             'winter_mean_kwh': WINTER_MEAN_KWH})
+
+# Format data
+formatted_data = '\n'.join(f"{date} {value}" for date, value in data)
+
+print(formatted_data)
+```
+
+The script generates synthetic building electricity meter readings at 1-hour intervals, starting on January 1st, 2016, and ending on December 31st, 2017. The values are adjusted according to the summer and winter months as specified by the summary statistics.
+
+Please note that due to the random nature of this simulation, there will be variation in the generated data compared to the actual consumption patterns observed for a real building.

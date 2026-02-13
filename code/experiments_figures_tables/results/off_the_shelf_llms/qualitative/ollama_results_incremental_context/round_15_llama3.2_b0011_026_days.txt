@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+
+np.random.seed(0) #for reproducibility
+
+# Generate date and time values for 624 measurements, starting from Jan 1, 2016
+dates = pd.date_range(start='01-01-2016', periods=624)
+
+# Initialize a list to store the generated electricity consumption data
+consumption_data = []
+
+# Loop over each measurement
+for i, date in enumerate(dates):
+    # Determine if it's summer or winter based on the month (June-Aug and Dec-Feb)
+    if date.month >= 6:
+        avg_kwh = 486.43784 
+    elif date.month <= 2:
+        avg_kwh = 162.72496
+    else:  
+        avg_kwh = np.random.uniform(0, 1000) #generate random values between 0 and 1000 for other months
+        
+    # Generate a random value that follows the average with some variability
+    kwh = avg_kwh + (np.random.normal(0,avg_kwh/10) * avg_kwh)
+    
+    if kwh < 0:
+        kwh = 0 
+    elif kwh > 1052.0:
+        kwh = 1052.0
+        
+    
+    # Append the generated data to the list
+    consumption_data.append((date, round(kwh)))
+
+# Convert the list of tuples into a DataFrame and print it
+df = pd.DataFrame(consumption_data, columns=['Date', 'Electricity Consumption (kWh)'])
+for index, row in df.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d %H:%M')}, {row['Electricity Consumption (kWh)']}")

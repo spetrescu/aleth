@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define building parameters
+building_id = 1143
+primary_use = 'Office'
+square_feet = 96612
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+# Generate date range for 384 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*5)
+
+date_range = []
+for n in range(5):
+    current_date = start_date + timedelta(days=n * 365)
+    while current_date < end_date:
+        date_range.append(current_date.strftime('%Y-%m-%d'))
+        current_date += timedelta(hours=1)
+
+# Generate random consumption values
+consumption_values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(date_range))
+summer_index = [i for i in range(len(date_range)) if (datetime.strptime(date_range[i], '%Y-%m-%d').month in [6, 7, 8])]
+winter_index = [i for i in range(len(date_range)) if (datetime.strptime(date_range[i], '%Y-%m-%d').month in [12, 1, 2])]
+consumption_values[summer_index] = np.random.uniform(summer_mean_kwh - 0.1*summer_mean_kwh, summer_mean_kwh + 0.1*summer_mean_kwh)
+consumption_values[winter_index] = np.random.uniform(winter_mean_kwh - 0.1*winter_mean_kwh, winter_mean_kwh + 0.1*winter_mean_kwh)
+
+# Create dataframe with consumption values and date range
+df = pd.DataFrame({'Date': date_range, 'Value': consumption_values})
+
+# Sort the dataframe by date
+df.sort_values(by='Date', inplace=True)
+
+# Output the dataset
+for index, row in df.iterrows():
+    print(f"{row['Date']} {row['Value']:.2f}")

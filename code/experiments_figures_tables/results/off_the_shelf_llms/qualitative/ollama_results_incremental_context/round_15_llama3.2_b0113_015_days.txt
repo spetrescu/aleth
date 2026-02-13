@@ -1,0 +1,45 @@
+Here's the Python code to generate the electricity consumption data:
+```python
+import pandas as pd
+from datetime import datetime, timedelta
+import random
+
+# Define constants
+BUILDING_ID = 113
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 100481
+YEARLY_MEAN_KWH = 363.97446
+YEARLY_MIN_KWH = 159.643
+YEARLY_MAX_KWH = 679.25
+SUMMER Mean_KWH = 365.49576
+WINTER_mean_KWH = 361.4717
+
+# Initialize list to store readings
+readings = []
+
+# Start on 01 January 2016
+start_date = datetime(2016, 1, 1)
+for i in range(360):
+    # Convert start date to YYYY-MM-DD HH:MM format
+    current_date = start_date.strftime('%Y-%m-%d %H:%M')
+
+    # Determine if it's summer or winter month
+    if (start_date.month >= 6 and start_date.month <= 8) or \
+       (start_date.month == 12):
+        consumption = random.gauss(SUMMER_mean_KWH, 10)
+    else:
+        consumption = random.gauss(WINTER_mean_KWH, 10)
+
+    # Clip value to yearly min and max kWh
+    consumption = max(YEARLY_MIN_KWH, min(consumption, YEARLY_MAX_KWH))
+
+    readings.append(f"{current_date},{consumption:.2f}")
+
+    # Increment start date by 1 hour
+    start_date += timedelta(hours=1)
+
+print("\n".join(readings))
+```
+This code generates the required electricity consumption data for 360 measurements at 1-hour intervals, starting on January 1st, 2016. The values are generated using a Gaussian distribution with mean and standard deviation specific to summer and winter months. The values are clipped to the yearly minimum and maximum kWh to ensure they fall within realistic ranges.
+
+When you run this code, it will output exactly 360 lines of data in the format "YYYY-MM-DD HH:MM,VALUE".

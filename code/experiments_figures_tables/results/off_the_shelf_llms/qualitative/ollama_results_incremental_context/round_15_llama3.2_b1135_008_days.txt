@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Build a dataframe with the given data
+df = pd.DataFrame({
+    'building_id': [1135],
+    'primary_use': ['Education'],
+    'square_feet': [150393],
+    'yearly_mean_kwh': [263.43817],
+    'yearly_min_kwh': [125.06],
+    'yearly_max_kwh': [479.897],
+    'summer_mean_kwh': [263.8639],
+    'winter_mean_kwh': [250.41924]
+})
+
+# Generate a date range from 01-01-2016 to 31-12-2016
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=192)
+
+# Initialize an empty list to store the data
+data = []
+
+# Loop over each hour in the date range
+while start_date <= end_date:
+    # Get the month and day of the current date
+    if start_date.month == 6 or start_date.month == 7 or start_date.month == 8: # Summer months
+        summer_mean_kwh = df.loc[0, 'summer_mean_kwh']
+    else: # Winter months
+        summer_mean_kwh = df.loc[0, 'winter_mean_kwh']
+
+    # Generate a random value between the min and max kWh for each hour
+    value = round(random.uniform(df.loc[0, 'yearly_min_kwh'], df.loc[0, 'yearly_max_kwh']), 3)
+    # if the summer season it is going to be higher than normal
+    if start_date.month in [6,7,8]:
+        value = min(max(value,summer_mean_kwh*1.05),df.loc[0,'yearly_max_kwh'])
+    else:
+        value = min(max(value,winter_mean_kwh*1.05),df.loc[0,'yearly_max_kwh'])
+    
+    # Append the date and kWh value to the data list
+    data.append(f"{start_date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+    # Increment the start date by one hour
+    start_date += timedelta(hours=1)
+
+# Print the data
+for line in data:
+    print(line)

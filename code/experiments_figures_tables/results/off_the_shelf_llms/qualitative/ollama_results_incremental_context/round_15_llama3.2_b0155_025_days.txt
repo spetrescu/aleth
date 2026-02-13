@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Initialize lists to store date and consumption data
+date_list = []
+consumption_list = []
+
+# Generate dates from 01 January 2016 to the end of the dataset (600 days later)
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + timedelta(days=600)
+current_date = start_date
+
+# Loop through each day in the dataset
+while current_date <= end_date:
+    # Randomly select consumption value between yearly_min_kwh and yearly_max_kwh
+    if current_date.month in [12, 1, 2]:  # Winter months
+        consumption = np.random.uniform(23.5, 91.38757)
+    else:  # Summer months
+        consumption = np.random.uniform(73.1753, 159.0)
+    
+    # Ensure the generated value is within the valid range for that month
+    if current_date.month in [12, 1, 2]:
+        consumption = max(consumption, 23.5)
+        consumption = min(consumption, 91.38757)
+    else:
+        consumption = max(consumption, 73.1753)
+        consumption = min(consumption, 159.0)
+    
+    # Append the date and consumption value to their respective lists
+    date_list.append(current_date.strftime('%Y-%m-%d'))
+    consumption_list.append(round(consumption, 6))
+    
+    # Move to the next day
+    current_date += timedelta(days=1)
+
+# Combine the date and consumption data into a DataFrame
+df = pd.DataFrame({'Date': date_list, 'Consumption (kWh)': consumption_list})
+
+# Convert the DataFrame to a list of lines as required
+lines = [f"{date} {consumption}" for date, consumption in zip(df['Date'], df['Consumption (kWh)'])]
+
+# Print the electricity consumption data
+print('\n'.join(lines))

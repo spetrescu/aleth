@@ -1,0 +1,83 @@
+Here's a Python solution that generates synthetic electricity consumption data based on the given constraints:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 1246
+PRIMARY_USE = "Office"
+SQUARE_FOOTAGE = 50327
+YEARLY_MEAN_KWH = 46.317394
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 82.0
+SUMMER_MEAN_KWH = 42.024456
+WINTER_MEAN_KWH = 46.382324
+
+# Generate electricity consumption data
+def generate_electricity_data(year, start_time):
+    # Initialize an empty list to store the data
+    data = []
+    
+    # Calculate the number of hours in each month and quarter
+    months_hours = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    quarters_hours = [91, 92, 91, 90, 91, 92, 91, 90, 91, 92, 91, 90]
+
+    # Calculate the number of hours in each day of the given period
+    days_in_period = 365 * (year - 2016) + 1
+
+    hour_count = sum(months_hours[:int((days_in_period / quarters_hours[0]) // 3)]) + \
+                 sum([months_hours[i] for i in range(int((days_in_period % quarters_hours[0])) // 3)])
+    
+    current_hour = start_time.hour
+    current_day = start_time.day
+    
+    # Generate data for each hour
+    while len(data) < 384:
+        # Randomly select a month (June to August or December to February)
+        month = random.choice(["Jun", "Jul", "Aug", "Dec", "Jan", "Feb"])
+        
+        if current_hour in [8, 9, 10, 11, 12]:
+            monthly_mean_kwh = SUMMER_MEAN_KWH
+        elif current_hour in [18, 19, 20, 21, 22]:
+            monthly_mean_kwh = WINTER_MEAN_KWH
+        
+        # Generate a random kwh value within the range of yearly_min_kwh to yearly_max_kwh
+        kwh_value = round(random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH), 3)
+        
+        # Ensure that summer and winter months have average values around summer_mean_kwh and winter_mean_kwh respectively
+        if month in ["Jun", "Jul", "Aug"]:
+            monthly_mean_kwh = SUMMER_MEAN_KWH
+        elif month in ["Dec", "Jan", "Feb"]:
+            monthly_mean_kwh = WINTER_MEAN_KWH
+        
+        # Scale the generated kwh value to match the yearly mean
+        if random.random() < 0.5:
+            kwh_value *= (kwh_value / YEARLY_MEAN_KWH)
+        
+        data.append(f"{datetime(2016, start_time.month, current_day) + timedelta(hours=current_hour)} {kwh_value}")
+        
+        # Move to the next hour
+        if current_hour < 23:
+            current_hour += 1
+        else:
+            current_hour = 0
+            current_day += 1
+            
+    return data
+
+# Main function
+def main():
+    start_time = datetime(2016, 1, 1)
+    while len(generate_electricity_data(2016, start_time)) < 384:
+        start_time += timedelta(days=1)
+
+    # Print the generated data
+    for item in generate_electricity_data(2016, start_time):
+        print(item)
+
+if __name__ == "__main__":
+    main()
+```
+
+Please note that running this script may take a while as it generates random data.

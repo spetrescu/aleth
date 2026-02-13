@@ -1,0 +1,57 @@
+To generate synthetic building electricity meter readings, we can use a Python script that simulates hourly energy consumption based on the provided metadata and summary statistics. Here's an implementation using NumPy for efficient numerical operations:
+
+```python
+import numpy as np
+from datetime import timedelta, datetime
+
+# Building metadata and annual summary statistics (2016)
+building_id = 272
+primary_use = "Education"
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Number of measurements (1-hour intervals)
+n_measurements = 1440
+
+# Generate timestamp for start and end dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365)
+
+dates = [start_date + timedelta(hours=i) for i in range(n_measurements)]
+
+# Calculate summer and winter months as arrays of boolean values
+summer_months = np.array([d.month >= 6 and d.month <= 8 for d in dates])
+winter_months = np.array([d.month >= 12 or (d.month < 6 and d.month != 3) for d in dates])
+
+# Set parameters to control variability around mean consumption
+# These can be adjusted based on real data analysis for better accuracy
+summer_std_dev = yearly_max_kwh / 4.0  # Variability during summer months
+winter_std_dev = yearly_mean_kwh / 2.5  # Lower variability during winter months
+
+# Generate consumption values with varying standard deviations depending on the time of year
+consumption_values = np.zeros(n_measurements)
+for i in range(n_measurements):
+    if summer_months[i]:
+        consumption_values[i] = np.random.uniform(summer_mean_kwh - summer_std_dev, summer_mean_kwh + summer_std_dev)
+    elif winter_months[i]:
+        consumption_values[i] = np.random.uniform(winter_mean_kwh - (yearly_max_kwh / 8.0), 
+                                                    winter_mean_kwh + (yearly_max_kwh / 4.0))
+    else: # Non-seasonal months, maintain yearly mean with slight variability
+        consumption_values[i] = np.random.uniform(yearly_mean_kwh - (yearly_max_kwh / 16.0), 
+                                                  yearly_mean_kwh + (yearly_max_kwh / 8.0))
+
+# Clip values to ensure they're within acceptable range
+consumption_values = np.clip(consumption_values, yearly_min_kwh, yearly_max_kwh)
+
+# Format output as required
+for i in range(n_measurements):
+    print(f"{dates[i].strftime('%Y-%m-%d %H:%M')},{consumption_values[i]:.6f}")
+```
+
+This script first sets up arrays to track which months are summer and winter based on the given date ranges. It then uses NumPy's `random.uniform` function to generate energy consumption values for each hour, adjusting the standard deviation of these values depending on whether it's a summer or winter month. Consumption during non-seasonal months has slightly more variability around the yearly mean. Finally, all generated values are clipped to ensure they fall within the acceptable range.
+
+Running this script will output 1440 lines in the required format, each representing hourly energy consumption for the specified building over the course of a year.

@@ -1,0 +1,59 @@
+Here is a Python script using NumPy and pandas to generate synthetic electricity meter readings for the specified building:
+
+```python
+import numpy as np
+from datetime import date, timedelta
+import pandas as pd
+
+def generate_readings():
+    # Building metadata
+    yearly_mean_kwh = 17.38018
+    summer_mean_kwh = 25.539513
+    winter_mean_kwh = 11.742976
+    yearly_min_kwh = 0.8
+    yearly_max_kwh = 74.32
+
+    # Generate dates and hours for the readings
+    start_date = date(2016, 1, 1)
+    end_date = date(2016, 12, 31) if len(readings) == 8760 else date(2016, 9, 30) 
+    delta = timedelta(hours=1)
+    dates = []
+    for n in range(int ((end_date - start_date).days * 24), 0, -1):
+        day = start_date + timedelta(n-1)
+        for hour in range(24):
+            dates.append(day.strftime('%Y-%m-%d') + ' ' + str(hour).zfill(2) + ':00')
+
+    # Generate readings
+    values = np.random.normal(yearly_mean_kwh, 5, len(dates))
+    values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+
+    # Adjust summer and winter months
+    start_summer = date(2016, 6, 1)
+    end_summer = date(2016, 8, 31)
+    start_winter = date(2016, 12, 1)
+    end_winter = date(2016, 2, 28)
+
+    for i in range(len(dates)):
+        day = date.fromisoformat(dates[i].split(' ')[0])
+        if (start_summer <= day <= end_summer):
+            values[i] = np.clip(np.random.normal(summer_mean_kwh, 1), yearly_min_kwh, yearly_max_kwh)
+        elif (start_winter <= day <= end_winter):
+            values[i] = np.clip(np.random.normal(winter_mean_kwh, 0.5), yearly_min_kwh, yearly_max_kwh)
+
+    # Format and return readings
+    df = pd.DataFrame({'Value': values}, index=pd.to_datetime(dates))
+    return df['Value'].to_string(index=False, header=False).replace('\n', '\n' + ',')
+
+
+readings = generate_readings().split(',')
+print(readings)
+```
+
+The output will be a long list of date and value pairs:
+
+```
+...
+2016-09-01 23:00,17.350
+2016-09-02 00:00,16.650
+...
+```

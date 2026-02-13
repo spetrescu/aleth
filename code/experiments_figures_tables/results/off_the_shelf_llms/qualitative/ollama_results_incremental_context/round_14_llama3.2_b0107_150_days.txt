@@ -1,0 +1,40 @@
+import random
+from datetime import datetime, timedelta, time
+
+# Initialize list to store data
+data = []
+
+# Function to generate a random kwh value between min and max
+def generate_random_kwh(min_kwh, max_kwh):
+    return round(random.uniform(min_kwh, max_kwh), 3)
+
+# Function to get the season (1 for summer, 2 for winter)
+def get_season(date):
+    if date.month >= 6:
+        return 1
+    elif date.month <= 2:
+        return 2
+
+for hour in range(0, 3600):
+
+    # Generate a random day and time based on the hour
+    current_date = datetime(2016, 1, 1) + timedelta(days=hour)
+    current_hour = current_date.time()
+    
+    if get_season(current_date.month) == 1:  # Summer months
+        average_kwh = 212.6387
+    else:
+        average_kwh = 265.17035
+
+    # Generate a random kwh value around the average
+    kwh_value = generate_random_kwh(average_kwh - 10, average_kwh + 10)
+
+    # Ensure the generated value is within min and max kwh values
+    if kwh_value < yearly_min_kwh:
+        data.append(f"{current_date.strftime('%Y-%m-%d')} {current_hour.strftime('%H:%M')}, {yearly_min_kwh}")
+    elif kwh_value > yearly_max_kwh:
+        data.append(f"{current_date.strftime('%Y-%m-%d')} {current_hour.strftime('%H:%M')}, {yearly_max_kwh}")
+    else:
+        data.append(f"{current_date.strftime('%Y-%m-%d')} {current_hour.strftime('%H:%M')}, {kwh_value}")
+
+print('\n'.join(data))

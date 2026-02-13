@@ -1,0 +1,34 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Initialize data
+data = []
+
+# Generate data for 720 hours
+for i in range(720):
+    # Convert hour to date and time format
+    dt = (datetime(2016, 1, 1) + timedelta(hours=i)).strftime('%Y-%m-%d %H:%M')
+
+    # Determine season (winter or summer)
+    if dt.split('-')[0] in ['12', '01', '02']:
+        avg_kwh = 250.41924
+    elif dt.split('-')[0] in ['06', '07', '08'] and dt.split('-')[1] > '31':
+        avg_kwh = 263.8639
+    else:
+        avg_kwh = 263.43817
+
+    # Add some randomness to avoid identical values
+    value = int(avg_kwh + np.random.uniform(-0.01, 0.01))
+
+    # Ensure the generated value is within the allowed range
+    if value < yearly_min_kwh:
+        value = int(yearly_min_kwh + np.random.uniform(0, (yearly_max_kwh - yearly_min_kwh))))
+    elif value > yearly_max_kwh:
+        value = int(yearly_max_kwh - np.random.uniform((yearly_max_kwh - yearly_min_kwh), 0))
+
+    # Append to the data
+    data.append(f"{dt},{value}")
+
+# Output the generated data
+print('\n'.join(data))

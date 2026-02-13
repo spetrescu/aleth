@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define parameters
+buildings = [1206]
+primary_use = 'Office'
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate date range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*192)
+
+# Initialize list to store readings
+readings = []
+
+# Loop through each hour in the date range
+for n in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(n)
+    
+    # Generate random values based on season and year
+    if (date.month >= 6 and date.month <= 8):  # summer months
+        value = np.random.uniform(summer_mean_kwh * 0.9, summer_mean_kwh * 1.1)
+    elif (date.month >= 12 and date.month <= 2):  # winter months
+        value = np.random.uniform(winter_mean_kwh * 0.9, winter_mean_kwh * 1.1)
+    else:
+        value = yearly_mean_kwh
+    
+    # Ensure values are within valid range
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Append reading to list
+    readings.append((date.strftime('%Y-%m-%d %H:%M'), value))
+
+# Print the generated data
+for reading in readings:
+    print(reading[0] + ', ' + str(reading[1]))

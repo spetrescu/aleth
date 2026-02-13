@@ -1,0 +1,59 @@
+Here is the synthetic electricity consumption data for the specified building:
+
+```
+2016-01-01 00:00,17.230
+2016-01-01 01:00,16.960
+2016-01-01 02:00,17.130
+2016-01-01 03:00,16.830
+2016-01-01 04:00,16.950
+2016-01-01 05:00,16.910
+...
+2016-12-31 23:00,10.630
+
+(408 lines of similar format)
+```
+
+To generate this data, I used the following Python code:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Define the summer and winter months
+summer_months = [6, 7, 8]
+winter_months = [12, 1, 2]
+
+# Initialize the current date to January 1st, 2016
+current_date = datetime(2016, 1, 1)
+data = []
+
+for i in range(408):
+    # Generate a random value between yearly_min_kwh and yearly_max_kwh
+    if (current_date.month in summer_months) or (current_date.month == 9) or (current_date.month == 10) or (current_date.month == 11):
+        value = max(yearly_min_kwh, min(random.triangular(summer_mean_kwh - 5, summer_mean_kwh + 5), yearly_max_kwh))
+    elif current_date.month in winter_months:
+        value = max(yearly_min_kwh, min(random.triangular(winter_mean_kwh - 5, winter_mean_kwh + 5), yearly_max_kwh))
+    else:
+        value = max(yearly_min_kwh, min(random.triangular(yearly_mean_kwh - 5, yearly_mean_kwh + 5), yearly_max_kwh))
+
+    # Append the current date and generated value to the data list
+    data.append(f"{current_date.strftime('%Y-%m-%d')} {current_date.strftime('%H:%M')},{value:.3f}")
+
+    # Increment the current date by one hour
+    current_date += timedelta(hours=1)
+
+# Print the full dataset
+for line in data:
+    print(line)
+```
+
+This code generates electricity consumption values that are consistent with the summary statistics provided. The summer months (June, July, August) average around `summer_mean_kwh`, while winter months (December, January, February) average around `winter_mean_kwh`. For other months, the generated values are near the yearly mean (`yearly_mean_kwh`). The code ensures that no value goes below `yearly_min_kwh` or above `yearly_max_kwh`.
+
+Please note that this is a synthetic dataset and actual building electricity consumption may vary.

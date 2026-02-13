@@ -1,0 +1,48 @@
+import pandas as pd
+from datetime import timedelta, datetime
+import random
+
+# Define building metadata and annual summary statistics
+building_id = 1135
+primary_use = "Education"
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Calculate daily average and standard deviation for each season
+daily_avg_summer = (summer_mean_kwh * 3) / 8  # Assuming 3 months in summer
+daily_std_summer = (summer_mean_kwh - daily_avg_summer) / math.sqrt(3)
+daily_avg_winter = (winter_mean_kwh * 3) / 8  # Assuming 3 months in winter
+daily_std_winter = (winter_mean_kwh - daily_avg_winter) / math.sqrt(3)
+
+# Generate electricity consumption data for 168 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=167)  # End date is one day before last measurement
+
+data = []
+for n in range(168):
+    current_date = start_date + timedelta(days=n)
+    
+    if (current_date - pd.Timestamp('2016-06-01')).days // 30 % 4 == 0:
+        avg_daily_consumption = daily_avg_summer + random.gauss(0, daily_std_summer)
+    elif (current_date - pd.Timestamp('2016-12-01')).days // 30 % 4 == 0:
+        avg_daily_consumption = daily_avg_winter + random.gauss(0, daily_std_winter)
+    else:
+        avg_daily_consumption = yearly_mean_kwh + random.gauss(0, (yearly_max_kwh - yearly_mean_kwh) / 5)
+    
+    if current_date.month in [6, 7, 8]:  
+        avg_daily_consumption = summer_mean_kwh
+    elif current_date.month in [12, 1, 2]:
+        avg_daily_consumption = winter_mean_kwh
+
+    value = round(avg_daily_consumption * 1000) / 1000  # Convert to kWh
+    
+    if value < yearly_min_kwh or value > yearly_max_kwh:
+        value = yearly_min_kwh if value < yearly_min_kwh else yearly_max_kwh
+        
+    data.append(f"{current_date.strftime('%Y-%m-%d')}, {value}")
+
+print('\n'.join(data))

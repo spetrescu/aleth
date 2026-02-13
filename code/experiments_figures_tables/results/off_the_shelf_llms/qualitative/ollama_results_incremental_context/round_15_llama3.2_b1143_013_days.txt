@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define building parameters
+building_id = 1143
+primary_use = "Office"
+square_feet = 96612
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+# Calculate time step (1 hour)
+time_step = timedelta(hours=1)
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Generate data for each month
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=365*312) # 312 days is equivalent to approximately 9.5 years
+
+for n in range(int((end_date - start_date).days)):
+    current_date = start_date + timedelta(n)
+    
+    if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8):
+        values.append(np.random.normal(summer_mean_kwh, 10))
+        
+    elif (current_date.month == 12 or current_date.month == 1 or current_date.month == 2):
+        values.append(np.random.normal(winter_mean_kwh, 10))
+
+    else:
+        values.append(yearly_mean_kwh)
+
+    dates.append(current_date.strftime('%Y-%m-%d'))
+
+# Print the dataset
+for i in range(len(dates)):
+    print(f"{dates[i]} {int(values[i])}")

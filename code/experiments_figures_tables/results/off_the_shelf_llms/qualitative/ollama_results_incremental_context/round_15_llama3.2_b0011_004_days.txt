@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize lists to hold the data
+years = []
+months = []
+hours = []
+
+# Function to generate random hour-by-hour values within a range
+def generate_hourly_data(year, month):
+    mean_kwh = 296.39252  # Yearly mean kwh
+    min_kwh = 0.0  # Minimum yearly kwh
+    max_kwh = 1052.0  # Maximum yearly kwh
+
+    if year == 2016 and (month >= 6 or month <= 8):  # Summer months
+        avg_summer_kwh = 486.43784
+    else:  # Winter months
+        avg_winter_kwh = 162.72496
+
+    hourly_mean = mean_kwh * 0.5 + np.random.normal(avg_summer_kwh - mean_kwh, 20)
+    if hourly_mean < min_kwh:
+        hourly_mean = min_kwh
+    elif hourly_mean > max_kwh:
+        hourly_mean = max_kwh
+
+    start_hour = datetime(year, month, 1).hour  # Start of the month
+    end_hour = (datetime(year, month + 1, 1) - timedelta(days=1)).hour  # Last hour of the month
+
+    for hour in range(start_hour, end_hour + 1):
+        years.append(year)
+        months.append(month + 1)  # Month is zero-indexed
+        hours.append(hour)
+
+# Generate data for each year and month
+for year in range(2016, 2017):  # Assuming data starts from 2016
+    for month in range(1, 13):
+        generate_hourly_data(year, month)
+
+# Create a DataFrame with the generated data
+df = pd.DataFrame({
+    'year': years,
+    'month': months,
+    'hour': hours
+})
+
+# Calculate the total energy consumption for each hour
+total_energy = df.groupby(['year', 'month', 'hour']).sum().reset_index()
+total_energy['value'] = total_energy.apply(lambda row: round((row['year'] * 365 + row['month']) / 12 * (row['hour'] / 24) * 296.39252), axis=1)
+
+# Add the date to each hour
+for index, row in df.iterrows():
+    ymd = f"{row['year']}-{str(row['month']).zfill(2)}-{str(row['hour')).zfill(2)}"
+    df.loc[index,'date'] = ymd
+
+# Format the output as required
+output = [f"{yimd} {h}:00,{e}" for yimd, h, e in zip(df[['year', 'month', 'hour']], df['value'])]
+
+print('\n'.join(output))

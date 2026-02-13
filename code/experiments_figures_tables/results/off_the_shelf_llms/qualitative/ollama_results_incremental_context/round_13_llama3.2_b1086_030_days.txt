@@ -1,0 +1,38 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1086
+primary_use = "Office"
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Generate time series data
+date_range = pd.date_range('2016-01-01', periods=720, freq='H')
+consumption_data = np.random.normal(yearly_mean_kwh, yearly_max_kwh - yearly_min_kwh, 720)
+
+# Ensure values are within the specified range
+consumption_data = np.clip(consumption_data, yearly_min_kwh, yearly_max_kwh)
+
+# Split data into summer and winter months
+summer_months = date_range[(date_range.month >= 6) & (date_range.month <= 8)]
+winter_months = date_range[(date_range.month >= 12) & (date_range.month <= 2)]
+
+# Adjust consumption data for summer and winter months
+sum_sum = np.sum(consumption_data[date_range.month >= 6] + consumption_data[date_range.month <= 8])
+sum_winter = np.sum(consumption_data[date_range.month >= 12] + consumption_data[date_range.month <= 2])
+
+consumption_data[sum_sum > summer_mean_kwh * len(summer_months)] = np.random.normal(summer_mean_kwh, yearly_max_kwh - yearly_min_kwh, sum(summer_months) - (sum_sum - summer_mean_kwh * len(summer_months)))
+consumption_data[winter_months] = np.random.normal(winter_mean_kwh, yearly_max_kwh - yearly_min_kwh, len(winter_months))
+
+# Format data into desired output format
+formatted_data = [f"{date.strftime('%Y-%m-%d %H:%M')}, {consumption:.2f}" for date, consumption in zip(date_range, consumption_data)]
+
+print('\n'.join(formatted_data))

@@ -1,0 +1,52 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 1069
+PRIMARY_USE = "Office"
+SQUARE_FEET = 20864
+YEARLY_MEAN_KWH = 6.4528236
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 18.1
+SUMMER_MEAN_KWH = 6.342618
+WINTER_MEAN_KWH = 6.7815933
+
+# Generate electricity consumption data
+def generate_data():
+    # Initialize a list to store the generated data
+    data = []
+
+    # Calculate the standard deviation of the yearly mean kWh
+    std_dev = (YEARLY_MAX_KWH - YEARLY_MIN_KWH) / 2
+    
+    for hour in range(3600):
+        current_date = datetime(2016, 1, 1)
+        while current_date.year == 2016:
+            if current_date.month == 12:
+                # Winter month
+                value = WINTER_MEAN_KWH + random.gauss(0, std_dev) * (random.random() < 0.5 and 1 or -1)
+                if value > YEARLY_MAX_KWH:
+                    value = YEARLY_MAX_KWH
+                elif value < YEARLY_MIN_KWH:
+                    value = YEARLY_MIN_KWH
+            else:
+                # Summer month
+                value = SUMMER_MEAN_KWH + random.gauss(0, std_dev) * (random.random() < 0.5 and 1 or -1)
+                if value > YEARLY_MAX_KWH:
+                    value = YEARLY_MAX_KWH
+                elif value < YEARLY_MIN_KWH:
+                    value = YEARLY_MIN_KWH
+
+            # Ensure the generated kWh is within the valid range of the yearly mean
+            if current_date.month in [12, 1, 2] and value > WINTER_MEAN_KWH + std_dev * (random.random() < 0.5 and 1 or -1):
+                value = WINTER_MEAN_KWH + std_dev * (random.random() < 0.5 and 1 or -1)
+            elif current_date.month in [6, 7, 8] and value > SUMMER_MEAN_KWH + std_dev * (random.random() < 0.5 and 1 or -1):
+                value = SUMMER_MEAN_KWH + std_dev * (random.random() < 0.5 and 1 or -1)
+
+            data.append(f"{current_date.strftime('%Y-%m-%d %H:%M')} {value}")
+
+            current_date += timedelta(hours=1)
+
+    return "\n".join(data)
+
+print(generate_data())

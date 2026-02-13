@@ -1,0 +1,62 @@
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Define constants
+building_id = 155
+primary_use = 'Office'
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate dates and time
+start_date = pd.to_datetime('2016-01-01')
+dates = []
+for i in range(672):
+    date = start_date + pd.DateOffset(hours=i)
+    dates.append(date)
+
+# Initialize lists to store the values
+values = []
+
+# Calculate the number of summer months (Jun-Aug) and winter months (Dec-Feb)
+num_summer_months = 3
+num_winter_months = 3
+
+# Split data into summer and winter periods
+for date in dates:
+    month = date.month
+    
+    if month < num_winter_months:
+        # Winter period, use average kWh from December to February
+        avg_kwh = winter_mean_kwh * (5 / len(dates))
+    elif month <= 8 + num_summer_months:
+        # Summer period, use average kWh from June to August
+        avg_kwh = summer_mean_kwh * (3 / len(dates))
+    else:
+        # Fall and spring periods, use the yearly mean kWh
+        avg_kwh = yearly_mean_kwh
+
+    # Randomly adjust the value within 10% of the average
+    adjustment_factor = np.random.uniform(0.9, 1.1)
+    adjusted_value = avg_kwh * adjustment_factor
+    
+    # Ensure the value stays within the specified range
+    if adjusted_value < yearly_min_kwh:
+        values.append(yearly_min_kwh)
+    elif adjusted_value > yearly_max_kwh:
+        values.append(yearly_max_kwh)
+    else:
+        values.append(adjusted_value)
+
+# Combine dates and values into a list of strings
+data = [f'{date.strftime("%Y-%m-%d %H:%M")}, {value}' for date, value in zip(dates, values)]
+
+# Output the data
+for line in data:
+    print(line)

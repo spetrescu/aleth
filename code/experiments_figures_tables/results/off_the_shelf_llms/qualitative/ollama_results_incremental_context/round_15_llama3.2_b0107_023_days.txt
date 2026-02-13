@@ -1,0 +1,78 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+total_days = 365 * 3  # Accounting for quarter and yearly variations
+
+# Initialize list to store data
+data = []
+
+# Loop over total days to generate readings
+for i in range(total_days):
+    current_day = (i+1) % 30 + 1  # Ensure we cover all three quarters
+    if current_day <= (sum([day for month, day in zip([(2,7),(5,6),(8,9)], [28,25,21])]) / 3):  # Quarter logic simplified for speed and clarity
+        if current_day <= 31:
+            month = 'Jan'
+            day_to_month_map = {1:1, 2:2, 3:3}
+        elif current_day <= 59:
+            month = 'Feb'
+        else:
+            month = 'Mar'
+    elif current_day <= (sum([day for month, day in zip([(7,28),(6,30),(9,30)], [25,31,30])]) / 3): # Quarter logic simplified for speed and clarity
+        if current_day <= 30:
+            month = 'Apr'
+        else:
+            month = 'May'
+    elif current_day <= (sum([day for month, day in zip([(5,6),(8,9),(11,12)], [31,30,30])]) / 3): # Quarter logic simplified for speed and clarity
+        if current_day <= 30:
+            month = 'Jun'
+        else:
+            month = 'Jul'
+    elif current_day <= (sum([day for month, day in zip([(10,11),(12,31)], [30,31])]) / 3): # Quarter logic simplified for speed and clarity
+        if current_day <= 31:
+            month = 'Aug'
+        else:
+            month = 'Sep'
+    elif current_day <= (sum([day for month, day in zip([(2,7),(5,6),(8,9)], [28,25,21])]) / 3): # Quarter logic simplified for speed and clarity
+        if current_day <= 31:
+            month = 'Oct'
+        else:
+            month = 'Nov'
+    else: # Last quarter of the year
+        if current_day <= 30:
+            month = 'Dec'
+        else:
+            month = 'Jan'
+
+    # Determine season
+    if (1 <= current_day <= 60) or (61 <= current_day <= 90):
+        season = 'summer'
+    elif (91 <= current_day <= 120) or (121 <= current_day <= 150) or (161 <= current_day <= 192): 
+        season = 'winter'
+    else:
+        season = 'quarter'
+
+    # Generate random number based on mean kWh for the season
+    if season == 'summer':
+        random_number = random.gauss(summer_mean_kwh, yearly_min_kwh)
+    elif season == 'winter':
+        random_number = random.gauss(winter_mean_kwh, yearly_min_kwh)
+    else:
+        random_number = random.gauss(yearly_mean_kwh, yearly_min_kwh)
+
+    # Ensure the generated number is within limits
+    if random_number < yearly_min_kwh or random_number > yearly_max_kwh:
+        random_number = random.gauss(summer_mean_kwh, yearly_min_kwh) if season == 'summer' else random.gauss(winter_mean_kwh, yearly_min_kwh)
+
+    # Generate the date string and append to data
+    date_string = f"{datetime(2016, month, current_day).strftime('%Y-%m-%d')} {datetime(2016, month, current_day).strftime('%H:%M')}, {random_number:.4f}"
+    data.append(date_string)
+
+# Output the generated data
+for line in data:
+    print(line)

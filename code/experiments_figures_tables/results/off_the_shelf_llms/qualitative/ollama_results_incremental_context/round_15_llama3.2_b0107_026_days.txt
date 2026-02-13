@@ -1,0 +1,55 @@
+import random
+from datetime import datetime, timedelta, timezone
+
+# Constants for generating synthetic data
+building_id = 107
+primary_use = "Education"
+square_feet = 97532
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Set up the time zone for datetime objects
+zone = timezone(tzname='America/New_York')
+
+def generate_data():
+    # Generate data for each hour in a year, excluding leap years to simplify date calculations
+    dates = [datetime(2016, month, 1).replace(hour=0) + timedelta(days=i*24*3600) for i in range(365)]
+
+    # Initialize lists to hold the generated data and the total kWh
+    kWh_data = []
+    total_kwh = 0
+
+    # Generate data for each hour of the year, with a slight bias towards more energy consumption during winter
+    for date in dates:
+        if (date.month == 6 or date.month == 7 or date.month == 8) and (date.day > 20):
+            value = summer_mean_kwh + random.gauss(0, 10)
+        elif (date.month == 12 or date.month == 1 or date.month == 2) and (date.day > 15):
+            value = winter_mean_kwh + random.gauss(0, 15)
+        else:
+            value = yearly_mean_kwh + random.gauss(0, 20)
+
+        # Ensure the generated value is within the valid range
+        if date.hour >= 6 or date.hour <= 18:  # daytime hours
+            value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+        else:
+            value = max(winter_min_kwh, min(summer_min_kwh, value))
+
+        # Round the generated kWh to a reasonable number of decimal places
+        rounded_value = round(value, 3)
+
+        # Append the generated data and the total kWh to the lists
+        kWh_data.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {rounded_value}")
+        total_kwh += rounded_value
+
+    return "\n".join(kwh_data)
+
+# Set the minimum and maximum possible values for winter months
+winter_min_kwh = yearly_min_kwh * 0.9
+winter_max_kwh = yearly_mean_kwh * 1.1
+
+# Set the minimum and maximum possible values for summer months
+summer_min_kwh = yearly_min_kwh
+summer_max_kwh = yearly_mean_kwh

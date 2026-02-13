@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define constants
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate dates and corresponding kWh values
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=744 - 1)
+
+dates = [start_date + timedelta(days=i) for i in range(744)]
+
+kwh_values = np.random.choice([yearly_min_kwh, yearly_max_kwh],
+                              size=744,
+                              p=[(yearly_min_kwh / yearly_mean_kwh),
+                                 (yearly_mean_kwh - yearly_min_kwh)])
+
+# Adjust kwh values for summer and winter months
+for i in range(len(dates)):
+    month = dates[i].month
+    
+    if 6 <= month <= 8:  # June, July, August
+        if np.random.choice([True, False]):
+            kwh_values[i] += (summer_mean_kwh - yearly_min_kwh) * np.random.uniform(0,1)
+        else:
+            kwh_values[i] -= (yearly_max_kwh - summer_mean_kwh) * np.random.uniform(0,1)
+            
+    elif 12 <= month <= 2:  # December, January, February
+        if np.random.choice([True, False]):
+            kwh_values[i] += (winter_mean_kwh - yearly_min_kwh) * np.random.uniform(0,1)
+        else:
+            kwh_values[i] -= (yearly_max_kwh - winter_mean_kwh) * np.random.uniform(0,1)
+
+# Format output
+output = f"{date.strftime('%Y-%m-%d %H:%M')},{kwh_value:.4f}\n"
+
+print(output.join(kwh_values))

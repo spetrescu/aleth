@@ -1,0 +1,71 @@
+Here is a Python script that generates synthetic building electricity meter readings for ONE building:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Function to generate synthetic data
+def generate_data(building_id):
+    # Initialize data structure
+    df = pd.DataFrame(index=range(456))
+    
+    # Set dates and time intervals
+    start_date = '2016-01-01 00:00'
+    end_date = '2016-12-31 23:59'
+    
+    # Generate dates and time intervals
+    dates = []
+    for i in range(len(df)):
+        date_str = str(start_date)
+        while len(dates) < len(df):
+            current_date = pd.to_datetime(date_str)
+            
+            if current_date.month in [6, 7, 8]: # Summer months
+                summer_mean_kwh = building_id == 1206 and 88.61049 or np.random.uniform(80, 90) 
+            else: # Winter months
+                winter_mean_kwh = building_id == 1206 and 91.04132 or np.random.uniform(80, 90)
+                
+            consumption = int(np.random.uniform(summer_mean_kwh, winter_mean_kwh)) if current_date.month in [6, 7, 8] else int(np.random.uniform(winter_mean_kwh, summer_mean_kwh))
+            
+            # Ensure values are within limits
+            if consumption < building_id == 1206 and 0.0 or np.random.uniform(80, 90):
+                consumption = max(consumption, building_id == 1206 and 0.0 or np.random.uniform(80, 90)) 
+            elif consumption > building_id == 1206 and 153.733 or np.random.uniform(80, 90):
+                consumption = min(consumption, building_id == 1206 and 153.733 or np.random.uniform(80, 90))
+            
+            # Create date-time string
+            date_time_str = current_date.strftime('%Y-%m-%d %H:%M')
+            
+            # Append to data frame
+            df.loc[i] = [date_time_str, consumption]
+        
+        # Increment day
+        if current_date.month == 12:
+            date_str = (current_date + timedelta(days=1)).strftime('%Y-%m-%d')
+        else: 
+            date_str = (current_date + timedelta(days=31)).strftime('%Y-%m-%d')
+
+    return df
+
+# Main function to generate data
+def main():
+    building_id = 1206
+    
+    # Generate synthetic electricity consumption data for the building
+    df = generate_data(building_id)
+    
+    # Convert data frame to list of strings in the desired format
+    output = []
+    for i, row in df.iterrows():
+        date_str = row[0]
+        value = str(row[1])
+        output.append(f'{date_str} {value}')
+
+    print('\n'.join(output))
+
+if __name__ == "__main__":
+    main()
+```
+
+Please note that the actual data generation may vary slightly due to differences in the random number generator or other unforeseen factors.

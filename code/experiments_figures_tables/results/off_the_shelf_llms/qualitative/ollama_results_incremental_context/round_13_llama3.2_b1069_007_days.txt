@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Generate time series data
+start_date = pd.Timestamp('2016-01-01')
+end_date = start_date + timedelta(days=168)
+time_series = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate values based on the summary statistics
+yearly_mean_kwh = 6.4528236
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+values = []
+for date in time_series:
+    if pd.Timestamp('2016-06-01') <= date <= pd.Timestamp('2016-08-31'):
+        value = np.random.normal(summer_mean_kwh, yearly_mean_kwh/10)
+    elif pd.Timestamp('2016-12-01') <= date <= pd.Timestamp('2017-02-28'):
+        value = np.random.normal(winter_mean_kwh, yearly_mean_kwh/10)
+    else:
+        value = np.random.normal(yearly_mean_kwh, yearly_mean_kwh/10)
+    values.append(value)
+
+# Create a DataFrame with the generated data
+df = pd.DataFrame({
+    'DATE': time_series,
+    'VALUE': values
+})
+
+# Round the values to 4 decimal places for consistency with summary statistics
+df['VALUE'] = df['VALUE'].round(4)
+
+# Convert the date column to string format
+df['DATE'] = df['DATE'].dt.strftime('%Y-%m-%d %H:%M')
+
+print(df)

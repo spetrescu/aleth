@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define the parameters
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Initialize the list of dates and values
+dates = []
+values = []
+
+# Loop through each hour from January 1, 2016 to December 31, 2016
+for i in range(144):
+    date = datetime(2016, 1, 1) + timedelta(hours=i)
+    hours_str = str(date.hour).zfill(2) + ':' + str(date.minute).zfill(2)
+
+    # Randomly generate a value between yearly_min_kwh and yearly_max_kwh
+    # that is close to the corresponding average mean for summer or winter months
+    if (date.month >= 6 and date.month <= 8):
+        value = np.random.uniform(summer_mean_kwh, summer_mean_kwh * 1.2)
+    else:
+        value = np.random.uniform(winter_mean_kwh, winter_mean_kwh * 1.2)
+
+    # Ensure the generated value is within the yearly_min_kwh and yearly_max_kwh bounds
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    if np.isnan(value):
+        value = 0
+
+    dates.append(date.strftime('%Y-%m-%d %H:%M'))
+    values.append(str(value))
+
+# Print the dataset
+for i in range(144):
+    print(dates[i] + ", " + str(values[i]))

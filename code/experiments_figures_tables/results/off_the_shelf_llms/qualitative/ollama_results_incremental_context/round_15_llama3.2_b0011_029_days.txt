@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define start and end dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=696 * 24 * 60) # Add days to get total number of hours required.
+
+# Create a date range for our hourly measurements.
+hourly_range = pd.date_range(start=start_date, periods=696, freq='H')
+
+# Generate random values for each hour based on seasonal averages and yearly mean
+# We use a uniform distribution between min and max values (yearly_min_kwh to yearly_max_kwh) with probability .5,
+# and a normal distribution around the average value.
+values = np.zeros(696)
+
+for i in range(len(hourly_range)):
+    month = hourly_range[i].month
+    
+    if month < 6: # winter months
+        values[i] = round(np.random.uniform(yearly_min_kwh, yearly_max_kwh) + (np.random.normal(summer_mean_kwh - yearly_min_kwh, yearly_max_kwh - summer_mean_kwh)/10),2)
+        
+    elif month <= 8: # summer months
+        values[i] = round(np.random.uniform(yearly_min_kwh, yearly_max_kwh) + (np.random.normal(winter_mean_kwh - yearly_min_kwh, yearly_max_kwh - winter_mean_kwh)/10),2)
+        
+    else: # other months
+        if np.random.rand() < .5:
+            values[i] = round(np.random.uniform(yearly_min_kwh, yearly_max_kwh) + (np.random.normal(summer_mean_kwh - yearly_min_kwh, yearly_max_kwh - summer_mean_kwh)/10),2)
+        else:
+            values[i] = round(np.random.uniform(yearly_min_kwh, yearly_max_kwh) + (np.random.normal(winter_mean_kwh - yearly_min_kwh, yearly_max_kwh - winter_mean_kwh)/10),2)
+
+# Combine hourly range with generated values
+data = pd.DataFrame({'Date': hourly_range, 'Value': values})
+
+# Create expected output string format
+for index, row in data.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d %H:%M')}, {row['Value']}")

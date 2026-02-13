@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Define the building metadata and annual summary statistics
+building_id = 272
+primary_use = 'Education'
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Generate the date range for 2880 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=2880*2 - 1) # Last measurement on the last day of 2017 to be exact at end 
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize an empty DataFrame
+df = pd.DataFrame(index=date_range)
+
+# Generate random values based on the building metadata and annual summary statistics
+for i in range(len(date_range)):
+    if (datetime(2016, 3, 20).month < 6) | (datetime(2016, 12, 21).month > 2):
+        df.loc[i, 'VALUE'] = np.random.uniform(winter_mean_kwh * 0.8, winter_mean_kwh * 1.2)
+    else:
+        df.loc[i, 'VALUE'] = np.random.uniform(summer_mean_kwh * 0.8, summer_mean_kwh * 1.2)
+
+# Ensure values are within the valid range
+df['VALUE'] = np.clip(df['VALUE'], yearly_min_kwh, yearly_max_kwh)
+
+# Convert to datetime format and reorder date_range for correct HH:MM output
+date_format = '%Y-%m-%d %H:%M'
+df.index = pd.to_datetime(df.index)
+df['VALUE'] = df['VALUE'].apply(lambda x: f"{x:.2f}") # Round values to 2 decimal places
+
+# Generate the full dataset in the required format
+dataset = '\n'.join([f"{date.strftime(date_format)} {value}" for date, value in zip(df.index, df['VALUE'])])
+
+print(dataset)

@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+
+# Define the parameters
+building_id = 1143
+primary_use = 'Office'
+square_feet = 96612
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+# Create a date range from 2016-01-01 to 2017-12-31 with 1-hour intervals
+start_date = '2016-01-01 00:00:00'
+end_date = '2017-12-31 23:59:59'
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Create a DataFrame to store the electricity consumption data
+df = pd.DataFrame({'Date': date_range}, columns=['Date'])
+
+# Define a function to generate random values for electricity consumption
+def generate_electricity_consumption(date):
+    # Determine if it's summer or winter based on the month
+    if (date.month >= 6 and date.month <= 8) or \
+       (date.month >= 12 and date.month <= 2):
+        return np.random.normal(summer_mean_kwh, yearly_mean_kwh / 10)
+    else:
+        return np.random.normal(winter_mean_kwh, yearly_mean_kwh / 10)
+
+# Generate electricity consumption data
+df['VALUE'] = df['Date'].apply(generate_electricity_consumption)
+
+# Ensure values are within the valid range
+df['VALUE'] = df['VALUE'].clip(lower=yearly_min_kwh, upper=yearly_max_kwh)
+
+# Print the output
+for index, row in df.iterrows():
+    print(f"{row['Date']} {row['VALUE']:.2f}")

@@ -1,0 +1,50 @@
+Here is a Python solution that uses NumPy for efficient random number generation and ensures that the generated values meet the specified constraints:
+
+```python
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define building metadata and annual summary statistics (2016)
+building_id = 1206
+primary_use = "Office"
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate electricity consumption data (kWh) at 1-hour intervals, starting on 01 January 2016
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365 * 24 * 1)
+dates = [start_date + timedelta(hours=i) for i in range(int((end_date - start_date).total_seconds() / 3600))]
+
+# Generate values that meet the specified constraints
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(dates))
+
+# Adjust values to be near yearly_mean_kwh and adjust summer/winter means
+for i in range(len(values)):
+    if start_date + timedelta(hours=i) >= datetime(2016, 6, 1) and start_date + timedelta(hours=i) <= datetime(2016, 8, 31):
+        # Summer months: average around summer_mean_kwh
+        values[i] = np.clip(np.random.normal(summer_mean_kwh, 10), yearly_min_kwh, yearly_max_kwh)
+    elif start_date + timedelta(hours=i) >= datetime(2016, 12, 1) and start_date + timedelta(hours=i) <= datetime(2016, 2, 28):
+        # Winter months: average around winter_mean_kwh
+        values[i] = np.clip(np.random.normal(winter_mean_kwh, 10), yearly_min_kwh, yearly_max_kwh)
+    else:
+        # Non-summer and non-winter periods: near yearly_mean_kwh
+        values[i] = np.clip(np.random.normal(yearly_mean_kwh, 5), yearly_min_kwh, yearly_max_kwh)
+
+# Format the output as "YYYY-MM-DD HH:MM,VALUE"
+output = []
+for date, value in zip(dates, values):
+    formatted_date = date.strftime("%Y-%m-%d %H:%M")
+    output.append(f"{formatted_date},{value:.2f}")
+
+print("\n".join(output))
+```
+
+This solution first generates a list of dates from January 1, 2016, to December 31, 2016. It then generates random values for each hour using NumPy's `uniform` function and adjusts these values to meet the specified constraints.
+
+The output is formatted as a series of lines with the date in "YYYY-MM-DD HH:MM" format followed by the value. The output is printed directly.
+
+Note that the solution uses `np.random.normal` to generate random numbers with a mean and standard deviation. The `np.clip` function is used to ensure that the generated values meet the specified constraints.

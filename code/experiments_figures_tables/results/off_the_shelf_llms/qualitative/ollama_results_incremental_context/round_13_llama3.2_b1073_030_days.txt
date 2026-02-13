@@ -1,0 +1,35 @@
+import random
+from datetime import timedelta, datetime
+
+# Constants
+BUILDING_ID = 1073
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 194111
+YEARLY_MEAN_KWH = 179.21414
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 853.0
+SUMMER_MEAN_KWH = 118.158516
+WINTER_MEAN_KWH = 230.26053
+
+# Convert yearly statistics to hourly mean
+def calculate_hourly_mean(kwh, period):
+    # Summer months (Jun-Aug)
+    if period in ['June', 'July', 'August']:
+        return SUMMER_MEAN_KWH
+    
+    # Winter months (Dec-Feb)
+    elif period in ['December', 'January', 'February']:
+        return WINTER_MEAN_KWH
+
+# Generate random hourly consumption
+def generate_consumption(hour, mean):
+    return round(random.uniform(mean - 0.5 * abs(mean-YEARLY_MIN_KWH), mean + 0.5 * abs(mean-YEARLY_MAX_KWH)),2)
+
+hours = []
+for i in range(720):  
+    date = datetime.strptime('01-01-' + str(i+2016) ,'%d-%m-%Y')
+    hours.append((date.strftime('%Y-%m-%d %H:%M'), generate_consumption(date.hour, calculate_hourly_mean(YEARLY_MEAN_KWH, date.strftime('%B')))))
+
+# Convert to desired output format
+output = '\n'.join([str(line[0])+' '+str(line[1]) for line in hours])
+print(output)

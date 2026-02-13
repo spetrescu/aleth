@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Define the building metadata and annual summary statistics
+building_id = 1073
+primary_use = 'Office'
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Generate the date range for 72 measurements, starting on 01 January 2016
+start_date = datetime(2016, 1, 1)
+date_range = pd.date_range(start=start_date, periods=72)
+
+# Initialize an empty list to store the electricity consumption data
+electricity_data = []
+
+for date in date_range:
+    # Determine if it's a summer or winter month
+    if (date.month == 6 or date.month == 7 or date.month == 8) and \
+       (date.day >= 1 and date.day <= 31):
+        # Summer months should average around summer_mean_kwh
+        consumption = np.random.uniform(summer_mean_kwh - 10, summer_mean_kwh + 10)
+    elif (date.month in [12, 1, 2] and date.day >= 1 and date.day <= 28) or \
+         (date.month == 3 and date.day >= 1 and date.day <= 31):
+        # Winter months should average around winter_mean_kwh
+        consumption = np.random.uniform(winter_mean_kwh - 10, winter_mean_kwh + 10)
+    else:
+        # Other months should be near yearly_mean_kwh
+        consumption = np.random.uniform(yearly_mean_kwh - 10, yearly_mean_kwh + 10)
+
+    # Ensure the value is within the valid range
+    consumption = max(yearly_min_kwh, min(consumption, yearly_max_kwh))
+
+    electricity_data.append((date.strftime('%Y-%m-%d %H:%M'), consumption))
+
+# Print the electricity consumption data
+for date, consumption in electricity_data:
+    print(f"{date}, {consumption}")

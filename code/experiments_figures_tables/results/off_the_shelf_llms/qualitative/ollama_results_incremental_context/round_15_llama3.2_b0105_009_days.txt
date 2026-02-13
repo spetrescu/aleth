@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(1234)
+
+# Create a date range from 01 January 2016 to 31 December 2020
+start_date = datetime(2016, 1, 1)
+end_date = pd.date_range(start=start_date, end=pd.date_fromtimestamp(1609459200), freq='H')
+
+# Shuffle the dates for randomness
+dates = np.array(list(end_date))
+np.random.shuffle(dates)
+
+# Initialize an empty list to store the data
+data = []
+
+for i in range(len(dates)):
+    date = dates[i]
+    value = 78.12403  # Default value
+
+    if date.month in [6, 7, 8]:  # Summer months
+        value += np.random.normal(0, 5)
+    elif date.month in [12, 1, 2]:  # Winter months
+        value -= np.random.normal(0, 5)
+
+    # Ensure the value is within the valid range
+    if value < 23.3036:
+        value = 23.3036
+    elif value > 173.945:
+        value = 173.945
+
+    data.append(f'{date.strftime("%Y-%m-%d %H:%M")},{value:.6f}')
+
+# Convert the list to a string with newline separators for readability
+data_str = '\n'.join(data)
+
+print(data_str)

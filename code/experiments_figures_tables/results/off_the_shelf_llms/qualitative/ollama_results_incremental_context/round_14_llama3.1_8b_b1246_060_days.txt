@@ -1,0 +1,44 @@
+To generate synthetic building electricity meter readings, I will use a Python script to simulate the data at 1-hour intervals for exactly 1440 measurements. The values will be realistic and consistent with the provided summary statistics.
+
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants based on metadata
+BUILDING_ID = 1246
+PRIMARY_USE = "Office"
+SQUARE_FEET = 50327
+YEARLY_MEAN_KWH = 46.317394
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 82.0
+SUMMER_MEAN_KWH = 42.024456
+WINTER_MEAN_KWH = 46.382324
+
+# Set the start date and end date for the simulation
+START_DATE = datetime(2016, 1, 1)
+END_DATE = START_DATE + timedelta(days=365)
+
+# Generate dates between the start and end dates at 1-hour intervals
+dates = pd.date_range(START_DATE, END_DATE, freq='H')
+
+# Define a function to generate values based on date
+def generate_value(date):
+    # Determine whether it's summer or winter month
+    if (6 <= date.month <= 8):
+        return np.random.uniform(SUMMER_MEAN_KWH - 1.5, SUMMER_MEAN_KWH + 1.5)
+    elif (12 <= date.month <= 2):
+        return np.random.uniform(WINTER_MEAN_KWH - 1.0, WINTER_MEAN_KWH + 1.0)
+    else:
+        # For months other than summer and winter, use yearly mean
+        return np.random.uniform(YEARLY_MEAN_KWH - 5.0, YEARLY_MEAN_KWH + 5.0)
+
+# Generate synthetic data at 1-hour intervals for exactly 1440 measurements
+synthetic_data = [(date.strftime('%Y-%m-%d %H:%M'), round(generate_value(date), 2))
+                  for date in dates]
+
+# Output the full dataset now with desired format and columns
+for date, value in synthetic_data:
+    print(f"{date},{value}")
+```

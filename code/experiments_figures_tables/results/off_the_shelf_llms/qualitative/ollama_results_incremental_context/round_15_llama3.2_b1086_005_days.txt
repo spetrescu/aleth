@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define constants
+BUILDING_ID = 1086
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER_MEAN_KWH = 393.1739
+WINTER_MEAN_KWH = 218.81273
+
+# Generate dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=120)
+
+# Initialize lists to hold data
+dates = []
+values = []
+
+# Loop through each day
+while start_date <= end_date:
+    # Determine season and kwh based on date
+    if (start_date.month >= 6) and (start_date.month <= 8):
+        avg_kwh = SUMMER_MEAN_KWH 
+    elif (start_date.month >= 12) and (start_date.month <= 2):
+        avg_kwh = WINTER_MEAN_KWH 
+    else:
+        avg_kwh = YEARLY_MEAN_KWH
+    
+    # Append values at each hour
+    for i in range(24):
+        kwh = avg_kwh + np.random.uniform(-0.1, 0.1) * (YEARLY_MEAN_KWH - SUMMER_MEAN_KWH)
+        
+        if kwh < YEARLY_MIN_KWH:
+            kwh = YEARLY_MIN_KWH
+        elif kwh > YEARLY_MAX_KWH:
+            kwh = YEARLY_MAX_KWH
+        
+        dates.append(str(start_date))
+        values.append(f"{kwh:.10f}")
+    
+    # Move to the next day
+    start_date += timedelta(hours=1)
+
+# Print output
+for date, value in zip(dates, values):
+    print(f"{date} {value}")

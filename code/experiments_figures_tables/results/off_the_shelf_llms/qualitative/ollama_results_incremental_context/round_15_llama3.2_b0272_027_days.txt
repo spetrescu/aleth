@@ -1,0 +1,51 @@
+import random
+import pandas as pd
+from datetime import datetime, timedelta
+
+def generate_electricity_data():
+    building_id = 272
+    yearly_mean_kwh = 17.38018
+    yearly_min_kwh = 0.8
+    yearly_max_kwh = 74.32
+    summer_mean_kwh = 25.539513
+    winter_mean_kwh = 11.742976
+
+    # Generate dates and times
+    start_date = pd.to_datetime('2016-01-01')
+    end_date = start_date + timedelta(days=647)
+
+    data = {
+        'YYYY-MM-DD HH:MM,VALUE': []
+    }
+
+    for i in range(int ((end_date - start_date).days)):
+        date = start_date + timedelta(days=i)
+        hour = date.time().hour
+        minute = date.time().minute
+
+        if (date.month >= 6) and (date.month <= 8):
+            mean_kwh = summer_mean_kwh
+        elif (date.month >= 12) and (date.month <= 2):
+            mean_kwh = winter_mean_kwh
+        else:
+            mean_kwh = yearly_mean_kwh
+
+        # Generate a random value around the mean
+        if i == 0: 
+            value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+        elif date.month >= 6 and date.month <= 8:
+            value = round(mean_kwh + random.uniform(-1, 2), 3)
+        else:
+            value = round(mean_kwh - random.uniform(0.5, 2), 3)
+
+        # Ensure the value is within the valid range
+        if value < yearly_min_kwh:
+            value = yearly_min_kwh
+        elif value > yearly_max_kwh:
+            value = yearly_max_kwh
+
+        data['YYYY-MM-DD HH:MM,VALUE'].append(f'{date.strftime("%Y-%m-%d")} {date.time().strftime("%H:%M")},{value}')
+
+    return '\n'.join(data['YYYY-MM-DD HH:MM,VALUE'])
+
+print(generate_electricity_data())

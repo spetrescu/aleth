@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Define building metadata and annual summary statistics
+building_id = 272
+primary_use = 'Education'
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Generate a date range from January 1, 2016 to February 12, 2017 (192 measurements)
+date_range = pd.date_range(start='2016-01-01', periods=192, freq='H')
+
+# Initialize an empty list to store the generated data
+data = []
+
+# Loop through each measurement in the date range
+for idx, dt in enumerate(date_range):
+    # Calculate the day of year (DOY) for January and February months
+    if dt.month == 1 or dt.month == 2:
+        doy = dt.dayofyear
+    
+    # Randomly select whether it's a summer month or not
+    if doy >= 181 and doy <= 213:  # June to August in the Northern Hemisphere
+        kwh = np.random.uniform(summer_mean_kwh * 0.8, summer_mean_kwh * 1.2)
+    else:
+        kwh = np.random.uniform(winter_mean_kwh * 0.8, winter_mean_kwh * 1.2)
+
+    # Ensure the generated value is within the allowed range
+    if kwh < yearly_min_kwh or kwh > yearly_max_kwh:
+        kwh = np.interp(kwh, [yearly_min_kwh, yearly_max_kwh], [yearly_min_kwh, yearly_max_kwh])
+
+    # Append the generated data to the list
+    data.append(f"{dt.strftime('%Y-%m-%d %H:%M')},{kwh:.4f}")
+
+# Join all values in the list into a single string with newline separation
+output = "\n".join(data)
+
+print(output)

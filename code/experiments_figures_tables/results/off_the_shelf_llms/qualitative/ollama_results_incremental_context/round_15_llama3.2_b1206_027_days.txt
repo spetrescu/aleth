@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Constants
+building_id = 1206
+primary_use = 'Office'
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate dates for measurements
+start_date = pd.to_datetime('2016-01-01')
+dates = [start_date + timedelta(hours=i) for i in range(648)]
+
+# Create a DataFrame with the same structure as the output
+df = pd.DataFrame({'DATE': dates, 'VALUE': np.random.normal(yearly_mean_kwh, 1, size=648)})
+
+# Apply constraints
+df['VALUE'] = df.apply(lambda row: max(row['VALUE'], yearly_min_kwh), axis=1)
+df['VALUE'] = df.apply(lambda row: min(row['VALUE'], yearly_max_kwh), axis=1)
+
+# Adjust summer and winter months
+summer_dates = [(6+int(x)) % 12 for x in range(183)]  # Jun-Aug, months 0-7
+winter_dates = [12, 11, 10, 9]  # Dec-Feb, months 10-13
+
+summer_values = np.random.normal(summer_mean_kwh, 1, size=183)
+winter_values = np.random.normal(winter_mean_kwh, 1, size=4)
+
+df.loc[df['DATE'].dt.month.isin(summer_dates), 'VALUE'] = summer_values
+df.loc[df['DATE'].dt.month.isin(winter_dates), 'VALUE'] = winter_values
+
+# Format as required
+output = '\n'.join(f'{date.strftime("%Y-%m-%d %H:%M")}, {value:.6f}' for date, value in df.iterrows())
+
+print(output)

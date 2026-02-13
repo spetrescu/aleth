@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Constants from problem statement
+BUILDING_ID = 113
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 100481
+YEARLY_MEAN_KWH = 363.97446
+YEARLY_MIN_KWH = 159.643
+YEARLY_MAX_KWH = 679.25
+SUMMER_MEAN_KWH = 365.49576
+WINTER_MEAN_KWH = 361.4717
+
+# Generate dates and values for the first 576 hours of data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=576)
+
+dates = [start_date + timedelta(hours=i) for i in range(577)]
+values = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH, size=len(dates))
+
+# Adjust values based on time of year and daily averages
+for date in dates:
+    month = date.month
+    if month in [6, 7, 8]:  # Summer months (Jun-Aug)
+        values[date] = np.random.uniform(SUMMER_MEAN_KWH - 0.1, SUMMER_MEAN_KWH + 0.1)
+    elif month in [12, 1, 2]:  # Winter months (Dec-Feb)
+        values[date] = np.random.uniform(WINTER_MEAN_KWH - 0.1, WINTER_MEAN_KWH + 0.1)
+
+# Print the dataset
+for date, value in zip(dates, values):
+    print(f"{date.strftime('%Y-%m-%d %H:%M')} {value:.6f}")

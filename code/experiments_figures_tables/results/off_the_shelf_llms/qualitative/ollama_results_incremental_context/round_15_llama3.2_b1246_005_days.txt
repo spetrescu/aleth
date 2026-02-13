@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set the seed for reproducibility
+np.random.seed(123)
+
+# Build metadata
+building_id = 1246
+primary_use = "Office"
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate dates and values
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=120)
+
+values = []
+for i in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(days=i)
+    if (date.month >= 3 and date.month <= 5) or (date.month >= 10 and date.month <= 12):
+        mean_kwh = summer_mean_kwh
+    elif date.month >= 6 and date.month <= 8:
+        mean_kwh = np.random.uniform(summer_mean_kwh*0.8, summer_mean_kwh*1.2)
+    else:
+        mean_kwh = winter_mean_kwh + np.random.uniform(-winter_mean_kwh*0.05, winter_mean_kwh*0.05)
+    
+    value = round(mean_kwh + np.random.normal(0, 5), 3) # Randomly add some variation
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+    
+    values.append(f"{date.strftime('%Y-%m-%d')} {value}")
+
+# Print the data
+for value in values:
+    print(value)

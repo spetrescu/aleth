@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define constants
+BUILDING_ID = 107
+PRIMARY_USE = "Education"
+SQUARE_FEET = 97532
+YEARLY_MEAN_KWH = 234.75676
+YEARLY_MIN_KWH = 0.0405
+YEARLY_MAX_KWH = 591.0
+SUMMER_MEAN_KWH = 212.6387
+WINTER_MEAN_KWH = 265.17035
+
+# Generate time series data
+start_date = pd.to_datetime('01 January 2016')
+end_date = start_date + timedelta(days=365 * 264)
+time_series = []
+for i in range(1, int((end_date - start_date).days)):
+    date = start_date + timedelta(days=i)
+    hour = (date - start_date).seconds // 3600
+    time_series.append({
+        'Date': str(date),
+        'Value': np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH, size=1)[0]
+    })
+
+# Adjust summer and winter months
+summer_start = pd.to_datetime('01 June 2016')
+winter_start = pd.to_datetime('01 December 2016')
+
+for i in range(int((end_date - summer_start).days)):
+    date = summer_start + timedelta(days=i)
+    if (date.year == end_date.year) & ((date.month >= 6) & (date.month <= 8)):
+        time_series[-1]['Value'] += np.random.uniform(0, SUMMER_MEAN_KWH - time_series[-1]['Value'])
+    elif (date.year == end_date.year) & ((date.month >= 12) & (date.month <= 2)):
+        time_series[-1]['Value'] += np.random.uniform(0, WINTER_MEAN_KWH - time_series[-1]['Value'])
+
+# Ensure values stay within range
+for value in time_series['Value']:
+    if value < YEARLY_MIN_KWH:
+        time_series['Value'][time_series['Date'].index(time_series['Value']==value)] = YEARLY_MIN_KWH
+    elif value > YEARLY_MAX_KWH:
+        time_series['Value'][time_series['Date'].index(time_series['Value']==value)] = YEARLY_MAX_KWH
+
+# Print the dataset
+for row in time_series['Value']:
+    print(f"{time_series['Date'][time_series['Value'].index(row)]:,}{row}")

@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Parameters
+buildings = [1206]
+building_id = buildings[0]
+primary_use = 'Office'
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate dates and electricity consumption values
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=2880*365)  # 2880 days (approximately 8 years)
+
+values = []
+for i in range(2880):
+    date = start_date + timedelta(days=i)
+    
+    # Randomly select between summer and winter months
+    if date.month in [6, 7, 8]:  # June, July, August
+        kWh_value = np.random.normal(summer_mean_kwh, yearly_max_kwh / 10)  # Adjust for variance
+        if kWh_value < yearly_min_kwh:
+            kWh_value = yearly_min_kwh
+        elif kWh_value > yearly_max_kwh:
+            kWh_value = yearly_max_kwh
+    else:  # December, January, February
+        kWh_value = np.random.normal(winter_mean_kwh, yearly_max_kwh / 10)  # Adjust for variance
+        if kWh_value < yearly_min_kwh:
+            kWh_value = yearly_min_kwh
+        elif kWh_value > yearly_max_kwh:
+            kWh_value = yearly_max_kwh
+            
+    values.append(kWh_value)
+
+# Create output lines
+output = ''
+for i in range(len(values)):
+    date_string = (start_date + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')
+    value_str = f'{date_string},{values[i]:.8f}'
+    output += value_str + '\n'
+
+print(output)

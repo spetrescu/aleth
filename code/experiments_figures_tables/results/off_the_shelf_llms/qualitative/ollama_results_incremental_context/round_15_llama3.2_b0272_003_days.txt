@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+
+# Constants
+BUILDING_ID = 272
+PRIMARY_USE = "Education"
+SQUARE_FEET = 4583
+YEARLY_MEAN_KWH = 17.38018
+YEARLY_MIN_KWH = 0.8
+YEARLY_MAX_KWH = 74.32
+SUMMER_MEAN_KWH = 25.539513
+WINTER_MEAN_KWH = 11.742976
+
+# Generate time series data with 72 measurements at 1-hour intervals from Jan 1, 2016 to Dec 31, 2016
+time_start = pd.to_datetime('2016-01-01')
+time_end = pd.to_datetime('2016-12-31')
+
+date_range = pd.date_range(start=time_start, end=time_end)
+hourly_usage = np.random.normal(loc=YEARLY_MEAN_KWH, scale=0.1 * YEARLY_MEAN_KWH, size=len(date_range))
+
+# Add winter and summer adjustments to usage
+for i in range(len(date_range)):
+    if (date_range[i].month == 6 or date_range[i].month == 7 or date_range[i].month == 8) and \
+       not pd.isnull(hourly_usage[i]):
+        hourly_usage[i] = WINTER_MEAN_KWH + np.random.normal(loc=0, scale=0.05 * WINTER_MEAN_KWH, size=1)[0]
+    elif (date_range[i].month in [12, 1, 2]) and not pd.isnull(hourly_usage[i]):
+        hourly_usage[i] = SUMMER_MEAN_KWH + np.random.normal(loc=0, scale=0.05 * SUMMER_MEAN_KWH, size=1)[0]
+
+# Create a dataframe with time and usage values
+df = pd.DataFrame({'TIME': date_range, 'VALUE': hourly_usage})
+
+# Format the output to match the desired format
+formatted_output = df.apply(lambda row: f"{row.TIME.strftime('%Y-%m-%d')} {row.VALUE:.2f}", axis=1)
+
+print(formatted_output)

@@ -1,0 +1,71 @@
+Here is a Python code snippet that generates synthetic building electricity meter readings:
+
+```python
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Constants for generating data
+BUILDING_ID = 140
+PRIMARY_USE = "Office"
+SQUARE_FEET = 50020
+YEARLY_MEAN_KWH = 31.697405
+YEARLY_MIN_KWH = 8.0204
+YEARLY_MAX_KWH = 61.0
+SUMMER_MEAN_KWH = 32.27265
+WINTER_MEAN_KWH = 30.24863
+
+# Number of measurements to generate
+NUM_MEASUREMENTS = 264
+
+# Start date and time for generating data
+start_date = pd.to_datetime("2016-01-01 00:00")
+end_date = start_date + timedelta(days=NUM_MEASUREMENTS)
+
+# Generate date and time ranges
+times = [start_date + timedelta(hours=i) for i in range((end_date - start_date).days * 24)]
+
+# Function to generate synthetic data
+def generate_data(num_measurements):
+    # Calculate the average consumption per hour based on yearly mean kwh
+    avg_hourly_consumption = YEARLY_MEAN_KWH / 8760  # divide by number of hours in a year
+    
+    # Initialize lists to store time and value
+    times_list = []
+    values_list = []
+
+    # Generate data for each measurement
+    for i in range(num_measurements):
+        date_time = times[i]
+        
+        # Randomly decide if it's summer or winter month
+        if (date_time.month >= 6) and (date_time.month <= 8):  
+            avg_consumption = SUMMER_MEAN_KWH / 96 
+        elif (date_time.month >= 12) and (date_time.month <= 2):
+            avg_consumption = WINTER_MEAN_KWH / 96
+        else:
+            avg_consumption = YEARLY_MEAN_KWH / 8760
+            
+        # Generate random value within the range of average hourly consumption
+        value = round(avg_consumption + (avg_consumption * ((i % 24) / 23)), 6)
+        
+        if value < YEARLY_MIN_KWH:
+            value = YEARLY_MIN_KWH
+        elif value > YEARLY_MAX_KWH:
+            value = YEARLY_MAX_KWH
+            
+        # Append time and value to the lists
+        times_list.append(date_time.strftime("%Y-%m-%d %H:%M"))
+        values_list.append(value)
+
+    # Return list of (time, value) pairs
+    return list(zip(times_list, values_list))
+
+# Generate data
+data = generate_data(NUM_MEASUREMENTS)
+
+# Print the output
+for time, value in data:
+    print(f"{time}, {value}")
+```
+
+Let me know if you need anything else!

@@ -1,0 +1,56 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants for the building's electricity usage data
+building_id = 105
+primary_use = "Education"
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Generate electricity consumption data for a year
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365)
+
+def generate_hourly_data(start_date, end_date):
+    hourly_data = []
+    current_date = start_date
+    while current_date < end_date:
+        # Randomly select a value between the minimum and maximum values for each month
+        if current_date.month in [6, 7, 8]:  # Summer months
+            avg_kwh = summer_mean_kwh
+        elif current_date.month in [12, 1, 2]:  # Winter months
+            avg_kwh = winter_mean_kwh
+        else:  # Spring and fall months
+            if random.random() < 0.5:
+                avg_kwh = yearly_min_kwh
+            else:
+                avg_kwh = yearly_max_kwh
+        
+        value = round(random.gauss(avg_kwh, (avg_kwh - yearly_mean_kwh) * 0.05), 3)
+        
+        # Ensure the generated value is within the allowed range
+        if value < yearly_min_kwh:
+            value = yearly_min_kwh
+        elif value > yearly_max_kwh:
+            value = yearly_max_kwh
+        
+        # Add the data to the list and move to the next hour
+        hourly_data.append((current_date.strftime('%Y-%m-%d %H:%M'), value))
+        
+        current_date += timedelta(hours=1)
+    
+    return hourly_data
+
+# Generate 504 hours of random electricity consumption data
+data = generate_hourly_data(start_date, end_date)
+while len(data) < 504:
+    new_data = generate_hourly_data(current_date, end_date)
+    data.extend(new_data)
+
+# Print the generated data
+for item in data[:504]:
+    print(f"{item[0]}, {item[1]}")

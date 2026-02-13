@@ -1,0 +1,38 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Constants
+BULDING_ID = 1246
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 50327
+YEARLY_MEAN_KWH = 46.317394
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 82.0
+SUMMER_MEAN_KWH = 42.024456
+WINTER_MEAN_KWH = 46.382324
+DATE_START = datetime(2016, 1, 1)
+
+# Generate a list of dates with hourly intervals for 600 measurements
+dates = []
+for i in range(600):
+    date = DATE_START + timedelta(hours=i)
+    while not (date.month in [6, 7, 8] and date.month >= 1): #summer or winter check 
+        if date.month == 12: #end of year
+            break
+        elif date.month < 12:
+            dates.append(date.strftime('%Y-%m-%d %H:%M'))
+            date += timedelta(hours=1)
+    else:
+        dates.append(date.strftime('%Y-%m-%d %H:%M'))
+
+# Create a DataFrame with the generated dates and random kWh values
+df = pd.DataFrame({
+    'DATE': dates,
+    'VALUE': np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH, 600)
+})
+
+print(df.to_string(index=False))

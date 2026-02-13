@@ -1,0 +1,44 @@
+import random
+import datetime
+
+# Set constants for summary statistics
+BUILDING_ID = 1135
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 150393
+YEARLY_MEAN_KWH = 263.43817
+YEARLY_MIN_KWH = 125.06
+YEARLY_MAX_KWH = 479.897
+SUMMER_MEAN_KWH = 263.8639
+WINTER_MEAN_KWH = 250.41924
+
+# Set constants for date ranges and intervals
+START_DATE = datetime.datetime(2016, 1, 1)
+END_DATE = START_DATE + datetime.timedelta(days=720)
+
+dates = []
+values = []
+
+for i in range(int ((END_DATE - START_DATE).days)):
+    date = START_DATE + datetime.timedelta(days=i)
+    month = date.strftime('%Y-%m')
+
+    # Randomly decide between summer and winter averages based on month
+    if (month[5:7] == "06" or month[5:7] == "07" or month[5:7] == "08"):
+        avg_kwh = SUMMER_MEAN_KWH
+    else:
+        avg_kwh = WINTER_MEAN_KWH
+
+    # Randomly adjust from average to stay within range of summary stats
+    kwh = round(avg_kwh + (random.uniform(-0.2 * avg_kwh, 0.2 * avg_kwh)), 3)
+    
+    if kwh < YEARLY_MIN_KWH:
+        kwh = YEARLY_MIN_KWH
+    elif kwh > YEARLY_MAX_KWH:
+        kwh = YEARLY_MAX_KWH
+
+    dates.append(date.strftime('%Y-%m-%d %H:%M'))
+    values.append(kwh)
+
+# Generate output lines
+for i in range(len(dates)):
+    print(f"{dates[i]},{values[i]}")

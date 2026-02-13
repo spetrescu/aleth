@@ -1,0 +1,62 @@
+Here is a Python script that generates synthetic building electricity meter readings:
+
+```python
+import random
+from datetime import datetime, timedelta, date
+
+def generate_electricity_data(building_id, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh):
+    # Define the start and end dates for generating data
+    start_date = '2016-01-01'
+    end_date = '2016-12-31'
+
+    # Initialize lists to store the data
+    year_data = []
+    month_data = []
+
+    # Generate data for each hour in a year
+    today = date.today()
+    for n in range(int((today - date(2016, 1, 1)).days)):
+        dt = start_date + str(n)
+        timestamp = int(dt.replace('-', '/').replace(':', ''))
+        hours = (timestamp % (24 * 60)) // 60
+        data_point = random.gauss(yearly_mean_kwh, yearly_max_kwh - yearly_min_kwh)
+
+        # Ensure the data point is within the valid range
+        if yearly_min_kwh <= data_point <= yearly_max_kwh:
+            year_data.append((dt + ' ' + str(hours).zfill(2), round(data_point)))
+
+    for month in ['Jun', 'Jul', 'Aug']:
+        start_date = '2016-06-' + month
+        end_date = '2016-08-' + month
+
+        # Generate data for each hour in the summer months
+        for n in range(int((end_date - start_date).days)):
+            dt = start_date + str(n)
+            timestamp = int(dt.replace('-', '/').replace(':', ''))
+            hours = (timestamp % (24 * 60)) // 60
+            data_point = round(random.gauss(summer_mean_kwh, summer_max_kwh - summer_min_kwh))
+
+            # Ensure the data point is within the valid range
+            if summer_min_kwh <= data_point <= summer_max_kwh:
+                month_data.append((dt + ' ' + str(hours).zfill(2), round(data_point)))
+
+    return year_data + month_data
+
+# Define the building metadata and summary statistics
+building_id = 1206
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+summer_max_kwh = 110.0
+summer_min_kwh = 80.0
+
+# Generate the electricity data
+data = generate_electricity_data(building_id, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh)
+
+# Format and print the data
+for item in data:
+    print(item[0] + ' ' + str(item[1]))
+```
+
+When you run this script, it will output 96 lines of synthetic building electricity meter readings for exactly one building. The values are realistic and consistent with the summary statistics provided.

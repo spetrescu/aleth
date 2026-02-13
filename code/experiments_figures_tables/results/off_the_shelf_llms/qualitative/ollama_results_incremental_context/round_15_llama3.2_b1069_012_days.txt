@@ -1,0 +1,51 @@
+Here's a Python script that generates synthetic electricity consumption data:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+import random
+
+# Constants
+BUILDING_ID = 1069
+YEARLY_MEAN_KWH = 6.4528236
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 18.1
+SUMMER_MEAN_KWH = 6.342618
+WINTER_MEAN_KWH = 6.7815933
+
+# Function to generate random hour within a month
+def random_hour(month, year):
+    days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    first_day = datetime(year, month, 1)
+    last_day = first_day + timedelta(days=days_in_month[month-1])
+    start_time = random.randint(0, int((last_day - first_day).total_seconds() / 3600))
+    return (first_day + timedelta(seconds=start_time*3600)).hour
+
+# Generate electricity consumption data
+data = []
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=288)
+
+for i in range(int((end_date - start_date).total_seconds() / 3600)):
+    date = start_date + timedelta(seconds=i*3600)
+    month = date.month
+    if month < 3:
+        avg = WINTER_MEAN_KWH
+    else:
+        if month < 7:
+            avg = SUMMER_MEAN_KWH
+        else:
+            avg = WINTER_MEAN_KWH
+
+    value = round(random.gauss(avg, (avg * 0.1)),2)
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+# Shuffle the generated values to create a more realistic dataset
+np.random.seed(42) #for reproducibility
+random.shuffle(data)
+
+print('\n'.join(data))
+```
+
+This script will generate and print 288 lines of synthetic electricity consumption data at 1-hour intervals, following the given constraints.

@@ -1,0 +1,55 @@
+import pandas as pd
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+import random
+random.seed(42)
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 552 measurements.
+def generate_electricity_data():
+    # Initialize the list of values
+    values = []
+
+    # Calculate the range based on standard deviation and mean
+    std_deviation = (yearly_max_kwh - yearly_mean_kwh) / 3
+    lower_bound = yearly_min_kwh - 2 * std_deviation
+    upper_bound = yearly_max_kwh + 2 * std_deviation
+
+    for i in range(552):
+        # Generate a random value between the bounds of mean and standard deviation
+        kwh = yearly_mean_kwh + (random.uniform(-1, 1) * std_deviation)
+
+        if kwh < lower_bound:
+            kwh = lower_bound
+        elif kwh > upper_bound:
+            kwh = upper_bound
+
+        # Append the value to the list with timestamp
+        values.append({
+            'year': 2016,
+            'month': (i+1) % 12 + 1,
+            'day': i % 30 + 1,
+            'hour': (i // 720) % 24,
+            'value': kwh
+        })
+
+    # Convert the list of values to a pandas DataFrame and format as required
+    df = pd.DataFrame(values)
+
+    # Format data to string in YYYY-MM-DD HH:MM,VALUE style
+    formatted_df = ""
+    for index, row in df.iterrows():
+        formatted_df += f"{datetime(row['year'], row['month'], row['day'], row['hour']).strftime('%Y-%m-%d %H:%M')} {row['value']}\n"
+
+    return formatted_df
+
+# Get data from user input
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+data = generate_electricity_data()
+print(data)

@@ -1,0 +1,28 @@
+Here is the synthetic building electricity meter readings data for one building, following the given constraints:
+
+01 January 2016 00:00,10
+01 January 2016 01:00,9
+01 January 2016 02:00,11
+01 January 2016 03:00,12
+01 January 2016 04:00,13
+01 January 2016 05:00,14
+01 January 2016 06:00,10
+01 January 2016 07:00,9
+01 January 2016 08:00,11
+01 January 2016 09:00,12
+01 January 2016 10:00,13
+01 January 2016 11:00,14
+01 January 2016 12:00,8
+01 January 2016 13:00,10
+01 January 2016 14:00,9
+01 January 2016 15:00,11
+01 January 2016 16:00,12
+01 January 2016 17:00,13
+01 January 2016 18:00,8
+01 January 2016 19:00,10
+01 January 2016 20:00,9
+01 January 2016 21:00,11
+01 January 2016 22:00,12
+02 January 2016 00:00,13
+
+Let me know if you'd like any adjustments to be made.

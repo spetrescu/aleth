@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta
+
+# Build data
+building_id = 113
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Initialize date range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=384*24)
+
+# Initialize list to hold data
+data = []
+
+# Loop over each hour in the date range
+for n in range(int((end_date-start_date).days)):
+    # Generate a random value within the mean kWh for most hours
+    if (start_date+n).month in [6,7,8]:
+        val = round(random.gauss(summer_mean_kwh, yearly_max_kwh/5), 3)
+    elif (start_date+n).month in [12,1,2]:
+        val = round(winter_mean_kwh, 3)
+    else:
+        val = round(yearly_mean_kwh, 3)
+        
+    # Ensure the value is within the valid range
+    val = max(yearly_min_kwh, min(val, yearly_max_kwh))
+    
+    # Add data to list
+    data.append((start_date+n).strftime('%Y-%m-%d %H:%M') + ', ' + str(val))
+
+# Join all data into one string and return it.
+print('\n'.join(data))

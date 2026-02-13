@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define start and end dates
+start_date = '2016-01-01'
+end_date = '2017-02-29'
+
+# Create a list to store the electricity consumption data
+data = []
+
+# Loop through each hour between start and end dates
+for n in range(int((end_date - start_date).days)):
+    # Convert date object to datetime object
+    dt = date.fromtimestamp(start_date.timestamp() + n)
+    
+    # Get the month and day of the week
+    month, weekday = dt.month, dt.isoweekday()
+    
+    # If it's a summer month (Jun-Aug) or winter month (Dec-Feb), generate values around summer_mean_kwh or winter_mean_kwh
+    if month in [6, 7, 8]:
+        value = np.random.normal(summer_mean_kwh, yearly_mean_kwh / 4)
+    elif month in [12, 1, 2]:
+        value = np.random.normal(winter_mean_kwh, yearly_mean_kwh / 4)
+    
+    # Ensure the generated values are within the allowed range
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    if np.isclose(value, summer_mean_kwh) and month in [6, 7, 8]:
+        value = np.random.normal(summer_mean_kwh, yearly_mean_kwh / 4)
+    elif np.isclose(value, winter_mean_kwh) and month in [12, 1, 2]:
+        value = np.random.normal(winter_mean_kwh, yearly_mean_kwh / 4)
+    
+    # Round the generated value to three decimal places
+    value = round(value, 3)
+    
+    # Append the data to the list
+    data.append(f"{dt.strftime('%Y-%m-%d %H:%M')}, {value}")
+
+# Print the dataset
+print('\n'.join(data))

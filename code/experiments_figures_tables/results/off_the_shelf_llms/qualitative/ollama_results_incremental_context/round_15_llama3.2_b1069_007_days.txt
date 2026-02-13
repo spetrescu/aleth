@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+
+# Generate time series data
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+# Create a date range with 1-hour intervals
+dates = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Calculate the number of days in summer and winter months
+summer_days = np.sum((dates.month >= 6) & (dates.month <= 8))
+winter_days = np.sum((dates.month >= 12) & (dates.month <= 2))
+
+# Generate random values for electricity consumption
+values = []
+for i in range(len(dates)):
+    day = dates[i]
+    month = day.month
+    if month >= 6 and month <= 8:  # Summer
+        mean_value = summer_mean_kwh
+        std_dev = (yearly_max_kwh - yearly_mean_kwh) / np.sqrt(10)
+    elif month >= 12 and month <= 2:  # Winter
+        mean_value = winter_mean_kwh
+        std_dev = (yearly_max_kwh - yearly_mean_kwh) / np.sqrt(10)
+    else:  # Other months
+        mean_value = yearly_mean_kwh
+        std_dev = (yearly_max_kwh - yearly_mean_kwh) / np.sqrt(20)
+
+    value = np.random.normal(mean_value, std_dev)
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    values.append(value)
+
+# Create a DataFrame with the time series data
+df = pd.DataFrame({'DATE': dates, 'VALUE': values})
+
+# Print the output
+for index, row in df.iterrows():
+    print(f"{row['DATE'].strftime('%Y-%m-%d %H:%M')}, {row['VALUE']:.8f}")

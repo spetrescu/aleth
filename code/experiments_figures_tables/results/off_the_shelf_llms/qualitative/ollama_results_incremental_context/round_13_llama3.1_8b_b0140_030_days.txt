@@ -1,0 +1,53 @@
+Here is a Python script using NumPy to generate synthetic electricity meter readings for one building:
+
+```python
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 140
+primary_use = "Office"
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Define number of readings to generate
+n_readings = 720
+
+# Generate dates for the readings (01 January 2016 - 31 December 2016)
+start_date = datetime(2016, 1, 1, 0, 0, 0)  # Start date
+end_date = start_date + timedelta(days=n_readings)  # End date
+
+# Generate a sequence of dates
+dates = [start_date + timedelta(hours=i) for i in range(n_readings)]
+
+# Define season-specific means (summer: June-August, winter: December-February)
+def summer_mean(date):
+    return summer_mean_kwh if 6 <= date.month <= 8 else yearly_mean_kwh
+
+def winter_mean(date):
+    return winter_mean_kwh if 12 == date.month or (1 <= date.month <= 2 and date.year == 2016) else yearly_mean_kwh
+
+# Generate values for each hour, using season-specific means
+values = [min(max(int(np.random.normal(mu, yearly_mean_kwh * 0.25)), yearly_min_kwh), yearly_max_kwh)
+          for mu in (summer_mean(date) if date.month in [6, 7, 8] else winter_mean(date)) for date in dates]
+
+# Print each reading as "YYYY-MM-DD HH:MM,VALUE"
+for i in range(n_readings):
+    print(f"{dates[i].strftime('%Y-%m-%d %H:%M')},{values[i]}")
+```
+
+This script generates 720 values with realistic and consistent electricity consumption data for one building. Each value is near the yearly mean (31.697405 kWh) but can fluctuate within a normal distribution of +/- 25% around this mean, ensuring that it never goes below the yearly minimum or above the yearly maximum. The summer months average around the summer mean, while winter months average around the winter mean.
+
+Output:
+
+```
+2016-01-01 00:00,29
+2016-01-01 01:00,30
+...
+```
+
+Note that this is a sample output; your actual output may vary slightly due to the random nature of the value generation process.

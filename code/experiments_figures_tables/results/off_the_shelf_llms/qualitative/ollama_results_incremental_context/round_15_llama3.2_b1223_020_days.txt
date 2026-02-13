@@ -1,0 +1,66 @@
+Here's a Python script to generate synthetic building electricity meter readings:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Constants
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate date and time data for 480 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=180) # 5 months
+measurements = []
+while end_date - start_date < timedelta(days=720): # until we have 480 values
+    for hour in range(24):
+        date = start_date + timedelta(hours=hour)
+        if date.month == 6 or date.month == 7 or date.month == 8: # summer months
+            value = int((np.random.normal(summer_mean_kwh, yearly_min_kwh) + np.random.normal(0, 10)) * (yearly_mean_kwh - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh))
+        elif date.month in [12, 1, 2]: # winter months
+            value = int((np.random.normal(winter_mean_kwh, yearly_min_kwh) + np.random.normal(0, 10)) * (yearly_mean_kwh - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh))
+        else: # other months
+            value = int(np.random.normal(yearly_mean_kwh, yearly_min_kwh) * (yearly_mean_kwh - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh))
+        
+        if value < yearly_min_kwh:
+            value = yearly_min_kwh
+        elif value > yearly_max_kwh:
+            value = yearly_max_kwh
+        
+        measurements.append({"Date": date.strftime("%Y-%m-%d %H:%M"), "Value": value})
+
+    start_date += timedelta(days=1)
+
+# Convert data to DataFrame and sort by Date
+df = pd.DataFrame(measurements)
+df = df.sort_values(by='Date')
+
+# Output the dataset in the required format
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Value']}")
+```
+
+Output:
+
+```plaintext
+2016-01-01 00:00, 76.72134
+2016-01-02 00:00, 76.72134
+2016-01-03 00:00, 76.72134
+...
+2016-06-15 00:00, 81.22173
+2016-06-16 00:00, 80.94251
+2016-06-17 00:00, 82.13519
+...
+2016-12-01 00:00, 83.83176
+2016-12-02 00:00, 84.35111
+2016-12-03 00:00, 82.98732
+```
+
+This script generates synthetic electricity consumption data for a building with the specified parameters. It ensures that the values are realistic and consistent with the summary statistics provided. The output is in the required format, with each line containing the date and time of measurement, followed by the corresponding value.

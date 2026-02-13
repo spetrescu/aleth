@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Building metadata
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate date range for 2160 hours
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=2160 - 1)
+
+# Initialize list to store data
+data = []
+
+# Iterate over each hour
+for n in range(int((end_date - start_date).total_seconds() / 3600)):
+    # Randomly generate values within constraints
+    if (start_date + timedelta(seconds=n*3600)).month >= 6:
+        value = np.random.uniform(summer_mean_kwh * 0.8, summer_mean_kwh * 1.2)
+    elif (start_date + timedelta(seconds=n*3600)).month <= 2:
+        value = np.random.uniform(winter_mean_kwh * 0.8, winter_mean_kwh * 1.2)
+    else:
+        value = yearly_mean_kwh * np.random.uniform(0.9, 1.1)
+
+    # Ensure value is within min and max
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+
+    # Append data to list
+    data.append(f"{start_date.strftime('%Y-%m-%d')} {start_date.strftime('%H:%M')}, {value}")
+
+# Convert data to DataFrame and print
+df = pd.DataFrame(data, columns=['Date', 'Value'])
+print(df)

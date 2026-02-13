@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+
+# Initialize empty list to store data
+data = []
+
+# Loop through each hour starting from 2016-01-01
+for day in range(672):
+    # Calculate date for this hour
+    date = pd.to_datetime('2016-01-' + str(day+1)).date()
+    
+    # Randomly generate value within the bounds of yearly_mean_kwh and yearly_min_kwh
+    if date.month < 8:  # Summer months (June to August)
+        value = np.random.uniform(yearly_min_kwh, summer_mean_kwh) * 2 + yearly_min_kwh
+    else:  # Winter months (December to February)
+        value = np.random.uniform(winter_mean_kwh, yearly_max_kwh) * 3 + winter_mean_kwh
+    
+    # Ensure the generated value is within the bounds of yearly_mean_kwh and yearly_max_kwh
+    if value > yearly_max_kwh:
+        value = yearly_max_kwh
+    elif value < yearly_min_kwh:
+        value = yearly_min_kwh
+
+    # Append line to data list
+    data.append(f"{date.strftime('%Y-%m-%d')} {value:.3f}")
+
+# Print the generated dataset
+for line in data:
+    print(line)

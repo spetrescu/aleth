@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+
+# Constants
+BUILDING_ID = 1223
+PRIMARY_USE = "Office"
+SQUARE_FEET = 52141
+YEARLY_MEAN_KWH = 76.72134
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 174.64
+SUMMER_MEAN_KWH = 81.22173
+WINTER_MEAN_KWH = 83.83176
+
+# Generate date range (Jan 1, 2016 to Feb 4, 2017)
+start_date = '2016-01-01'
+end_date = pd.to_datetime('2017-02-04')
+date_range = pd.date_range(start=start_date, end=end_date)
+
+# Initialize lists
+values = []
+for date in date_range:
+    if (date.month >= 6 and date.month <= 8) or (date.month >= 12 and date.month <= 2):
+        # Summer or winter month
+        values.append(summer_mean_kwh + np.random.normal(0, yearly_mean_kwh/24))
+    else:
+        # Other months
+        values.append(yearly_mean_kwh + np.random.normal(0, yearly_mean_kwh/24))
+
+# Ensure the values stay within the allowed range
+values = [max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH)) for value in values]
+
+# Format data as required
+formatted_data = []
+for i, date in enumerate(date_range):
+    formatted_date = f"{date.strftime('%Y-%m-%d')} {date.strftime('%H:%M')}"
+    formatted_data.append((formatted_date, round(values[i], 3)))
+
+# Convert to a list of strings
+formatted_data_str = '\n'.join([f"{date},{value}" for date, value in formatted_data])
+
+print(formatted_data_str)

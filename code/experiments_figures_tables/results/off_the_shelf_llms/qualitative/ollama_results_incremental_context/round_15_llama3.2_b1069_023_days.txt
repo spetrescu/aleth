@@ -1,0 +1,56 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_consumption_data():
+    # Initialize date and time
+    date = datetime(2016, 1, 1)
+    while len(data) < 552:
+        if (date.month == 6 or date.month == 7 or date.month == 8) and \
+           (date.day <= 31 or date.day >= 30):
+            month_sum_avg = 6.342618
+        elif (date.month == 12 or date.month == 1 or date.month == 2) and \
+             (date.day <= 28 or date.day >= 29):
+            month_sum_avg = 6.7815933
+        else:
+            month_sum_avg = yearly_mean_kwh
+
+        # Generate random value within the allowed range
+        value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 4)
+
+        # Ensure the generated value is closer to the average of the current month than the previous day's value
+        if data:
+            last_date_value = float(data[-1].split(", ")[1])
+            avg = ((month_sum_avg * (date.day - 1) + last_date_value * (30 - date.day)) / 30)
+            value = round(min(max(value, avg), avg))
+
+        # Append the generated line to the data
+        data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+        # Move on to the next day
+        if date.month == 12:
+            if date.day > 31:
+                date = datetime(2017, 1, 1)
+            else:
+                date = datetime(date.year, 1, 1)
+        elif date.month in [6, 7, 8]:
+            if date.day >= 30:
+                date = datetime(date.year, 1, 1)
+            else:
+                date += timedelta(days=1)
+        elif date.month in [11, 12]:
+            if date.day > 31:
+                date = datetime(2017, 1, 1)
+            else:
+                date += timedelta(days=1)
+
+    return data
+
+# Initialize the output
+data = []
+
+# Generate electricity consumption data
+generate_electricity_consumption_data()
+
+# Print the output
+for line in data:
+    print(line)

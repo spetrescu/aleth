@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1086
+primary_use = "Office"
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=2160)
+date_range = [start_date + timedelta(hours=i) for i in range(2160)]
+
+data = []
+for date in date_range:
+    if (datetime(date.year, 6, 1) <= date <= datetime(date.year, 8, 31)):
+        # Summer months
+        value = np.random.normal(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh)
+        data.append((date.strftime("%Y-%m-%d %H:%M"), round(value, 4)))
+    elif (datetime(date.year, 12, 1) <= date <= datetime(date.year, 2, 28)):
+        # Winter months
+        value = np.random.normal(winter_mean_kwh, yearly_max_kwh - winter_mean_kwh)
+        data.append((date.strftime("%Y-%m-%d %H:%M"), round(value, 4)))
+    else:
+        # Other months (mostly near yearly_mean_kwh)
+        value = np.random.normal(yearly_mean_kwh, abs(yearly_mean_kwh) / 10)
+        data.append((date.strftime("%Y-%m-%d %H:%M"), round(value, 4)))
+
+pd.DataFrame(data, columns=['Date', 'Value']).to_csv('electricity_consumption.csv', index=False)

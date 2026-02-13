@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 272
+primary_use = 'Education'
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Generate date range for 504 hours starting from January 1, 2016
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*50) #50 days to account for the last hour of data.
+
+dates = [start_date + timedelta(hours=i) for i in range(int((end_date-start_date).total_seconds() / 3600)+1)]
+
+# Initialize lists to store the date and the corresponding kWh consumption
+date_list = []
+kwh_consumption_list = []
+
+# Generate kWh consumption values
+for d in dates:
+    if (d.month > 5) or (d.month < 3):
+        kwh_consumption = np.random.uniform(winter_mean_kwh - (winter_mean_kwh / 2), winter_mean_kwh + (winter_mean_kwh / 2))
+    else:
+        kwh_consumption = np.random.uniform(summer_mean_kwh - (summer_mean_kwh / 2), summer_mean_kwh + (summer_mean_kwh / 2))
+
+    # Ensure that the value is within yearly_min_kwh and yearly_max_kwh
+    if kwh_consumption < yearly_min_kwh:
+        kwh_consumption = yearly_min_kwh
+    elif kwh_consumption > yearly_max_kwh:
+        kwh_consumption = yearly_max_kwh
+
+    date_list.append(d.strftime('%Y-%m-%d %H:%M'))
+    kwh_consumption_list.append(kwh_consumption)
+
+# Print the data in the required format
+for i in range(len(date_list)):
+    print(f"{date_list[i]},{kwh_consumption_list[i]}")

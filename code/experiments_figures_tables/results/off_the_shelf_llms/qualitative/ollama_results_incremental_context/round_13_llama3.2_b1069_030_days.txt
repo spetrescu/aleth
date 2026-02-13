@@ -1,0 +1,49 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_data():
+    # Initialize variables
+    building_id = 1069
+    primary_use = 'Office'
+    square_feet = 20864
+    yearly_mean_kwh = 6.4528236
+    yearly_min_kwh = 0.0
+    yearly_max_kwh = 18.1
+    summer_mean_kwh = 6.342618
+    winter_mean_kwh = 6.7815933
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=365*720)
+
+    # Initialize output list
+    data = []
+
+    for day in range(int((end_date-start_date).days)):
+        date = start_date + timedelta(days=day)
+        year = date.year
+        month = date.month
+
+        if month in [6, 7, 8]:  # summer months
+            avg_kwh = summer_mean_kwh
+        elif month in [12, 1, 2]:  # winter months
+            avg_kwh = winter_mean_kwh
+        else:  # other months
+            avg_kwh = yearly_mean_kwh
+
+        hours = date.hour
+        if random.random() < 0.05:  # 5% chance of reading error
+            avg_kwh += round(random.uniform(-1, 2), 3)
+            if avg_kwh < yearly_min_kwh:
+                data.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {yearly_min_kwh}")
+            elif avg_kwh > yearly_max_kwh:
+                data.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {yearly_max_kwh}")
+            else:
+                data.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {round(avg_kwh, 3)}")
+        else:
+            if random.random() < 0.5:  # 50% chance of peak hour
+                data.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {avg_kwh * 1.2}")
+            else:
+                data.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {round(avg_kwh, 3)}")
+
+    return '\n'.join(data)
+
+print(generate_electricity_data())

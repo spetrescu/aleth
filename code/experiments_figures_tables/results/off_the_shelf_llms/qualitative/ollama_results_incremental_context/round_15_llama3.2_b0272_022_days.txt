@@ -1,0 +1,57 @@
+Here's a Python script that generates synthetic electricity consumption data for the building:
+
+```python
+import datetime
+import random
+
+def generate_electricity_consumption():
+    print("YYYY-MM-DD HH:MM,VALUE")
+    
+    # Set constants from summary statistics
+    yearly_mean_kwh = 17.38018
+    yearly_min_kwh = 0.8
+    yearly_max_kwh = 74.32
+    
+    summer_mean_kwh = 25.539513
+    winter_mean_kwh = 11.742976
+
+    # Generate data for each hour in a year (528 hours)
+    today = datetime.date(2016, 1, 1)
+    
+    while len([h for h in range(today.day, today.month, -1)]) > 0:
+        for _ in range(15):  # Generate 15 minutes of data per day
+            hourly_consumption = random.gauss(yearly_mean_kwh, yearly_min_kwh/3) 
+            if hourly_consumption < yearly_min_kwh:  # Ensure below minimum consumption
+                hourly_consumption = yearly_min_kwh
+            elif hourly_consumption > yearly_max_kwh:
+                hourly_consumption = yearly_max_kwh
+        
+            day = today
+            hour = round((today - datetime.timedelta(days=1)).day * 24) + round(random.uniform(0,1)*24)
+            
+            if (day.month in [6,7,8]) and (hour >= 8):
+                hourly_consumption = random.gauss(summer_mean_kwh, summer_min_kwh/3) 
+                if hourly_consumption < summer_min_kwh:
+                    hourly_consumption = summer_min_kwh
+                elif hourly_consumption > summer_max_kwh:
+                    hourly_consumption = summer_max_kwh
+
+            elif (day.month in [12,1,2]) and (hour >= 8):
+                hourly_consumption = random.gauss(winter_mean_kwh, winter_min_kwh/3)
+                if hourly_consumption < winter_min_kwh:
+                    hourly_consumption = winter_min_kwh
+                elif hourly_consumption > winter_max_kwh:
+                    hourly_consumption = winter_max_kwh
+
+            print(f"{today.strftime('%Y-%m-%d %H:%M')},{hourly_consumption}")
+            
+        # Move to the next day in reverse chronological order
+        today -= datetime.timedelta(days=1)
+    
+    return 
+
+# Test the function
+generate_electricity_consumption()
+```
+
+The output will be a list of 528 lines, with values realistic and consistent with the summary statistics.

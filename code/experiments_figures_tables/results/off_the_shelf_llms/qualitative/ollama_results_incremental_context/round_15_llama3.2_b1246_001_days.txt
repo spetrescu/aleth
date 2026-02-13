@@ -1,0 +1,42 @@
+Here is a Python solution using pandas and numpy libraries to generate synthetic electricity consumption data:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1246
+primary_use = 'Office'
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 24 measurements.
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=1828)  # 24 measurements * 1 hour per measurement
+
+data = []
+for n in range(24):
+    date = start_date + timedelta(seconds=n)
+    if winter_mean_kwh <= np.random.rand() < summer_mean_kwh:
+        kwh = round(winter_mean_kwh * (np.random.rand() - 0.5) + yearly_min_kwh, 3)
+    else:
+        kwh = round(yearly_mean_kwh * (np.random.rand() - 0.5) + yearly_min_kwh, 3)
+
+    # Ensure values are within valid range
+    if kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{kwh}")
+
+# Output the generated data
+for line in data:
+    print(line)
+```
+
+This script will generate synthetic electricity consumption data, adhering to the specified constraints. Please note that due to the random nature of this generation method, the output may vary each time you run it.

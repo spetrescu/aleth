@@ -1,0 +1,63 @@
+Here's a Python script that generates synthetic electricity consumption data for the specified building:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+def generate_electricity_data(building_id, primary_use, square_feet, 
+                              yearly_mean_kwh, yearly_min_kwh, 
+                              yearly_max_kwh, summer_mean_kwh,
+                              winter_mean_kwh):
+    # Define dates and hours for the data
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=24*365)  # One year
+    hours_to_generate = 24
+
+    # Initialize lists to store generated data
+    dates = []
+    values = []
+
+    current_date = start_date
+    for _ in range(hours_to_generate):
+        date = current_date.strftime('%Y-%m-%d')
+        hours = current_date.strftime('%H') + ':00'
+        
+        if (current_date.month == 6 or current_date.month == 7 or 
+            current_date.month == 8) and (yearly_mean_kwh * 0.75 <= 
+                                        random.random() * yearly_max_kwh):
+            value = summer_mean_kwh
+        elif (current_date.month in [12, 1, 2] and 
+              yearly_mean_kwh * 0.75 <= 
+              random.random() * yearly_max_kwh):
+            value = winter_mean_kwh
+        else:
+            value = yearly_mean_kwh
+
+        if value < yearly_min_kwh or value > yearly_max_kwh:
+            value = np.clip(value, yearly_min_kwh, yearly_max_kwh)
+
+        values.append(str(round(value)))
+
+        dates.append(f"{date} {hours}")
+
+        current_date += timedelta(hours=1)
+
+    # Create a pandas DataFrame
+    df = pd.DataFrame({
+        "Date": dates,
+        "Value (kWh)": values
+    })
+
+    return df
+
+# Generate and print the electricity consumption data
+df = generate_electricity_data(113, 'Education', 100481, 
+                              363.97446, 159.643, 679.25, 
+                              365.49576, 361.4717)
+print("\n".join(df.apply(lambda row: f"{row['Date']}, {row['Value (kWh)']}",
+                          axis=1)))
+```
+
+This script generates synthetic electricity consumption data for the specified building over a period of one year with hourly intervals. The values are generated based on the annual summary statistics provided, and they follow the constraints specified in your task.

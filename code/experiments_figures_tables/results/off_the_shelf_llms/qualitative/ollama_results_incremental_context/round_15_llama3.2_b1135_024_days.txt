@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize variables
+year = 2016
+building_id = 1135
+primary_use = "Education"
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate dates and corresponding kWh values
+start_date = datetime(year, 1, 1)
+end_date = start_date + timedelta(days=576-1)  # Subtract one day to ensure correct end date
+
+kWh_values = []
+for n in range(int ((end_date-start_date).days)):
+    date = start_date + timedelta(n)
+    if (date.month in [6,7,8]) and (year == 2016):
+        kWh_value = np.random.normal(summer_mean_kwh, yearly_min_kwh/100)  # Summer months
+    elif (date.month in [12,1,2]) and (year == 2016):
+        kWh_value = np.random.normal(winter_mean_kwh, yearly_min_kwh/100)  # Winter months
+    else:
+        kWh_value = np.random.normal(yearly_mean_kwh, yearly_min_kwh/100)  # Other months
+
+    if (kWh_value < yearly_min_kwh):
+        kWh_value = yearly_min_kwh
+    elif (kWh_value > yearly_max_kwh):
+        kWh_value = yearly_max_kwh
+
+    kWh_values.append(kWh_value)
+
+# Convert values to string and format output
+output = []
+for i, value in enumerate(kWh_values):
+    date_str = str(datetime(year,1,1)+timedelta(i)).split(' ')[0]
+    output_line = f"{date_str} {value:.2f}\n"
+
+print(output_line)

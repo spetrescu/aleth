@@ -1,0 +1,30 @@
+import random
+from datetime import timedelta, datetime
+
+def generate_data():
+    yearly_mean_kwh = 363.97446
+    yearly_min_kwh = 159.643
+    yearly_max_kwh = 679.25
+    summer_mean_kwh = 365.49576
+    winter_mean_kwh = 361.4717
+    
+    # Generate time series data for a year
+    start_date = datetime(2016,1,1)
+    end_date = start_date + timedelta(days=365*120)  # 120 days of the next 4 years
+
+    while start_date < end_date:
+        if (start_date.month == 6 or start_date.month == 7 or start_date.month == 8):
+            consumption = round(random.gauss(summer_mean_kwh, summer_mean_kwh/5),2)
+        else:
+            consumption = round(random.gauss(winter_mean_kwh, winter_mean_kwh/5),2)
+
+        if consumption < yearly_min_kwh:
+            consumption = yearly_min_kwh
+        elif consumption > yearly_max_kwh:
+            consumption = yearly_max_kwh
+        
+        print(f"{start_date.strftime('%Y-%m-%d %H:%M')}, {consumption}")
+        
+        # Increment the time by 1 hour
+        start_date += timedelta(hours=1)
+generate_data()

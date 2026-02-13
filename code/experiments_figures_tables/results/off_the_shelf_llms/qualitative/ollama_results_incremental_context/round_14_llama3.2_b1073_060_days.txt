@@ -1,0 +1,41 @@
+import random
+from datetime import timedelta, datetime
+
+# Constants for building electricity meter readings
+BUILDING_ID = 1073
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 194111
+YEARLY_MEAN_KWH = 179.21414
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 853.0
+SUMMER_MEAN_KWH = 118.158516
+WINTER_MEAN_KWH = 230.26053
+
+# Calculate hours per year, accounting for non-standard month lengths (February)
+HOURS_PER_YEAR = (
+    24 * 365 + 
+    24 if (datetime(2016, 2, 29).weekday() == 6) else
+    23
+)
+
+def generate_reading(time, mean_kwh):
+    return round(random.gauss(mean_kwh, abs(YEARLY_MIN_KWH-YEARLY_MAX_KWH)/10), 5)
+
+# Start date for generating data
+start_date = datetime(2016,1,1)
+end_date = start_date + timedelta(hours=HOURS_PER_YEAR*1440-1)
+
+# Generate readings, using yearly means with slight variations based on time of day.
+while(start_date <= end_date):
+    # Hourly reading
+    print(f"{start_date.strftime('%Y-%m-%d %H:%M')}, {generate_reading(24/1440*get_mean_kwh(start_date), YEARLY_MEAN_KWH)}")
+    start_date += timedelta(hours=1)
+
+# Helper function to calculate mean kWh per time period
+def get_mean_kwh(date):
+    # Determine whether the date is in summer or winter, using a simple rule:
+    #  June-August for summer (Jun-Aug), Dec-Feb for winter (Dec-Feb)
+    if(date.month >= 6 and date.month <= 8):  
+        return SUMMER_MEAN_KWH
+    elif(date.month >= 12 and date.month <= 2):
+        return WINTER_MEAN_KWh

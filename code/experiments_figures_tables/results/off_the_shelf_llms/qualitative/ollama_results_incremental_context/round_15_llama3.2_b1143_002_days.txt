@@ -1,0 +1,42 @@
+import random
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+random.seed(0)
+
+# Initialize lists to store time and values
+times = []
+values = []
+
+# Calculate number of days per hour in each season
+summer_days_per_hour = 3
+winter_days_per_hour = 6
+total_days_in_year = 365
+hours_in_day = 24
+
+# Generate data for each measurement period
+for _ in range(48):
+    # Determine if it's summer or winter month
+    month_start = datetime(2016, 6, 1)
+    month_end = datetime(2016, 8, 31)
+
+    if (datetime(2016, 6, random.randint(0, total_days_in_year - 1)) - 
+        month_start).days / (total_days_in_year // summer_days_per_hour) < 1:
+        season_value = random.gauss(summer_mean_kwh, yearly_max_kwh/10)
+    else:
+        season_value = round(random.gauss(winter_mean_kwh, yearly_min_kwh/10), 3)
+
+    # Generate a value that is realistic and consistent with the summary stats
+    value = min(max(season_value, yearly_min_kwh), yearly_max_kwh)
+
+    # Calculate time (in seconds past January 1st)
+    time_start = datetime(2016, 1, 1).timestamp()
+    time = time_start + timedelta(days=random.randint(0, total_days_in_year - 1))
+
+    # Store the time and value
+    times.append(time)
+    values.append(value)
+
+# Print the data
+for time, value in zip(times, values):
+    print(f"{datetime.fromtimestamp(time).strftime('%Y-%m-%d')} {int(time)}:{int((time - int(time)) * 60):02d}, {value}")

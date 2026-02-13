@@ -1,0 +1,23 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Generate time series data for electricity consumption
+np.random.seed(0)
+data = {
+    'date': [],
+    'value': []
+}
+for hour in range(24):
+    for i in range(10):
+        date = (datetime(2016, 1, 1) + timedelta(hours=hour+i*2)).strftime('%Y-%m-%d %H:%M')
+        value = np.random.uniform(dataframe['yearly_mean_kwh'].mean(), dataframe['yearly_max_kwh'].min()) + (
+                dataframe['summer_mean_kwh'] - dataframe['yearly_mean_kwh']).round(3) * np.random.choice([-1, 1])
+        data['date'].append(date)
+        data['value'].append(value)
+
+df = pd.DataFrame(data)
+
+# Filter out invalid values
+df = df[(df['value'] >= df['yearly_min_kwh']) & (df['value'] <= df['yearly_max_kwh'])]
+print(df)

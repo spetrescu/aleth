@@ -1,0 +1,43 @@
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics
+building_id = 1135
+primary_use = "Education"
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate electricity consumption data for one building
+start_date = datetime(2016, 1, 1)
+consumption_values = []
+for i in range(600):
+    date = start_date + timedelta(hours=i)
+    hour = date.hour
+    
+    # Determine season based on month and day of week
+    if (date.month == 6 or date.month == 7 or date.month == 8) and date.weekday() < 5:
+        consumption_value = round(random.gauss(summer_mean_kwh, yearly_max_kwh/4), 3)
+    elif (date.month == 12 or date.month == 1 or date.month == 2) and date.weekday() >= 5:
+        consumption_value = round(winter_mean_kwh, 3)
+    else:
+        consumption_value = round(yearly_mean_kwh, 3)
+
+    # Ensure value is within valid range
+    if consumption_value < yearly_min_kwh or consumption_value > yearly_max_kwh:
+        consumption_value = random.gauss(summer_mean_kwh if date.month in [6,7,8] and date.weekday() < 5 else winter_mean_kwh, (yearly_max_kwh - yearly_min_kwh) / 4)
+    elif consumption_value == yearly_min_kwh or consumption_value == yearly_max_kwh:
+        consumption_value = round(random.gauss(summer_mean_kwh if date.month in [6,7,8] and date.weekday() < 5 else winter_mean_kwh, (yearly_max_kwh - yearly_min_kwh) / 4), 3)
+
+    # Add value to list
+    consumption_values.append(consumption_value)
+
+# Generate output lines
+for i, value in enumerate(consumption_values):
+    date = start_date + timedelta(hours=i)
+    hours_str = "{:02d}-{:02d}-{:04d} {:02d}:{:02d}".format(date.month, date.day, date.year, date.hour, date.minute)
+    output_line = "{} {}\n".format(hours_str, value)
+    print(output_line)

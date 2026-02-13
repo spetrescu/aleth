@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Generate electricity consumption data for a building
+def generate_electricity_data(building_id, primary_use, square_feet, yearly_mean_kwh,
+                             yearly_min_kwh, yearly_max_kwh,
+                             summer_mean_kwh, winter_mean_kwh):
+    # Define the number of measurements and the time step
+    num_measurements = 528
+    time_step = timedelta(hours=1)
+
+    # Initialize lists to store the date and consumption values
+    dates = []
+    values = []
+
+    # Generate data for each hour in a year
+    current_date = date(2016, 1, 1)
+    while len(dates) < num_measurements:
+        dates.append(current_date.strftime('%Y-%m-%d %H:%M'))
+        if (current_date.month in [6, 7, 8] and current_date.month not in [12, 1, 2]) or \
+           (current_date.month in [12, 1, 2] and current_date.month not in [6, 7, 8]):
+            values.append(summer_mean_kwh)
+        else:
+            values.append(winter_mean_kwh)
+
+        # Check if the generated consumption is within the allowed range
+        if np.random.rand() < 0.01:
+            new_value = int(yearly_min_kwh + np.random.uniform(-10, 10))
+        elif np.random.rand() < 0.05:
+            new_value = int(yearly_max_kwh - np.random.uniform(1, 5))
+        else:
+            new_value = int(yearly_mean_kwh)
+
+        # Check if the generated consumption is within the allowed range
+        assert new_value >= yearly_min_kwh and new_value <= yearly_max_kwh
+
+        current_date += time_step
+
+    # Combine date and value into a list of strings
+    dataset = [f"{date_str} {value}" for date_str, value in zip(dates, values)]
+
+    return dataset
+
+# Call the function to generate the electricity data
+dataset = generate_electricity_data(1246, "Office", 50327,
+                                   yearly_mean_kwh=46.317394,
+                                   yearly_min_kwh=0.0,
+                                   yearly_max_kwh=82.0,
+                                   summer_mean_kwh=42.024456,
+                                   winter_mean_kwh=46.382324)
+
+# Print the dataset
+for line in dataset:
+    print(line)

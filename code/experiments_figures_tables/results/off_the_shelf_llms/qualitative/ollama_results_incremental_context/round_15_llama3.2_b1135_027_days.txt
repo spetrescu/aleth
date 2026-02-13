@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Calculate daily averages based on season
+daily_avg = (263.8639 + 250.41924) / 2
+
+# Initialize arrays to hold time and energy consumption values
+time = []
+energy = []
+
+# Loop through the dates starting from January 1, 2016 until March 31, 2016.
+for year in range(2016, 2017):
+    for month in [1, 2, 3]:
+        first_day_of_month = f"{year}-{month:02}-01"
+        last_day_of_month = f"{year}-{month:02}-{31}"
+        
+        # Generate random values between yearly_min_kwh and yearly_max_kwh
+        for day in range(1, 32):
+            if (day == 1 or day == 8 or day == 15 or day == 22 or day == 29) and month in [6,7,8]:
+                value = np.random.uniform(263.8639, 479.897)
+            elif (day == 1 or day == 8 or day == 15 or day == 22 or day == 29) and month in [12,1,2]:
+                value = np.random.uniform(250.41924, 479.897)
+            else:
+                if month == 6:
+                    value = np.random.uniform(263.8639, 479.897)
+                elif month == 12:
+                    value = np.random.uniform(250.41924, 479.897)
+
+            time.append(f"{first_day_of_month} {day:02}")
+            energy.append(value)
+
+        # Generate a random day in June, July or August
+        if month in [6,7,8]:
+            day_in_june = np.random.randint(1,31)
+            value = np.random.uniform(263.8639, 479.897)
+            time.append(f"{last_day_of_month} {day_in_june:02}")
+            energy.append(value)
+
+# Generate a random last month
+if month in [6,7,8]:
+    day_in_june = np.random.randint(1,31)
+    value = np.random.uniform(263.8639, 479.897)
+    time.append(f"{last_day_of_month} {day_in_june:02}")
+    energy.append(value)
+
+# Combine the lists into a single array
+time = pd.Series(time)
+energy = pd.Series(energy)
+
+# Convert to DataFrames for more convenient output
+df = pd.DataFrame({'time':time,'energy':energy})
+print(df)

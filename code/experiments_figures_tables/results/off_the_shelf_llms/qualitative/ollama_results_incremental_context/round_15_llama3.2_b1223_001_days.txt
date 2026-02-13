@@ -1,0 +1,57 @@
+import pandas as pd
+from datetime import timedelta, date
+import random
+
+# Initialize variables
+year = 2016
+month = 1
+day = 1
+hour = 0
+building_id = 1223
+primary_use = 'Office'
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+days_in_month = [31,28,31,30,31,30,31,31,30,31,30,31]
+max_random_value = yearly_max_kwh
+
+# Generate data for all the months of the year
+data = []
+for month in range(1,13):
+    month_start_date = date(year,month,1)
+    if month == 2:
+        days_in_month[month-1] = 29
+    
+    # Calculate number of days in month
+    num_days = days_in_month[month-1]
+    
+    for day in range(1,num_days+1):
+        current_date = month_start_date + timedelta(days=day)
+        
+        if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8) and year > 2015:
+            avg_value = summer_mean_kwh
+        elif (current_date.month == 12 or current_date.month == 1 or current_date.month == 2) and year > 2015:
+            avg_value = winter_mean_kwh
+        else:
+            avg_value = yearly_mean_kwh
+        
+        if random.random() < 0.05: # Random variation to make the dataset look more realistic
+            value = round(avg_value + (max_random_value - avg_value) * random.uniform(-1, 1))
+        else:
+            value = round(avg_value)
+        
+        data.append(f'{current_date.strftime("%Y-%m-%d %H:%M")},{value}')
+    
+    # Calculate the next month's start date
+    if current_date.month < 12:
+        year += 1
+        month_start_date = date(year,month+1,1)
+        num_days = days_in_month[month]
+    else:
+        month_start_date = date(year + 1,1,1)
+
+# Limit the output to 24 lines
+print(data[:24])

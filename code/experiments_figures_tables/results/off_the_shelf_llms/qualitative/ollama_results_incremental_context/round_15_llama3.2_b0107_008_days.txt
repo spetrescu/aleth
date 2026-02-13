@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define time intervals
+hourly_interval = 1
+
+# Define year and months of interest
+year_start = '2016-01'
+year_end = '2016-12'
+
+# Calculate the total number of hours in a year
+hours_in_year = (datetime.strptime(year_end, '%Y-%m') - datetime.strptime(year_start, '%Y-%m')).days * 24
+
+# Define hourly consumption values based on summary stats
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Generate data for summer months (Jun-Aug)
+summer_months = ['2016-06', '2016-07', '2016-08']
+summer_hours = [(datetime.strptime(m, '%Y-%m') - datetime.strptime(year_start, '%Y-%m')).days * hourly_interval 
+                for m in summer_months]
+total_summer_hours = sum(summer_hours)
+
+# Generate data for winter months (Dec-Feb)
+winter_months = ['2016-12', '2016-01', '2016-02']
+winter_hours = [(datetime.strptime(m, '%Y-%m') - datetime.strptime(year_start, '%Y-%m')).days * hourly_interval 
+                for m in winter_months]
+total_winter_hours = sum(winter_hours)
+
+# Generate data for all other months
+other_months_hours = hours_in_year - total_summer_hours - total_winter_hours
+
+# Function to generate random value within range
+def get_random_value(lower, upper):
+    return np.random.uniform(lower, upper) * (upper - lower) + lower
+
+# Create a list of date and time strings
+dt_list = []
+for i in range(int(hours_in_year)):
+    current_time = datetime.strptime(year_start, '%Y-%m') + timedelta(days=i)
+    if ((current_time.month == 6 or current_time.month == 7 or current_time.month == 8) 
+        and (current_time.year == 2016)) or ((current_time.month == 12 or current_time.month == 1 or current_time.month == 2) 
+            and (current_time.year == 2016)):
+        dt_list.append(f"{current_time.strftime('%Y-%m')}, {summer_mean_kwh}kWh" if ((current_time.month == 6 or current_time.month == 7 or current_time.month == 8) 
+            and (current_time.year == 2016)) or ((current_time.month == 12 or current_time.month == 1 or current_time.month == 2) 
+            and (current_time.year == 2016)) else f"{yearly_mean_kwh}kWh")
+    elif i % 24 < other_months_hours:
+        dt_list.append(f"{current_time.strftime('%Y-%m')}, {get_random_value(yearly_min_kwh, yearly_max_kwh)}kWh")
+
+# Shuffle the list
+np.random.shuffle(dt_list)
+
+print("\n".join(dt_list))

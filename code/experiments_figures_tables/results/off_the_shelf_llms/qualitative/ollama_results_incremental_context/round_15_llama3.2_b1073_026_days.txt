@@ -1,0 +1,63 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 1073
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 194111
+YEARLY_MEAN_KWH = 179.21414
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 853.0
+SUMMER_MEAN_KWH = 118.158516
+WINTER_MEAN_KWH = 230.26053
+N_measurements = 624
+
+# Calculate daily averages
+daily_mean_kwh = (YEARLY_MIN_KWH + YEARLY_MAX_KWH) / 2
+seasonal_daily_means = {
+    'summer': (SUMMER_MEAN_KWH + daily_mean_kwh) / 2,
+    'winter': (WINTER_MEAN_KWH + daily_mean_kwh) / 2
+}
+
+# Generate electricity consumption data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=N_measurements - 1)
+
+measurements = []
+while start_date <= end_date:
+    # Determine season
+    if (start_date.month < 3 or (start_date.month == 3 and start_date.day < 1)) and \
+       (start_date.month > 10 or (start_date.month == 11 and start_date.day > 31)):
+        season = 'winter'
+    else:
+        season = 'summer'
+
+    # Generate random value for this hour
+    if season == 'summer':
+        value = seasonal_daily_means['summer'] * np.random.uniform(0.9, 1.1)
+    elif season == 'winter':
+        value = seasonal_daily_means['winter'] * np.random.uniform(0.9, 1.1)
+
+    # Limit values to yearly limits
+    if value < YEARLY_MIN_KWH:
+        value = YEARLY_MIN_KWH
+    elif value > YEARLY_MAX_KWH:
+        value = YEARLY_MAX_KWH
+
+    # Ensure most values are near the mean
+    value = np.clip(value, 0.1 * (value + (YEARLY_MEAN_KWH - YEARLY_MIN_KWH)), 0.9 * (value + (YEARLY_MAX_KWH - YEARLY_MEAN_KWH)))
+
+    measurements.append((start_date.strftime('%Y-%m-%d %H:%M'), value))
+    
+    # Move to the next hour
+    if start_date.month == 12 and start_date.day == 31:
+        break
+    elif start_date.month == 2 and (start_date.day > 28 or (start_date.day == 29 and not (start_date.year % 4 != 0 and start_date.year % 100 != 0 and start_date.year % 400 != 0))):
+        start_date = start_date + timedelta(days=1)
+    else:
+        start_date += timedelta(hours=1)
+
+# Print the results
+for measurement in measurements:
+    print(f"{measurement[0]} {measurement[1]:.8f}")

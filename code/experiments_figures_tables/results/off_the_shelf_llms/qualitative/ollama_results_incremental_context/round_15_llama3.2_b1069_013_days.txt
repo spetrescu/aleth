@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize lists to store the data
+dates = []
+values = []
+
+# Function to generate random values within a specified range
+def rand_in_range(min_val, max_val):
+    return round(np.random.uniform(min_val, max_val), 4)
+
+# Generate data for each hour of the year
+for i in range(312):
+    # Calculate the date and time for this hour
+    dt = datetime(2016, 1, 1) + timedelta(hours=i)
+    
+    # Check if it's a summer or winter month
+    if (dt.month < 7 or dt.month > 8):  # Spring/Fall months are not considered
+        avg_kwh = rand_in_range(5.9, 6.4)  # Adjusted range for spring/fall
+    else:
+        avg_kwh = rand_in_range(6.0, 6.8)
+    
+    # Add some random variation to the value
+    kwh = avg_kwh + np.random.normal(0, 0.1)
+    
+    # Ensure the value is within the valid range
+    if kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    elif kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+    
+    # Append the data to the lists
+    dates.append(dt.strftime('%Y-%m-%d %H:%M'))
+    values.append(str(kwh))
+
+# Print the generated data in the desired format
+for date, value in zip(dates, values):
+    print(f"{date}, {value}")

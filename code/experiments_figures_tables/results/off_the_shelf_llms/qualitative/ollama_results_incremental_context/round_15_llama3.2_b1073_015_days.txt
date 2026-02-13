@@ -1,0 +1,44 @@
+import random
+from datetime import datetime, timedelta
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+random.seed(0)
+
+def generate_data(start_date, end_date, duration, mean_kwh):
+    # Calculate number of hours in each time period
+    summer_hours = 3 * 24 * 60  # June, July, August
+    winter_hours = 4 * 24 * 60  # December, January, February, March
+
+    current_time = start_date
+    while duration > 0:
+        year = current_time.year
+        month = current_time.month
+        day_of_month = current_time.day
+        hour = current_time.hour % 12 or 12  # Convert to 12-hour format
+        minute = current_time.minute
+        second = random.uniform(0, 1) * 60
+
+        # Determine season based on time of year
+        if (month == 6 or month == 7 or month == 8) and day_of_month > 15:
+            kwh = mean_kwh * summer_hours / 24 / 3600
+        elif (month == 12 or month == 1 or month == 2) and day_of_month > 25:
+            kwh = mean_kwh * winter_hours / 24 / 3600
+        else:
+            # Generate random value around mean_kwh, within bounds of yearly_min_kwh and yearly_max_kwh
+            kwh = round(random.uniform(yearly_min_kwh, yearly_max_kwh),2)
+        
+        print(f"{year}-{month:02d}-{day_of_month:02d} {hour}:{minute:02d},{kwh}")
+
+        # Move to next time period
+        if month < 12:
+            current_time = current_time.replace(month=month+1, day=1)
+        else:
+            current_time = current_time.replace(year=current_time.year + 1, month=1, day=1)
+
+        duration -= 1
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=360*24*60) # exactly 360 measurements
+generate_data(start_date, end_date, 360, yearly_mean_kwh)

@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+
+# Define date range and time interval
+start_date = '2016-01-01 00:00'
+end_date = '2017-12-31 23:59'
+
+date_range = pd.date_range(start=start_date, end=end_date, freq='1H')
+
+# Generate electricity consumption data
+df = pd.DataFrame(index=date_range)
+df['VALUE'] = np.random.normal(loc=6.4528236, scale=(0.1 * (18.1 - 0.0)), size=len(df))
+
+# Ensure values are within valid range
+df['VALUE'] = df['VALUE'].clip(lower=0.0).clip(upper=18.1)
+
+# Split data into summer and winter months
+summer_months = [6, 7, 8]  # June, July, August
+winter_months = [12, 1, 2]  # December, January, February
+
+summer_dates = df.index[(df.index.month.isin(summer_months))]
+winter_dates = df.index[(df.index.month.isin(winter_months))]
+
+# Adjust values for summer and winter months to match summary statistics
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+summer_values = df.loc[summer_dates, 'VALUE']
+summer_values = (summer_values - np.mean(summer_values)) / np.std(summer_values) * summer_mean_kwh + summer_mean_kwh
+
+winter_values = df.loc[winter_dates, 'VALUE']
+winter_values = (winter_values - np.mean(winter_values)) / np.std(winter_values) * winter_mean_kwh + winter_mean_kwh
+
+# Replace values for summer and winter months
+df.loc[summer_dates, 'VALUE'] = summer_values
+df.loc[winter_dates, 'VALUE'] = winter_values
+
+# Format output as required
+output = '\n'.join(f"{date.strftime('%Y-%m-%d %H:%M')} {value:.6f" for date, value in df.iterrows())
+
+print(output)

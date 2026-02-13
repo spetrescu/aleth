@@ -1,0 +1,41 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants for simulation
+num_samples = 576
+total_seconds_in_year = 60*60 * 24 * 365
+yearly_mean_kwh = 46.317394
+summer_month_mean_kwh = 42.024456
+winter_month_mean_kwh = 46.382324
+min_kwh = 0.0
+max_kwh = 82.0
+
+# Simulation results as a list of tuples (timestamp, value)
+simulation_data = []
+
+# Start date for simulation
+start_date = datetime(2016,1,1)
+
+while len(simulation_data) < num_samples:
+    # Get the timestamp (datetime object) from start_date plus some random number of seconds.
+    current_time = start_date + timedelta(seconds=random.randint(0,total_seconds_in_year))
+
+    # Determine if it's summer or winter by checking month.
+    if (current_time.month == 6 or current_time.month == 7 or current_time.month == 8):
+        kwh_value = round(summer_month_mean_kwh + random.uniform(-5,5),3)
+    elif (current_time.month == 12 or current_time.month == 1 or current_time.month == 2):
+        kwh_value = round(winter_month_mean_kwh + random.uniform(-5,5),3)
+    else:
+        kwh_value = yearly_mean_kwh + random.uniform(-5,5)
+
+    # Ensure value stays within valid range
+    if kwh_value < min_kwh:
+        kwh_value = min_kwh
+    elif kwh_value > max_kwh:
+        kwh_value = max_kwh
+
+    simulation_data.append((current_time.strftime("%Y-%m-%d %H:%M"), round(kwh_value,3)))
+
+# Print results as specified.
+for timestamp, value in simulation_data:
+    print(f"{timestamp}, {value}")

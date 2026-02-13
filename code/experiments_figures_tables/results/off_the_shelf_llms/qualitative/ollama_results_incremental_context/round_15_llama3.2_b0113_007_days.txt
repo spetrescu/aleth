@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize lists to hold data
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+data = []
+
+for date in pd.date_range(start=start_date, end=end_date, freq='H'):
+    # Randomly select a value within the allowed range (yearly_mean_kwh +/- 10%)
+    value = yearly_mean_kwh * (1 + np.random.uniform(-0.1, 0.1))
+    
+    # Ensure value is not below min or above max kWh
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+    
+    # Randomly adjust for seasonal variation (summer/winter)
+    if (date.month in [6, 7, 8]) or (date.month in [12, 1, 2]):
+        value += np.random.uniform(-10, 10) * summer_mean_kwh
+    else:
+        value -= np.random.uniform(-10, 10) * winter_mean_kwh
+    
+    # Append data to list with correct date and value format
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')} {value:.6f}")
+
+# Print generated dataset
+for line in data:
+    print(line)

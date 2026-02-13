@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define summary statistics
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Generate date range
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=720)
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Loop over each hour in the range
+for n in range(int((end_date - start_date).days)):
+    current_date = start_date + timedelta(n)
+    # Generate random consumption for this hour
+    if current_date.month in [6, 7, 8]:  # Summer months (Jun-Aug)
+        value = np.random.normal(summer_mean_kwh, yearly_min_kwh / 10)  # Add some variability to avoid hitting minimum kWh
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))  # Ensure value is within range
+    elif current_date.month in [12, 1, 2]:  # Winter months (Dec-Feb)
+        value = np.random.normal(winter_mean_kwh, yearly_min_kwh / 10)  # Add some variability to avoid hitting minimum kWh
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))  # Ensure value is within range
+    else:
+        value = np.random.normal(yearly_mean_kwh, yearly_min_kwh / 10)  # Add some variability to avoid hitting minimum kWh
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))  # Ensure value is within range
+    
+    dates.append(current_date.isoformat())
+    values.append(round(value, 3))
+
+# Create DataFrame and print output
+df = pd.DataFrame({'Date': dates, 'Value (kWh)': values})
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Value (kWh)']}")

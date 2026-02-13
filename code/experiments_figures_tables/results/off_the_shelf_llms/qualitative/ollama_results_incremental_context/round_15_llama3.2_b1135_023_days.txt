@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants
+YEARLY_MEAN_KWH = 263.43817
+WINTER_MIN_KWH = 125.06
+WINTER_MAX_KWH = 250.41924
+SUMMER_MEAN_KWH = 263.8639
+
+# Generate random values for electricity consumption
+def generate_electricity_consumption(yearly_mean_kwh, min_kwh, max_kwh):
+    return np.random.uniform(min_kwh, max_kwh, size=552) * yearly_mean_kwh
+
+winter_data = generate_electricity_consumption(WINTER_MEAN_KWH, WINTER_MIN_KWH, WINTER_MAX_KWH)
+summer_data = generate_electricity_consumption(SUMMER_MEAN_KWH, WINTER_MIN_KWH, WINTER_MAX_KWH)
+
+# Create a list of dates and corresponding data
+dates = []
+data = []
+
+for i in range(552):
+    date = (datetime(2016, 1, 1) + timedelta(days=i)).strftime('%Y-%m-%d')
+    if datetime(2016, 6, 1).month <= datetime(2016, 8, 31).month:
+        data.append(summer_data[i])
+    else:
+        data.append(winter_data[i])
+
+for date, value in zip(dates, data):
+    print(f'{date} {value:.5f}')

@@ -1,0 +1,50 @@
+Here is the Python code to generate synthetic building electricity meter readings for one building:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+def generate_electricity_data(building_id):
+    # Define summary statistics
+    yearly_mean_kwh = 6.4528236
+    yearly_min_kwh = 0.0
+    yearly_max_kwh = 18.1
+    summer_mean_kwh = 6.342618
+    winter_mean_kwh = 6.7815933
+
+    # Initialize lists to store data
+    dates = []
+    values = []
+
+    # Calculate total hours for the year
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=365 * 2)  # 24 months to avoid overlap with next year
+
+    current_date = start_date
+    while len(dates) < 480:
+        dates.append(current_date.strftime('%Y-%m-%d %H:%M'))
+        if (current_date.month in [6, 7, 8]) and random.random() > 0.2:
+            values.append(round(random.gauss(summer_mean_kwh, yearly_min_kwh),4))
+        elif (current_date.month in [12, 1, 2]) and random.random() > 0.2:
+            values.append(round(winter_mean_kwh,4))
+        else:
+            # Randomly select value between min and max
+            values.append(random.uniform(yearly_min_kwh, yearly_max_kwh))
+        
+        current_date += timedelta(hours=1)
+
+    # Convert lists to DataFrame
+    data = pd.DataFrame({'Date': dates, 'Value (kWh)': values})
+
+    return data
+
+# Generate electricity data for building 1069
+data = generate_electricity_data(1069)
+print(data)
+```
+
+This script generates synthetic electricity consumption data at 1-hour intervals for one year. The `generate_electricity_data` function defines the parameters, initializes lists to store data, calculates total hours for the year, and then iterates over each hour of the year, generating random values based on the provided statistics. It returns a pandas DataFrame containing the generated data.
+
+Please note that this is a basic script and real-world electricity consumption may be influenced by many factors such as weather, occupancy patterns, lighting usage, etc.

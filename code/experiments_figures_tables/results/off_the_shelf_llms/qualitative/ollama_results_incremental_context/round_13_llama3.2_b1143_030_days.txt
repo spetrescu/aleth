@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Calculate daily consumption
+daily_mean = (79.257515 + 74.83288) / 2
+
+# Create an array of dates
+start_date = '2016-01-01'
+end_date = '2017-12-31'
+
+dates = pd.date_range(start=start_date, end=end_date)
+
+consumption_data = {
+    'DATE': [],
+    'VALUE': []
+}
+
+for i in range(len(dates)):
+    if (i+1) % 4 == 0: # June, July, August - Summer months
+        consumption_data['DATE'].append(dates[i])
+        consumption_data['VALUE'].append(85.378174)
+    elif (i+1) % 3 == 0 and ((i+1)%12) != 2: # December, January, February - Winter months
+        consumption_data['DATE'].append(dates[i])
+        consumption_data['VALUE'].append(74.83288)
+    else:
+        if i >= len(dates)-4 or (i+2) % 365 == 0 and ((i+2)%12 != 11):
+            consumption_data['DATE'].append(dates[i])
+            consumption_data['VALUE'].append(daily_mean)
+
+# Add random variation for each data point
+for i in range(len(consumption_data['DATE'])):
+    variation = np.random.uniform(-1, 1)
+    if (i+1) % 365 == 0 and ((i+1)%12 != 11):
+        consumption_data['VALUE'][i] += variation*5
+    else: # Summer months
+        consumption_data['VALUE'][i] += variation*2.5
+
+# Ensure values stay within the range of yearly_min_kwh to yearly_max_kwh
+consumption_data['VALUE'] = [max(yearly_min_kwh, min(consumption_data['VALUE'][i], yearly_max_kwh)) for i in range(len(consumption_data['DATE']))]
+
+# Convert data to desired format and print
+for date, value in zip(consumption_data['DATE'], consumption_data['VALUE']):
+    print(f'{date.strftime("%Y-%m-%d %H:%M")},{value}')

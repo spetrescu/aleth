@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 432 measurements.
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*2)  # 2 years
+dates = [start_date + timedelta(hours=i) for i in range(int((end_date - start_date).total_seconds() / 3600) + 1)]
+kwh_values = [round(yearly_mean_kwh * np.random.uniform(0.8, 1.2)) if date.month in [6,7,8] else round(winter_mean_kwh * np.random.uniform(0.8, 1.2)) for date in dates]
+
+# Ensure values are within min and max limits
+kwh_values = [max(yearly_min_kwh, min(value, yearly_max_kwh)) for value in kwh_values]
+
+# Output ONLY lines of: "YYYY-MM-DD HH:MM,VALUE"
+output = []
+for date, value in zip(dates, kwh_values):
+    output.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+print('\n'.join(output))

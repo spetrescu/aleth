@@ -1,0 +1,58 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+# Building metadata and annual summary statistics (2016)
+building_id = 107
+primary_use = "Education"
+square_feet = 97532
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Initialize lists to store date and consumption values
+dates = []
+consumptions = []
+
+# Calculate number of days in a year (365) and months in a year (12)
+days_in_year = 365
+months_in_year = 12
+
+# Generate dates for each hour from January 1, 2016 to December 31, 2016
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=days_in_year*2) # extra 2 months in case of non-leap year
+for n in range(int((end_date - start_date).total_seconds() / 3600)):
+    hour = int(start_date + timedelta(seconds=n*3600)).strftime('%Y-%m-%d %H:%M')
+    dates.append(hour)
+    # Calculate consumption value for each hour, with random variation around yearly_mean_kwh
+    consumption = round(yearly_mean_kwh + np.random.normal(0, 10), 4) 
+    # Ensure that the calculated consumption falls within the valid range
+    if consumption < yearly_min_kwh:
+        consumption = yearly_min_kwh
+    elif consumption > yearly_max_kwh:
+        consumption = yearly_max_kwh
+
+    if (start_date + timedelta(seconds=n*3600)).month in [6,7,8]:
+        consumption = round(summer_mean_kwh + np.random.normal(0, 20), 4)
+        # Ensure that the calculated consumption falls within the valid range
+        if consumption < yearly_min_kwh:
+            consumption = yearly_min_kwh
+        elif consumption > yearly_max_kwh:
+            consumption = yearly_max_kwh
+
+    else:
+       consumption = round(winter_mean_kwh + np.random.normal(0, 20), 4)
+        # Ensure that the calculated consumption falls within the valid range
+        if consumption < yearly_min_kwh:
+            consumption = yearly_min_kwh
+        elif consumption > yearly_max_kwh:
+            consumption = yearly_max_kwh
+
+    consumptions.append(consumption)
+
+# Generate the full dataset
+dataset = "\n".join(f"{date} {consumption}" for date, consumption in zip(dates, consumptions))
+
+print(dataset)

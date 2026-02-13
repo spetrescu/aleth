@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define constants
+BUILDING_ID = 1086
+PRIMARY_USE = "Office"
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER Mean_KWH = 393.1739
+WINTER_mean_KWH = 218.81273
+HOURS_IN_YEAR = 8760
+
+# Generate the dataset
+data = []
+current_date = datetime(2016, 1, 1)
+for _ in range(72):
+    # Generate a random hour
+    hour = np.random.randint(24)
+
+    # Determine if it's summer or winter based on the month
+    if (6 <= current_date.month < 8) or (12 >= current_date.month > 2):
+        consumption = SUMMER_mean_KWH * (hour / 24)
+    else:
+        consumption = WINTER_mean_KWH * (hour / 24)
+
+    # Ensure that values are within the valid range
+    if current_date.month in [6, 7, 8]:
+        consumption = max(YEARLY_MIN_KWH, min(consumption, YEARLY_MAX_KWH))
+    else:
+        consumption = max(YEARLY_MIN_KWH, min(consumption, YEARLY_MAX_KWH))
+
+    # Add to the dataset
+    data.append((current_date.strftime("%Y-%m-%d %H:%M"), consumption))
+
+    # Move to the next hour
+    current_date += timedelta(hours=1)
+
+# Convert the list of tuples into a pandas DataFrame and format as required
+df = pd.DataFrame(data, columns=["Date", "Consumption (kWh)"])
+print("\n".join(f"{d[0]},{d[1]:.8f}" for d in df.values))

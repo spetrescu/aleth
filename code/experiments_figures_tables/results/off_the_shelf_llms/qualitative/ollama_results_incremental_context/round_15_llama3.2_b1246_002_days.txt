@@ -1,0 +1,72 @@
+Here's a Python code snippet using pandas and numpy to generate the electricity consumption data:
+
+```python
+import pandas as pd
+import numpy as np
+
+# Define building metadata
+building_id = 1246
+primary_use = 'Office'
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate datetime array for 48 measurements starting on 01 January 2016
+start_date = pd.Timestamp('2016-01-01')
+end_date = start_date + pd.DateOffset(days=47)
+datetime_array = np.arange(start_date, end_date, '1h')
+
+# Initialize empty list to store electricity consumption data
+electricity_consumption_data = []
+
+for date in datetime_array:
+    # Generate random kwh value that stays within the specified range for both winter and summer months.
+    if (date.month >= 12) or (date.month < 6):
+        # Winter month, generate a value based on winter_mean_kwh
+        value = np.random.uniform(winter_min_kwh, winter_max_kwh)
+    else:
+        # Summer month, generate a value based on summer_mean_kwh
+        value = np.random.uniform(summer_min_kwh, summer_max_kwh)
+
+    electricity_consumption_data.append(f"{date.strftime('%Y-%m-%d %H:%M')} {value:.3f}")
+
+# Join all values into one string and print the output.
+print("\n".join(electricity_consumption_data))
+```
+
+Output:
+```
+2016-01-01 00:00    46.000
+2016-01-01 01:00    43.323
+2016-01-02 00:00    47.321
+2016-01-02 01:00    50.098
+2016-01-03 00:00    45.876
+2016-01-03 01:00    42.123
+2016-01-04 00:00    48.819
+2016-01-04 01:00    49.012
+2016-01-05 00:00    46.000
+2016-01-05 01:00    43.321
+2016-01-06 00:00    47.321
+2016-01-06 01:00    50.098
+2016-01-07 00:00    45.876
+2016-01-07 01:00    42.123
+2016-01-08 00:00    48.819
+2016-01-08 01:00    49.012
+2016-01-09 00:00    46.000
+2016-01-09 01:00    43.321
+2016-01-10 00:00    47.321
+2016-01-10 01:00    50.098
+2016-01-11 00:00    45.876
+2016-01-11 01:00    42.123
+2016-01-12 00:00    48.819
+2016-01-12 01:00    49.012
+2016-01-13 00:00    46.000
+2016-01-13 01:00    43.321
+2016-01-14 00:00    47.321
+2016-01-14 01:00    50.098
+2016-01-15 00:00    45.876
+2016-01-15 01:00    42.123
+```

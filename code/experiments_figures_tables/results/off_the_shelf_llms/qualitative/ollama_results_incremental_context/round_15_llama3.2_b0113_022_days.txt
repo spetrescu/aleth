@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Constants
+building_id = 113
+primary_use = 'Education'
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Generate dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=529 - 1)
+
+dates = [start_date + timedelta(hours=i) for i in range(int((end_date-start_date).total_seconds()/3600))]
+
+# Initialize lists to store values and corresponding date-hour
+values = []
+date_hour_values = []
+
+for date, hour in zip(dates, range(len(dates))):
+    # Randomly choose between summer and winter based on the month (June, July, August are summer; December, January, February are winter)
+    if (date.month == 6 or date.month == 7 or date.month == 8):
+        avg_kwh = summer_mean_kwh
+    else:
+        avg_kwh = winter_mean_kwh
+    
+    # Generate random values within the given kWh range and average
+    value = round(avg_kwh + np.random.uniform(-10, 10), 3)
+    
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+    
+    values.append(value)
+
+    date_hour_values.append(f"{date.strftime('%Y-%m-%d')} {hour:02d}:{value:08.3f}")
+
+# Print the dataset
+for date, hour in zip(dates, range(len(dates))):
+    print(f"{date.strftime('%Y-%m-%d')} {hour:02d}:{values[range(hour)]}")

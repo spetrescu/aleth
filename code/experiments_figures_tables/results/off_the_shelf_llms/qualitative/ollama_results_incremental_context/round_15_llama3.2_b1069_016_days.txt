@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+
+# Generate electricity consumption data
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+df = pd.DataFrame({
+    'date': [],
+    'value': []
+})
+
+for i in range(384):
+    date = start_date + \
+        '00:00' if i % 24 < 8 else \
+        (pd.to_datetime(start_date) + pd.DateOffset(minutes=i*60)).strftime('%Y-%m-%d') + \
+        ':{:02d}'.format(i // 24)
+    
+    # Randomly select a value based on season
+    if date.month in [6, 7, 8]:
+        value = np.random.uniform(5.9, summer_mean_kwh) + yearly_mean_kwh * (np.random.uniform(-0.1, 0.1))
+    else:
+        value = np.random.uniform(6.4, winter_mean_kwh) + yearly_mean_kwh * (np.random.uniform(-0.1, 0.1))
+
+    # Ensure the generated data is within the bounds of the summary stats
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    df.loc[i] = [date, round(value, 6)]
+
+# Print the dataset
+for i, row in df.iterrows():
+    print("{} {}".format(row['date'], row['value']))

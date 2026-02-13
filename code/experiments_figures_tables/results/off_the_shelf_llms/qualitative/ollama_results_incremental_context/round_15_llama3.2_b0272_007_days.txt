@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Generate date and time indices for 168 measurements
+start_date = '2016-01-01 00:00:00'
+end_date = pd.to_datetime(start_date) + pd.DateOffset(hours=1, days=168)
+dt_indices = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize lists to store the date/time and consumption values
+consumption_values = []
+
+for dt in dt_indices:
+    # Randomly decide if it's summer or winter
+    season = np.random.choice([0, 1], p=[0.2, 0.8])
+    
+    # Generate a random value within the specified ranges based on the season
+    if season == 0:  # Summer
+        mean_kwh = 25.539513
+    else:  # Winter
+        mean_kwh = 11.742976
+    
+    kwh = np.random.normal(mean_kwh, 
+                            (yearly_mean_kwh - yearly_min_kwh) / 2,
+                            size=1)[0]
+    
+    # Ensure the value is within the specified range
+    kwh = max(yearly_min_kwh, min(kwh, yearly_max_kwh))
+    
+    # Append the date/time and consumption values to the lists
+    consumption_values.append((dt.strftime('%Y-%m-%d %H:%M'), kwh))
+
+# Print the dataset
+for dt, kwh in consumption_values:
+    print(f"{dt}, {kwh:.6f}")

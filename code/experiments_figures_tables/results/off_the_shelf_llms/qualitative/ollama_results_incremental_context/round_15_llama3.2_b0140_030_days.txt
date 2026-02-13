@@ -1,0 +1,27 @@
+import pandas as pd
+import numpy as np
+
+# Set a seed for reproducibility
+np.random.seed(42)
+
+# Generate dates for 720 measurements (1 hour intervals)
+dates = pd.date_range('2016-01-01', periods=720, freq='H')
+
+# Create a DataFrame with the generated dates and random values
+df = pd.DataFrame({
+    'date': dates,
+    'kwh': np.random.normal(31.697405, 5, 720),
+    'value': np.clip(df['kwh'], df['kwh'].min(), df['kwh'].max())
+})
+
+# Create a new column to mark the month
+df['month'] = pd.PeriodIndex(df['date'], freq='M').cat.codes
+
+# Apply seasonal adjustments
+df.loc[df['month'] < 6, 'value'] = np.random.normal(32.27265, 5, len(df.loc[df['month'] < 6]))
+df.loc[df['month'] >= 6 & df['month'] <= 11, 'value'] = np.random.normal(30.24863, 5, len(df.loc[(df['month'] >= 6) & (df['month'] <= 11)]))
+
+# Convert the DataFrame to a list of strings
+lines = [f"{date.strftime('%Y-%m-%d %H:%M')}, {kwh}" for kwh in df['value']]
+
+print('\n'.join(lines))

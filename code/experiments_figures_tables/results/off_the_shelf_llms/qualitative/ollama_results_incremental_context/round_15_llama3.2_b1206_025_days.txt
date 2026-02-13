@@ -1,0 +1,31 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_data():
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=600)
+
+    date_range = [start_date + timedelta(days=i) for i in range((end_date - start_date).days)]
+
+    data = []
+    yearly_mean_kwh = 87.59102
+
+    for date in date_range:
+        month = date.month
+        if (month >= 6 and month <= 8): # summer months
+            kwh_reading = round(random.gauss(summer_mean_kwh, year_variance), 3)
+            year_variance = random.uniform(1, 5) # adding some variability for each year
+        else: # winter months
+            kwh_reading = round(winter_mean_kwh, 3)
+
+        if kwh_reading < yearly_min_kwh or kwh_reading > yearly_max_kwh:
+            data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{yearly_min_kwh}")
+        else:
+            data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{kwh_reading}")
+
+    return "\n".join(data)
+
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+print(generate_electricity_data())

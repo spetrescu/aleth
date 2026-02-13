@@ -1,0 +1,25 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_data(building_id):
+    # Define time intervals and associated averages
+    intervals = [(datetime(2016, 1, 1), datetime(2016, 12, 31)), 
+                 ((datetime(2016, 6, 1), datetime(2016, 8, 31)), (datetime(2016, 12, 2), datetime(2016, 2, 29)))]
+
+    # Initialize output list
+    data = []
+
+    # Generate electricity consumption at each interval in both seasons
+    for start_date, end_date in intervals:
+        while start_date <= end_date:
+            current_hour = start_date.hour + (start_date.minute / 60)
+            if len(data) < 720: 
+                kWh_consumed = round(random.gauss(intervals[0][1], intervals[0][0]), 3)
+                data.append(f"{str(start_date).replace(' ', 'T').replace('-', '/').replace(':', ':')} {kWh_consumed}")
+                start_date += timedelta(hours=1)
+
+    return "\n".join(data)
+
+
+# Call function with building ID
+print(generate_data(107))

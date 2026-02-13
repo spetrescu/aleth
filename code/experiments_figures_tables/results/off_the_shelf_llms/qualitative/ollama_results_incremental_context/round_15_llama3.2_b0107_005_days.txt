@@ -1,0 +1,46 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_meter_readings(building_id, primary_use, square_feet, yearly_mean_kwh,
+                            yearly_min_kwh, yearly_max_kwh, summer_mean_kwh,
+                            winter_mean_kwh, days_per_year):
+    readings = []
+    
+    current_date = datetime(2016, 1, 1)
+    
+    while len(readings) < 120:
+        if (current_date.month in [6, 7, 8] and
+            random.random() < 0.2):  # 20% chance of winter reading
+            readings.append((current_date.strftime('%Y-%m-%d %H:%M'), round(
+                winter_mean_kwh * random.uniform(0.85, 1.15))))
+        elif (current_date.month in [6, 7, 8] and
+              not random.random() < 0.2):
+            readings.append((current_date.strftime('%Y-%m-%d %H:%M'), yearly_min_kwh))
+        else:  # summer month or spring/fall transition
+            readings.append((current_date.strftime('%Y-%m-%d %H:%M'), round(
+                summer_mean_kwh * random.uniform(0.85, 1.15))))
+        
+        if (current_date.month == 12 and current_date.day > 31):
+            break
+        
+        # Increment time by one day
+        current_date += timedelta(days=1)
+    
+    return readings
+
+# Generate the electricity consumption data
+readings = generate_meter_readings(
+    building_id=107,
+    primary_use="Education",
+    square_feet=97532,
+    yearly_mean_kwh=234.75676,
+    yearly_min_kwh=0.0405,
+    yearly_max_kwh=591.0,
+    summer_mean_kwh=212.6387,
+    winter_mean_kwh=265.17035,
+    days_per_year=365
+)
+
+# Print the electricity consumption data
+for reading in readings:
+    print(f"{reading[0]}, {reading[1]}")

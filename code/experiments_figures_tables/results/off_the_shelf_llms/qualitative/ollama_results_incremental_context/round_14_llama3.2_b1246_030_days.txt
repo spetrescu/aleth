@@ -1,0 +1,46 @@
+import random
+import datetime
+
+# Set constants
+BUILDING_ID = 1246
+PRIMARY_USE = "Office"
+SQUARE_FEET = 50327
+YEARLY_MEAN_KWH = 46.317394
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 82.0
+SUMMER_MEAN_KWH = 42.024456
+WINTER_MEAN_KWH = 46.382324
+
+# Generate synthetic data
+start_date = datetime.date(2016, 1, 1)
+end_date = start_date + datetime.timedelta(days=730) # 720 days
+
+consumption_values = []
+current_hour = 0
+
+for day in range((end_date - start_date).days):
+    date = start_date + datetime.timedelta(days=day)
+
+    if date.month < 6:
+        mean_kwh = WINTER_MEAN_KWH
+    else:
+        mean_kwh = SUMMER_MEAN_KWH
+    
+    # Generate a random value with the given mean and standard deviation 
+    std_dev = (mean_kwh - YEARLY_MIN_KWH) / 2.0
+    kwh = round(random.gauss(mean_kwh, std_dev), 3)
+    
+    while kwh < YEARLY_MIN_KWH or kwh > YEARLY_MAX_KWH:
+        if kwh < YEARLY_MIN_KWH:
+            kwh += random.uniform(std_dev, (YEARLY_MAX_KWH - mean_kwh))
+        else:
+            kwh -= random.uniform(std_dev, (mean_kwh - YEARLY_MIN_KWH))
+
+    for hour in range(24):
+        consumption_values.append((date.strftime("%Y-%m-%d %H:%M"),kwh))
+        
+        # Move to the next hour
+        current_hour += 1
+        
+        if current_hour >= 720:
+            break

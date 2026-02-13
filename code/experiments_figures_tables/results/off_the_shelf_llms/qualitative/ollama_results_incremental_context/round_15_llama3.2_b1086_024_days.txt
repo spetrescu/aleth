@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Generate date and time data
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+dates = pd.date_range(start=start_date, end=end_date, freq='h')
+
+# Function to generate random consumption values within the allowed range
+def generate_consumption():
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    return value
+
+# Generate electricity consumption data at 1-hour intervals
+consumptions = [generate_consumption() for _ in range(576)]
+
+# Create DataFrame with date and consumption values
+df = pd.DataFrame({'Date': dates, 'Consumption (kWh)': consumptions})
+
+# Filter by summer and winter months
+summer_df = df[(df['Date'].dt.month.isin([6, 7, 8]))]
+winter_df = df[(df['Date'].dt.month.isin([12, 1, 2]))]
+
+# Apply mean consumption to each month
+summers_mean_consumption = summer_df['Consumption (kWh)'].mean()
+winters_mean_consumption = winter_df['Consumption (kWh)'].mean()
+
+# Interpolate between mean values and previous/next measurements for each day within the month
+summer_df['Consumption (kWh)'] = summer_df['Consumption (kWh)'].interpolate(method='linear')
+winter_df['Consumption (kWh)'] = winter_df['Consumption (kWh)'].interpolate(method='linear')
+
+# Set values to the mean consumption for each month
+summer_df.loc[(summer_df.index % 24) > 15, 'Consumption (kWh)'] = summers_mean_consumption
+winter_df.loc[(winter_df.index % 24) > 7.5, 'Consumption (kWh)'] = winters_mean_consumption
+
+# Combine summer and winter data back into the main DataFrame
+df = pd.concat([summer_df, winter_df])
+
+# Output the full dataset in the desired format
+for index, row in df.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d %H:%M')}, {row['Consumption (kWh)']}")

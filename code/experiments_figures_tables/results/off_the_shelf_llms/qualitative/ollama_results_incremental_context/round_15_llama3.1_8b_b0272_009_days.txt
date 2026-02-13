@@ -1,0 +1,61 @@
+I'll use Python to generate the electricity consumption data.
+
+
+```python
+import pandas as pd
+from datetime import timedelta, datetime
+
+# Define building metadata and annual summary statistics
+building_id = 272
+primary_use = "Education"
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Define summer and winter months
+summer_months = [6, 7, 8]
+winter_months = [12, 1, 2]
+
+# Create a list to store the electricity consumption data
+data = []
+
+# Loop through each hour of the year (01 Jan 2016 - 31 Dec 2016)
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365)
+current_date = start_date
+
+while current_date <= end_date:
+    # Get month and day of week
+    month = current_date.month
+    day_week = current_date.weekday()
+
+    # Check if summer or winter month
+    is_summer = month in summer_months
+    is_winter = month in winter_months
+
+    # Calculate mean kwh based on season
+    if is_summer:
+        mean_kwh = summer_mean_kwh
+    elif is_winter:
+        mean_kwh = winter_mean_kwh
+    else:
+        mean_kwh = yearly_mean_kwh
+
+    # Apply a slight random variation to the mean kwh value
+    value = round(mean_kwh + (0.2 - 0.1) * (random.random() - 0.5), 2)
+
+    # Ensure value is within allowed range
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+
+    # Add value to data list with formatted date string
+    data.append(f"{current_date.strftime('%Y-%m-%d %H:%M')},{value:.2f}")
+
+    current_date += timedelta(hours=1)
+
+# Print each line of the dataset
+for line in data:
+    print(line)
+```

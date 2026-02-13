@@ -1,0 +1,48 @@
+To generate synthetic building electricity meter readings for ONE building as per your requirements, we'll use a Python script with the `random` and `datetime` modules to simulate hourly energy consumption between January 1st, 2016, and October 30th, 2017 (720 hours). This period is chosen because it includes summer and winter months and spans more than two years to ensure we have both seasonal variations well-covered.
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = "1069"
+primary_use = "Office"
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Function to generate random value within a certain range
+def generate_random_value(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 2)
+
+# Generate data for summer months (June to August)
+summer_months = ["06", "07", "08"]
+
+start_date = datetime(2016, 1, 1)
+output_list = []
+
+while len(output_list) < 720:
+    current_date = start_date + timedelta(hours=len(output_list))
+    
+    # Seasonal adjustment
+    if current_date.strftime('%m') in summer_months:
+        value = generate_random_value(summer_mean_kwh - (yearly_mean_kwh * 0.05), 
+                                      summer_mean_kwh + (yearly_mean_kwh * 0.05))
+    else:  # Winter months and the rest of the year
+        value = generate_random_value(winter_mean_kwh - (yearly_mean_kwh * 0.03), 
+                                      winter_mean_kwh + (yearly_mean_kwh * 0.03))
+
+    # Adjust to stay within yearly min/max kwh
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    output_list.append(f"{current_date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+# Print the generated data
+for line in output_list:
+    print(line)
+```
+
+This script will generate 720 lines of electricity consumption data for the specified building, adhering to your requirements. The `generate_random_value` function is used to ensure that values are within a realistic range and consistent with the provided summary statistics.

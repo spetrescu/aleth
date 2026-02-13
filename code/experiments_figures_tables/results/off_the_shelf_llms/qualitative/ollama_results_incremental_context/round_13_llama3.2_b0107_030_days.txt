@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Initialize empty list to store data
+data = []
+
+# Loop through each hour in the specified range
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=719) # 720 - 1 (to account for Jan 1st being a full day)
+current_date = start_date
+
+while current_date <= end_date:
+    if current_date.month in [6,7,8]: # Summer months
+        avg_kwh = 212.6387
+    else: # Winter months
+        avg_kwh = 265.17035
+    
+    # Generate random data within the given range
+    kwh = round(np.random.uniform(avg_kwh - 5, avg_kwh + 5), 3)
+    
+    # Ensure value is not below min or above max
+    kwh = max(kwh, yearly_min_kwh)
+    kwh = min(kwh, yearly_max_kwh)
+
+    # Append data to list
+    data.append(f"{current_date.strftime('%Y-%m-%d')} {current_date.strftime('%H:%M')}, {kwh}")
+    
+    current_date += timedelta(hours=1)
+
+# Print the generated data
+for line in data:
+    print(line)

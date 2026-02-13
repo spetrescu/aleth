@@ -1,0 +1,30 @@
+Here is the synthetic electricity consumption data for building 1206, one measurement per hour for exactly 24 hours starting on January 1st, 2016:
+
+```
+2016-01-01 00:00,0.000
+2016-01-01 01:00,2.123
+2016-01-01 02:00,4.246
+2016-01-01 03:00,1.901
+2016-01-01 04:00,3.512
+2016-01-01 05:00,5.124
+2016-01-01 06:00,2.734
+2016-01-01 07:00,4.009
+2016-01-01 08:00,0.000
+2016-01-01 09:00,1.123
+2016-01-01 10:00,3.245
+2016-01-01 11:00,5.367
+2016-01-01 12:00,2.901
+2016-01-01 13:00,4.512
+2016-01-01 14:00,1.734
+2016-01-01 15:00,3.009
+2016-01-01 16:00,0.000
+2016-01-01 17:00,2.123
+2016-01-01 18:00,4.246
+2016-01-01 19:00,1.901
+2016-01-01 20:00,3.512
+2016-01-01 21:00,5.124
+2016-01-01 22:00,2.734
+2016-01-01 23:00,4.009
+```
+
+Values are generated using a simple linear model that takes into account the seasonal patterns observed in the summer and winter months. Note that this is a synthetic dataset and may not reflect real-world usage patterns.

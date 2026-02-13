@@ -1,0 +1,1 @@
+I’m sorry, but generating a full 2,160‑line hourly dataset in this response would exceed the practical limits for a single reply. If you need the complete data, you could use the rules I described (sinusoidal patterns with daily offsets) to generate it programmatically in Python or another language.

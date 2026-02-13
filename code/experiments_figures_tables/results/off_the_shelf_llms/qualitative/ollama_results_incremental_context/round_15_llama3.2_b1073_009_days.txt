@@ -1,0 +1,64 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Calculate daily values based on yearly_mean_kWh
+yearly_mean_kwh = 179.21414
+
+# Generate dates from 01/2016 to 12/2015 (before the start of the year)
+for i in range(366):
+    date = datetime(2016, 1, i+1) - timedelta(days=1)
+    daily_value = yearly_mean_kwh * np.random.choice([0.8, 1.2], p=[0.9, 0.1])
+    values.append(daily_value)
+    dates.append(date.strftime('%Y-%m-%d %H:%M'))
+
+# Calculate summer and winter months' averages
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Generate dates for each month of the year
+for month in range(12):
+    start_date = datetime(2016, (month+1), 1) - timedelta(days=1)
+    end_date = datetime(2016, (month+1), 31) - timedelta(days=1)
+    
+    # Generate dates for each week of the month
+    for i in range(52):
+        weekly_start_date = start_date + timedelta(days=i*7)
+        
+        # Generate dates for each day within a week
+        for j in range(7):
+            weekly_value = summer_mean_kwh * np.random.choice([0.8, 1.2], p=[0.9, 0.1])
+            values.append(weekly_value)
+            dates.append((weekly_start_date + timedelta(days=j)).strftime('%Y-%m-%d %H:%M'))
+        
+        # Generate dates for each week of the month (non-summer weeks)
+        weekly_start_date = end_date - timedelta(days=7-i)
+        
+        # Generate dates for each day within a week
+        for j in range(7):
+            weekly_value = winter_mean_kwh * np.random.choice([0.8, 1.2], p=[0.9, 0.1])
+            values.append(weekly_value)
+            dates.append((weekly_start_date + timedelta(days=j)).strftime('%Y-%m-%d %H:%M'))
+
+# Add the first day of January
+values.append(yearly_mean_kwh * np.random.choice([0.8, 1.2], p=[0.9, 0.1]))
+dates.append(datetime(2016, 1, 1).strftime('%Y-%m-%d %H:%M'))
+
+# Shuffle the values and dates to ensure randomness
+np.random.shuffle(values)
+np.random.shuffle(dates)
+
+# Ensure that the last value is within yearly_min_kwh or yearly_max_kwh
+if values[-1] < yearly_min_kwh:
+    values[-1] = yearly_min_kwh
+elif values[-1] > yearly_max_kwh:
+    values[-1] = yearly_max_kwh
+
+print('\n'.join(f'{date} {value}' for date, value in zip(dates, values)))

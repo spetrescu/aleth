@@ -1,0 +1,39 @@
+import random
+import datetime
+
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+start_date = datetime.datetime(2016,1,1)
+dates = []
+consumption_values = []
+
+while len(dates) < 3600:
+    year = start_date.year
+    month = start_date.month
+    day = start_date.day
+    
+    if (year == 2016 and month in [6,7,8]) or \
+       (year == 2016 and month in [12,1,2]):
+        consumption = summer_mean_kwh * random.uniform(0.9,1.1)
+    else:
+        consumption = yearly_mean_kwh * random.uniform(0.9,1.1)
+
+    if consumption < yearly_min_kwh or consumption > yearly_max_kwh:
+        raise Exception("Generated value outside valid range")
+    
+    consumption_values.append(consumption)
+    dates.append(start_date)
+
+    if start_date.month == 12 and start_date.day == 31:
+        end_date = datetime.datetime(year+1,1,1) - datetime.timedelta(days=1)
+    else:
+        end_date = datetime.datetime(year,month + 1,1) - datetime.timedelta(days=1)
+
+    start_date += datetime.timedelta(hours=1)
+
+for i in range(3600):
+    print(f"{dates[i].strftime('%Y-%m-%d %H:%M')},{consumption_values[i]:.6f}")

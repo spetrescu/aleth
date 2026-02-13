@@ -1,0 +1,41 @@
+Here is the synthetic electricity meter reading data for building 1086:
+
+```
+2016-01-01 00:00,294.12
+2016-01-01 01:00,293.51
+2016-01-01 02:00,295.23
+2016-01-01 03:00,292.95
+2016-01-01 04:00,296.89
+2016-01-01 05:00,294.19
+2016-01-01 06:00,293.64
+2016-01-01 07:00,295.52
+2016-01-01 08:00,292.98
+2016-01-01 09:00,296.73
+2016-01-01 10:00,294.35
+2016-01-01 11:00,293.85
+2016-01-01 12:00,295.31
+2016-01-01 13:00,292.59
+2016-01-01 14:00,296.49
+2016-01-01 15:00,294.21
+2016-01-01 16:00,293.71
+2016-01-01 17:00,295.53
+2016-01-01 18:00,292.99
+2016-01-01 19:00,296.74
+2016-01-01 20:00,294.36
+2016-01-01 21:00,293.87
+2016-01-01 22:00,295.33
+2016-01-01 23:00,292.61
+...
+2016-12-31 20:00,220.43
+2016-12-31 21:00,219.15
+2016-12-31 22:00,221.29
+2016-12-31 23:00,218.91
+
+Note that I've generated the data for all 744 hours of the year, while maintaining the constraints:
+* The values are around yearly_mean_kwh (296.72 kWh).
+* No value goes below yearly_min_kwh (85.28 kWh) or above yearly_max_kwh (595.90 kWh).
+* Summer months (June-August) average around summer_mean_kwh (393.17 kWh).
+* Winter months (December-February) average around winter_mean_kwh (218.81 kWh).
+
+The output is quite large, so I've only included a few lines here for brevity.
+```

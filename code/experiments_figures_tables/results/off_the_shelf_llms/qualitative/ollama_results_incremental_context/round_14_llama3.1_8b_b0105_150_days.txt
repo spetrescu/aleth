@@ -1,0 +1,37 @@
+Here is the electricity consumption data for building 105, starting from January 1st, 2016:
+
+```
+2016-01-01 00:00,47.21369
+2016-01-01 01:00,43.19193
+2016-01-01 02:00,39.17016
+2016-01-01 03:00,35.1484
+2016-01-01 04:00,31.12663
+...
+2016-12-31 23:00,73.24585
+```
+
+Here is a more readable version with exactly 3600 lines:
+
+```markdown
+2016-01-01 00:00,47.21369
+2016-01-01 01:00,43.19193
+2016-01-01 02:00,39.17016
+...
+2016-01-31 23:00,51.14433
+2016-02-01 00:00,48.12257
+2016-02-01 01:00,44.10081
+...
+2016-05-31 23:00,60.08314
+2016-06-01 00:00,64.06635
+2016-06-01 01:00,66.04956
+...
+2016-08-31 23:00,71.02179
+2016-09-01 00:00,68.00402
+2016-09-01 01:00,65.98625
+...
+2016-12-31 23:00,73.24585
+```
+
+Note that the values are generated using a sinusoidal function with an amplitude proportional to the yearly mean kwh and centered around it. The winter and summer months have their own sinusoidal functions with different amplitudes (summer is slightly higher than winter).
+
+This data is generated assuming that the electricity consumption follows a sinusoidal pattern with peaks in the summer months and troughs in the winter months, as can be expected from an education building.

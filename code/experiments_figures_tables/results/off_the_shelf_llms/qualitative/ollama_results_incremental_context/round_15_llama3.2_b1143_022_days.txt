@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize variables
+building_id = 1143
+primary_use = "Office"
+square_feet = 96612
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+num_measurements = 528
+
+# Generate time intervals
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=(num_measurements - 1) * 24 * 3600)
+
+time_intervals = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize lists to store values
+values = []
+
+# Loop through time intervals and generate random values
+for date in time_intervals:
+    # Calculate month (Jan=0, Feb=1, etc.)
+    month = (date.year - 2016) * 12 + date.month - 1
+    
+    # Set season based on month
+    if month < 8:  # Summer months
+        mean_kwh = summer_mean_kwh
+    elif month > 11:  # Winter months
+        mean_kwh = winter_mean_kwh
+    else:
+        # Spring/Fall averages are roughly halfway between summer and winter means
+        mean_kwh = (summer_mean_kwh + winter_mean_kwh) / 2
+    
+    # Generate random value within the range [yearly_min_kwh, yearly_max_kwh]
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    # Scale to mean kWh and apply seasonal factor
+    scaled_value = (value - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh) * (mean_kwh - yearly_min_kwh) + yearly_min_kwh
+    
+    # Add the value to the list
+    values.append(scaled_value)
+
+# Create output lines
+output_lines = []
+for i in range(num_measurements):
+    date = time_intervals[i]
+    value = round(values[i], 3)
+    output_line = f"{date.strftime('%Y-%m-%d %H:%M')}, {value}"
+    output_lines.append(output_line)
+
+print('\n'.join(output_lines))

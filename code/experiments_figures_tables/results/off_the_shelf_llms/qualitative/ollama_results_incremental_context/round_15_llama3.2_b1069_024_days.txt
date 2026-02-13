@@ -1,0 +1,41 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+# Building metadata
+building_id = 1069
+primary_use = "Office"
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Generate dates and hours for 576 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=576-1) # subtract one because we are not counting the last day
+
+date_list = [start_date + timedelta(days=i) for i in range(576)]
+
+hours_in_day = 24
+
+df = pd.DataFrame({'DATE': date_list,
+                   'HOUR': [hour % hours_in_day + 1 for hour in range(hours_in_day*576)]})
+
+# Interpolate values to match the 576 measurements
+def interpolate(value, start_date, end_date):
+    return np.random.uniform(start_date, end_date) * (end_date - start_date)
+
+interpolated_df = pd.DataFrame({'DATE': date_list,
+                                'HOUR': df['HOUR'],
+                                'VALUE': [np.random.choice([yearly_min_kwh, yearly_mean_kwh, yearly_max_kwh], p=[0.001, 0.999, 0.0001]) if i == 0 else
+                                         interpolate(yearly_mean_kwh, (start_date + timedelta(days=int(start_date.strftime('%Y-%m-01')))), 
+                                                    (end_date - timedelta(days=575))) for i in range(576)]
+
+# Apply seasonal adjustments
+seasonal_adjustments = interpolated_df.copy()
+seasonal_adjustments['VALUE'] = np.where(seasonal_adjustments['DATE'].dt.month.between(6, 8), summer_mean_kwh, winter_mean_kwh)
+interpolated_df.loc[(interpolated_df['DATE'].dt.month.between(6, 8)), 'VALUE'] = seasonal_adjustments['VALUE']
+
+print('\n'.join(f"{date.strftime('%Y-%m-%d %H:%M')} {value}" for date, value in zip(interpolated_df['DATE'], interpolated_df['VALUE'])))

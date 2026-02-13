@@ -1,0 +1,49 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define metadata
+building_id = 11
+primary_use = 'Education'
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Generate date and time ranges for 168 measurements
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + timedelta(days=167)
+
+# Initialize list to store readings
+readings = []
+
+for i in range(int((end_date - start_date).days)):
+    current_date = start_date + timedelta(days=i)
+    
+    # Determine season (based on month)
+    if current_date.month >= 6: # June, July, August
+        mean_kwh = summer_mean_kwh
+    else:
+        mean_kwh = winter_mean_kwh
+    
+    # Generate random value around the annual mean with some randomness
+    kwh_value = yearly_mean_kwh + (np.random.uniform(-0.5*yearly_mean_kwh, 0.5*yearly_mean_kwh))
+    
+    # Ensure the generated value is within valid range
+    while kwh_value < yearly_min_kwh or kwh_value > yearly_max_kwh:
+        kwh_value = yearly_mean_kwh + (np.random.uniform(-0.5*yearly_mean_kwh, 0.5*yearly_mean_kwh))
+        
+    # Append reading to the list
+    readings.append((current_date.strftime('%Y-%m-%d %H:%M'), round(kwh_value,2)))
+
+# Create a pandas dataframe from the list of readings
+df = pd.DataFrame(readings, columns=['Date','kWh'])
+
+# Print out the data as required
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['kWh']}")

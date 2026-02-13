@@ -1,0 +1,34 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Building metadata and annual summary statistics (2016)
+building_id = 140
+primary_use = "Office"
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 312 measurements.
+df = pd.DataFrame(index=range(312), columns=['Date', 'Value'])
+for i in range(312):
+    date = datetime(2016, 1, 1) + timedelta(days=i)
+    # Adjust the value to match the yearly mean and variability
+    if (date.month >= 3 and date.month <= 5 or  # Summer months
+        date.month == 12):  # December is winter month
+        value = summer_mean_kwh * np.random.uniform(0.8, 1.2)
+    else:
+        value = yearly_mean_kwh * np.random.uniform(0.8, 1.2)
+    df.loc[i, 'Date'] = date.strftime('%Y-%m-%d %H:%M')
+    df.loc[i, 'Value'] = value
+
+# Ensure values are within the specified range
+df['Value'] = pd.to_numeric(df['Value'])
+df.loc[df['Value'] < yearly_min_kwh, 'Value'] = yearly_min_kwh
+df.loc[df['Value'] > yearly_max_kwh, 'Value'] = yearly_max_kwh
+
+print("\n".join(f"{row['Date']}, {row['Value']}" for index, row in df.iterrows()))

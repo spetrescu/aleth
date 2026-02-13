@@ -1,0 +1,41 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+# Define building metadata and annual summary statistics
+building_metadata = {
+    'building_id': [11],
+    'primary_use': ['Education'],
+    'square_feet': [49073],
+    'yearly_mean_kwh': [296.39252],
+    'yearly_min_kwh': [0.0],
+    'yearly_max_kwh': [1052.0],
+    'summer_mean_kwh': [486.43784],
+    'winter_mean_kwh': [162.72496]
+}
+
+# Generate electricity consumption data
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + timedelta(days=216)
+consumption_data = []
+
+for i in range(int((end_date - start_date).days)):
+    current_time = start_date + timedelta(days=i)
+    hour = current_time.hour
+    
+    # Determine season and calculate mean kwh based on season
+    if (current_time.month >= 6) & (current_time.month <= 8):
+        avg_kwh = building_metadata['summer_mean_kwh'][0]
+    elif ((current_time.month >= 12) | (current_time.month <= 2)):
+        avg_kwh = building_metadata['winter_mean_kwh'][0]
+    else:
+        avg_kwh = building_metadata['yearly_mean_kwh'][0]
+    
+    # Generate random value between yearly_min_kwh and yearly_max_kwh
+    kwh_value = np.random.uniform(building_metadata['yearly_min_kwh'][0], building_metadata['yearly_max_kwh'][0])
+    
+    # Append data to consumption data list
+    consumption_data.append(f"{current_time.strftime('%Y-%m-%d %H:%M')},{kwh_value:.6f}")
+
+# Print dataset
+print('\n'.join(consumption_data))

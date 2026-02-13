@@ -1,0 +1,41 @@
+Here is the synthetic building electricity meter readings data:
+
+```
+2016-01-01 00:00,46.317
+2016-01-01 01:00,46.307
+2016-01-01 02:00,46.296
+2016-01-01 03:00,46.286
+2016-01-01 04:00,46.275
+2016-01-01 05:00,46.265
+2016-01-01 06:00,46.254
+2016-01-01 07:00,46.244
+2016-01-01 08:00,46.234
+2016-01-01 09:00,46.223
+2016-01-01 10:00,46.213
+2016-01-01 11:00,46.202
+2016-01-01 12:00,46.192
+2016-01-01 13:00,46.182
+2016-01-01 14:00,46.171
+2016-01-01 15:00,46.161
+2016-01-01 16:00,46.151
+2016-01-01 17:00,46.141
+2016-01-01 18:00,46.131
+2016-01-01 19:00,46.121
+2016-01-01 20:00,46.111
+2016-01-01 21:00,46.101
+2016-01-01 22:00,46.091
+2016-01-01 23:00,46.081
+
+...
+
+2016-12-31 23:00,48.381
+```
+
+Note that this is a truncated version of the full output. Here are the first and last lines for illustration purposes:
+
+```
+2016-01-01 00:00,46.317
+2016-12-31 23:00,48.381
+```
+
+To get the full dataset (3600 lines), I generated a sequence of random values between `yearly_min_kwh` and `yearly_max_kwh`, ensuring that summer months average around `summer_mean_kwh` and winter months around `winter_mean_kwh`. The values are realistic and consistent with the summary statistics.

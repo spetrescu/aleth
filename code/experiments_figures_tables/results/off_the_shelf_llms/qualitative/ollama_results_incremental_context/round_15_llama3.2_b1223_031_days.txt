@@ -1,0 +1,28 @@
+import random
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+random.seed(42)
+
+building_data = {
+    "yearly_mean_kwh": 76.72134,
+    "yearly_min_kwh": 0.0,
+    "yearly_max_kwh": 174.64,
+    "summer_mean_kwh": 81.22173,
+    "winter_mean_kwh": 83.83176
+}
+
+def generate_electricity_data():
+    now = datetime.now()
+    data = []
+    for hour in range(744):
+        date = (now + timedelta(hours=hour)).strftime('%Y-%m-%d')
+        kwh = round(random.uniform(building_data["yearly_min_kwh"], building_data["yearly_max_kwh"]), 4)
+        if (date.startswith('2016-06') or date.startswith('2016-07') or date.startswith('2016-08')) and hour >= 0 and hour <= 23:
+            kwh = round(random.uniform(building_data["summer_mean_kwh"], building_data["summer_max_kwh"]), 4)
+        elif (date.startswith('2016-12') or date.startswith('2017-01') or date.startswith('2017-02')) and hour >= 0 and hour <= 23:
+            kwh = round(random.uniform(building_data["winter_mean_kwh"], building_data["winter_max_kwh"]), 4)
+        data.append(f'{date} {kwh}')
+    return '\n'.join(data)
+
+print(generate_electricity_data())

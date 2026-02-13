@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+building_id = 272
+primary_use = "Education"
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Calculate total hours in a year (assuming 24/7)
+total_hours = 8760
+
+# Generate date range
+start_date = datetime(2016, 1, 1)
+date_range = [start_date + timedelta(hours=i) for i in range(total_hours)]
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Loop through each hour of the year
+for i in range(total_hours):
+    # Determine season based on month and day of week (Monday is considered winter)
+    if (i % 365) >= 153:  # December, January, February
+        season = "winter"
+        mean_kwh = winter_mean_kwh
+    else:
+        season = "summer"
+        mean_kwh = summer_mean_kwh
+
+    # Randomly select value between min and max kwh based on season
+    if season == "winter":
+        value = yearly_min_kwh + (mean_kwh - yearly_min_kwh) * np.random.uniform(0, 1)
+    else:
+        value = yearly_max_kwh - (yearly_max_kwh - mean_kwh) * np.random.uniform(0, 1)
+
+    # Append date and value to lists
+    dates.append(date_range[i].strftime("%Y-%m-%d %H:%M"))
+    values.append(value)
+
+# Create data frame
+df = pd.DataFrame({"DATE": dates, "VALUE (kWh)": values})
+
+# Print data
+for index, row in df.iterrows():
+    print(f"{row['DATE']}, {row['VALUE (kWh)']}")

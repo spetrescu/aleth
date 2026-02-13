@@ -1,0 +1,37 @@
+import random
+import datetime
+
+# Define constants based on summary statistics
+YEARLY_MEAN_KWH = 31.697405
+YEARLY_MIN_KWH = 8.0204
+YEARLY_MAX_KWH = 61.0
+SUMMER_MEAN_KWH = 32.27265
+WINTER_MEAN_KWH = 30.24863
+
+# Generate the data
+start_date = datetime.date(2016, 1, 1)
+end_date = start_date + datetime.timedelta(days=168)
+
+data = []
+while start_date <= end_date:
+    if (start_date.month in [6,7,8]) or (start_date.month in [12,1,2]):
+        mean_kwh = SUMMER_MEAN_KWH
+    else:
+        mean_kwh = YEARLY_MEAN_KWH
+
+    # Generate a random value within the allowed range
+    kwh = round(random.gauss(mean_kwh, 0.5), 3)  # +/- 50% of the mean
+
+    # Ensure values stay within allowed range
+    if kwh < YEARLY_MIN_KWH:
+        kwh = YEARLY_MIN_KWH
+    elif kwh > YEARLY_MAX_KWH:
+        kwh = YEARLY_MAX_KWH
+
+    # Add to data with timestamp
+    date_str = start_date.strftime('%Y-%m-%d %H:%M')
+    data.append(f'{date_str},{kwh}')
+
+    start_date += datetime.timedelta(hours=1)
+
+print('\n'.join(data))

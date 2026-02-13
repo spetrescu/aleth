@@ -1,0 +1,39 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import random
+
+# Define constants
+BUILDING_ID = 1246
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 50327
+YEARLY_MEAN_KWH = 46.317394
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 82.0
+SUMMER_MEAN_KWH = 42.024456
+WINTER_MEAN_KWH = 46.382324
+
+# Create a list to store the data
+data = []
+
+# Define the time range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=144)
+
+# Loop through each hour in the time range
+for n in range(int ((end_date - start_date).days)):
+    # Calculate the current date and time
+    current_date = start_date + timedelta(n)
+    current_time = current_date.strftime('%Y-%m-%d %H:%M')
+
+    # Randomly select a consumption value between yearly_min_kwh and yearly_max_kwh
+    if (current_date.month >= 6) or (current_date.month <= 8):
+        value = round(random.uniform(YEARLY_MEAN_KWH, YEARLY_MAX_KWH), 3)
+    else:
+        value = round(random.uniform(YEARLY_MIN_KWH, YEARLY_MEAN_KWH), 3)
+
+    # Append the data to the list
+    data.append((current_time, value))
+
+# Print the data
+for row in data:
+    print(f"{row[0]}, {row[1]}")

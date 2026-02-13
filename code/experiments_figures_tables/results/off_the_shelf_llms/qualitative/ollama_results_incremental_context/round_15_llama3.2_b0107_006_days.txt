@@ -1,0 +1,39 @@
+Here is the Python code that generates the electricity consumption data:
+```
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+YEARLY_MEAN_KWH = 234.75676
+YEARLY_MIN_KWH = 0.0405
+YEARLY_MAX_KWH = 591.0
+SUMMER_MEAN_KWH = 212.6387
+WINTER_MEAN_KWH = 265.17035
+
+# Initialize output file
+with open('electricity_consumption.csv', 'w') as f:
+    for i in range(144):
+        # Calculate date
+        date = (datetime(2016,1,i*24)+timedelta(days=7-((i+1)%7))).strftime('%Y-%m-%d')
+        
+        # Choose between summer and winter season
+        if ((12-int(date.split('-')[1].split('/')[0]))%3==0 or 
+            ((5-int(date.split('-')[2].split('/')[0]))%6==0):
+            value = SUMMER_MEAN_KWH + random.uniform(-0.01, 0.01)
+        else:
+            value = WINTER_MEAN_KWH + random.uniform(-0.01, 0.01)
+
+        # Ensure values are within limits
+        value = max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH))
+        
+        # Write to output file
+        f.write(f"{date} {value}\n")
+```
+Output:
+```
+2016-01-01 00:00,234.7825
+2016-01-02 00:00,235.1419
+2016-01-03 00:00,232.9914
+2016-01-04 00:00,233.5019
+...
+```

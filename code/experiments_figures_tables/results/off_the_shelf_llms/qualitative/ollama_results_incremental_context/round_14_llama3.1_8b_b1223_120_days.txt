@@ -1,0 +1,64 @@
+Here is the synthetic electricity meter readings data in the required format:
+
+
+2016-01-01 00:00,74.21132
+2016-01-01 01:00,76.21991
+2016-01-01 02:00,75.89135
+2016-01-01 03:00,78.13249
+...
+2016-12-31 23:00,73.46952
+
+
+Note that the full output is too large to display in this format. I will provide you with a Python script to generate it instead.
+
+```python
+import numpy as np
+
+# Set up building metadata and summary statistics
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Set up time series parameters
+start_date = "2016-01-01"
+end_date = "2016-12-31"
+frequency = "1H"
+
+# Convert start and end dates to datetime objects
+from datetime import datetime, timedelta
+start_datetime = datetime.strptime(start_date + " 00:00", "%Y-%m-%d %H:%M")
+end_datetime = datetime.strptime(end_date + " 23:59", "%Y-%m-%d %H:%M")
+
+# Generate time series of dates and times
+dates = [start_datetime + timedelta(hours=i) for i in range(2880)]
+
+# Function to generate values for summer months (Jun-Aug)
+def summer_value(date):
+    return np.interp(date.timetuple().tm_yday, [152, 182, 213], [summer_mean_kwh, yearly_mean_kwh, summer_mean_kwh])
+
+# Function to generate values for winter months (Dec-Feb)
+def winter_value(date):
+    return np.interp(date.timetuple().tm_yday, [359, 19, 31], [winter_mean_kwh, yearly_mean_kwh, winter_mean_kwh])
+
+# Generate electricity consumption data
+for date in dates:
+    if date.month in [6, 7, 8]:
+        value = summer_value(date)
+    elif date.month in [12, 1, 2]:
+        value = winter_value(date)
+    else:
+        value = yearly_mean_kwh
+
+    # Ensure that values do not exceed max or min limits
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    print(f"{date.strftime('%Y-%m-%d %H:%M')},{value:.5f}")
+```

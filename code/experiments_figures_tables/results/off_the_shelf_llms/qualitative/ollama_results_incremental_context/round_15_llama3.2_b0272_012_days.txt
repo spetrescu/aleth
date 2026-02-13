@@ -1,0 +1,35 @@
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 272
+primary_use = 'Education'
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 288 measurements.
+data = []
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*8 - 1)
+
+while start_date <= end_date:
+    hour = int(start_date.hour) % 24
+    minute = random.randint(0, 59)
+    
+    if (hour >= 12 and hour < 18) or (hour == 21): # Summer months
+        kwh_value = round(random.gauss(summer_mean_kwh, summer_mean_kwh/100),4)
+    else: # Winter months
+        kwh_value = round(random.gauss(winter_mean_kwh, winter_mean_kwh/100),4)
+
+    kwh_value = max(yearly_min_kwh, min(kwh_value, yearly_max_kwh))
+    
+    data.append(f"{start_date.strftime('%Y-%m-%d %H:%M')},{kwh_value}")
+    
+    start_date += timedelta(hours=1)
+
+print("\n".join(data))

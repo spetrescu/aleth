@@ -1,0 +1,41 @@
+import random
+from datetime import datetime, timedelta
+
+# Define the metadata and summary statistics
+building_id = 105
+primary_use = "Education"
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Define the start and end dates for generating data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=2160)
+
+# Generate 2160 random kWh values within the specified range
+kwh_values = []
+while len(kwh_values) < 2160:
+    value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 6)
+    kwh_values.append(value)
+
+# Generate data for each hour and append to the list of values
+for i in range(2160):
+    date = start_date + timedelta(hours=i)
+    # Randomly select a season (summer or winter) based on the month
+    if (date.month == 6 or date.month == 7 or date.month == 8):
+        kwh_value = round(random.uniform(summer_mean_kwh, summer_mean_kwh * 1.2), 6)
+    else:
+        kwh_value = round(random.uniform(winter_mean_kwh, winter_mean_kwh * 1.2), 6)
+
+    # Ensure the value is within the valid range
+    if kwh_value < yearly_min_kwh or kwh_value > yearly_max_kwh:
+        kwh_value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 6)
+    
+    kwh_values.append((date.strftime("%Y-%m-%d %H:%M"), kwh_value))
+
+# Print the generated data
+for kwh in kwh_values:
+    print(f"{kwh[0]},{kwh[1]}")

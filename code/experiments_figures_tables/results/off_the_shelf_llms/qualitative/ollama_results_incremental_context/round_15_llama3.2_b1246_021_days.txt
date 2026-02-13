@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+np.random.seed(0)
+start_date = '2016-01-01'
+end_date = '2022-12-31'
+intervals = pd.date_range(start=start_date, end=end_date, freq='H')
+
+def generate_data(end_date):
+    # Create a DataFrame to store the data
+    df = pd.DataFrame(index=intervals)
+    
+    # Initialize the values in the 'VALUE' column with yearly_mean_kwh and NaN for summer/winter months
+    df['VALUE'] = np.full(len(intervals), 46.317394, dtype=float)
+    months = [6,7,8] + [12,1,2]
+    indices_to_fill = []
+    for i in range(0,len(intervals)):
+        if (intervals[i].month in months):
+            df.at[i,'VALUE'] = np.nan
+        else:
+            indices_to_fill.append(i)
+            
+    # Fill the 'VALUE' column with summer_mean_kwh during summer months and winter_mean_kwh during winter months
+    for i in indices_to_fill:
+        if (intervals[i].month < 9):
+            df.at[i,'VALUE'] = np.random.uniform(42.024456, 45.0)
+        else:
+            df.at[i,'VALUE'] = np.random.uniform(46.382324, 47.5)
+
+    # Adjust the values to never go below yearly_min_kwh or above yearly_max_kwh
+    for i in range(len(df)):
+        if pd.isna(df['VALUE'].iloc[i]):
+            if intervals[i].month < 9:
+                df.at[i,'VALUE'] = np.clip(np.random.uniform(42.024456, 45.0), 0.0, 82.0)
+            else:
+                df.at[i,'VALUE'] = np.clip(np.random.uniform(46.382324, 47.5), 0.0, 82.0)
+
+    return df
+
+df = generate_data(end_date)
+print(df['VALUE'].astype(str).to_list())

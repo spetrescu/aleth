@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+
+# Generate time indices
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+date_range = pd.date_range(start=start_date, end=end_date)
+
+# Generate random values between yearly_min_kwh and yearly_max_kwh
+kwh_values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(date_range))
+
+# Create a DataFrame with the time indices and kWh values
+df = pd.DataFrame({'date': date_range, 'kwh': kwh_values})
+
+# Filter out the values that are outside of the winter and summer months ranges (winter: Dec-Feb; summer: Jun-Aug)
+df = df[(df['date'].dt.month >= 12) | ((df['date'].dt.month < 6) & (df['date'].dt.year == 2016))]
+
+# Filter out the values that are outside of yearly_min_kwh and yearly_max_kwh
+df = df[df['kwh'] >= yearly_min_kwh]
+df = df[df['kwh'] <= yearly_max_kwh]
+
+# Resample the data to hourly intervals
+df_resampled = df.set_index('date')['kwh'].resample('H').mean()
+
+# Interpolate missing values and convert the result into a DataFrame
+df_resampled_interpolated = df_resampled.interpolate(method='linear')
+
+# Create a list of 'YYYY-MM-DD HH:MM,VALUE' lines for each row in the resampled data
+output_lines = []
+for i in range(len(df_resampled)):
+    output_line = f"{start_date.strftime('%Y-%m-%d')} {start_date + pd.DateOffset(hours=i)}:{df_resampled_interpolated.iloc[i]:.2f}\n"
+    output_lines.append(output_line)
+
+print(''.join(output_lines))

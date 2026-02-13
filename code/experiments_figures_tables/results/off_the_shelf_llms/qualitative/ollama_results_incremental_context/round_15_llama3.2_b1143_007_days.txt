@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Parameters
+building_id = 1143
+primary_use = "Office"
+square_feet = 96612
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+# Generate dates and times for the measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=168)
+
+dates = [start_date + timedelta(hours=i) for i in range(int((end_date - start_date).total_seconds() / 3600) + 1)]
+
+# Generate random values for each measurement
+kwh_values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(dates))
+
+for date in dates:
+    # Set summer and winter months based on the day of the year
+    if (date.month == 6 or date.month == 7 or date.month == 8) and \
+       not ((date.month == 12 or date.month == 1 or date.month == 2) and 
+            np.random.rand() < 0.5):
+        kwh_values[date.hour] = summer_mean_kwh
+    elif (date.month in [12, 1, 2]) and not ((date.month == 6 or date.month == 7 or date.month == 8) and 
+                                            np.random.rand() < 0.5):
+        kwh_values[date.hour] = winter_mean_kwh
+
+# Format the dates and values
+formatted_dates = [date.strftime("%Y-%m-%d %H:%M") for date in dates]
+formatted_values = [f"{value:.3f}" for value in kwh_values]
+
+# Combine the formatted dates and values into a single list of strings
+result = "\n".join(f"{date},{value}" for date, value in zip(formatted_dates, formatted_values))
+
+print(result)

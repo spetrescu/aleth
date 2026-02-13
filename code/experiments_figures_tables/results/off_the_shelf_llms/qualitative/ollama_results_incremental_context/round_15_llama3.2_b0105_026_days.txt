@@ -1,0 +1,49 @@
+import random
+from datetime import timedelta, datetime
+
+# Constants for building metadata and annual summary statistics
+BUILDING_ID = 105
+PRIMARY_USE = "Education"
+SQUARE_FEET = 50623
+YEARLY_MEAN_KWH = 78.12403
+YEARLY_MIN_KWH = 23.3036
+YEARLY_MAX_KWH = 173.945
+SUMMER_MEAN_KWH = 78.177864
+WINTER_MEAN_KWH = 76.68618
+
+# Function to generate synthetic electricity consumption data
+def generate_electricity_consumption_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh):
+    # Initialize variables for time and consumption values
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=624 - 1)
+
+    data = []
+    while start_date <= end_date:
+        if (start_date.month == 6 or start_date.month == 7 or start_date.month == 8) and \
+           (start_date.day >= 15):  # Summer months
+            consumption_value = round(random.gauss(SUMMER_MEAN_KWH, 0.01 * SUMMER_MEAN_KWH), 3)
+        else:  # Winter months
+            consumption_value = round(random.gauss(WINTER_MEAN_KWH, 0.01 * WINTER_MEAN_KWH), 3)
+
+        if consumption_value < yearly_min_kwh:
+            consumption_value = yearly_min_kwh
+
+        if consumption_value > yearly_max_kwh:
+            consumption_value = yearly_max_kwh
+
+        # Round to two decimal places
+        consumption_value = round(consumption_value, 2)
+        hour = start_date.hour + 24 * (start_date.dayofweek - 1)
+
+        data.append(f"{start_date.strftime('%Y-%m-%d %H:%M')} {consumption_value}")
+
+        # Move to next day
+        if consumption_value < yearly_max_kwh:
+            start_date += timedelta(days=1)
+    return data
+
+# Generate electricity consumption data
+electricity_consumption_data = generate_electricity_consumption_data(BUILDING_ID, PRIMARY_USE, SQUARE_FEET, YEARLY_MEAN_KWH, YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+
+for item in electricity_consumption_data:
+    print(item)

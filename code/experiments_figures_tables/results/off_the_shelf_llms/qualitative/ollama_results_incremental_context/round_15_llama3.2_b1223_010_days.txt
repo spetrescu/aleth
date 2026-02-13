@@ -1,0 +1,52 @@
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(123)
+
+# Define the start and end dates of the data
+start_date = '2016-01-01'
+end_date = pd.to_datetime(start_date) + pd.DateOffset(minutes=15*240)  # 1 hour intervals for 240 measurements
+
+# Generate a date range with 1-hour intervals
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize an empty list to store the values
+values = []
+
+# Loop over each minute in the date range
+for i, date in enumerate(date_range):
+    # Calculate the hour of day
+    hour = date.hour
+    
+    # Determine if it's a summer or winter month
+    if (date.month == 6 or date.month == 7 or date.month == 8) and (date.day > 20):
+        summer_mean_kwh = 81.22173
+    elif (date.month in [12, 1, 2] and date.day >= 15):
+        winter_mean_kwh = 83.83176
+    
+    # Calculate the value for this minute based on the season and hourly variance
+    if hour < 8 or hour > 17:
+        variance = 0.25 * (summer_mean_kwh - yearly_mean_kwh)
+    else:
+        variance = 0.125 * (winter_mean_kwh - yearly_mean_kwh)
+
+    value = np.random.normal(yearly_mean_kwh, variance) + np.random.normal(0, 0.1*yearly_mean_kwh)  # add some randomness
+    
+    # Ensure the value is within the valid range
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    values.append(value)
+
+# Create a DataFrame with the date and corresponding value
+df = pd.DataFrame({'Date': date_range, 'Value': values})
+
+# Convert the Date column to string format for output
+df['Date'] = df['Date'].dt.strftime('%Y-%m-%d %H:%M')
+
+# Output the data in the required format
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Value']}")

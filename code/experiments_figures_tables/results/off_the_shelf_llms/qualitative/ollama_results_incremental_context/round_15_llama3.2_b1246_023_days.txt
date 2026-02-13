@@ -1,0 +1,36 @@
+import random
+from datetime import timedelta, datetime
+
+# Summary statistics
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+num_hours_per_year = 24 * 365
+
+# Initialize current time and kWh usage
+current_time = datetime(2016, 1, 1)
+kwh_usage = 0.0
+
+# Generate electricity consumption data
+for _ in range(552):
+    # Update current time
+    current_time += timedelta(hours=1)
+
+    # Check if it's summer or winter month
+    if (current_time.month == 6 or current_time.month == 7 or current_time.month == 8) and \
+       (current_time.year == 2016):
+        kwh_usage = random.gauss(summer_mean_kwh, yearly_min_kwh)
+    elif (current_time.month in [12, 1, 2] and 
+          current_time.year == 2016):
+        kwh_usage = random.gauss(winter_mean_kwh, yearly_min_kwh)
+
+    # Ensure kWh usage is within valid range
+    if kwh_usage < yearly_min_kwh:
+        kwh_usage = yearly_min_kwh
+    elif kwh_usage > yearly_max_kwh:
+        kwh_usage = yearly_max_kwh
+
+    # Print the reading
+    print(f"{current_time.strftime('%Y-%m-%d %H:%M')},{kwh_usage:.8f}")

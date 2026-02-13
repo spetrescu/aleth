@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+
+# Building metadata and annual summary statistics
+building_id = 1246
+primary_use = "Office"
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate electricity consumption data at 1-hour intervals
+start_date = pd.to_datetime('01 January 2016')
+end_date = start_date + pd.DateOffset(days=2160)
+
+data = []
+for hour in range(24*9): # 9 months x 24 hours
+    if (hour >= 0 and hour <= 179):
+        month = (hour//24)
+        month_start = month -1 
+        month_end = month
+
+        # Adjusting to the right summer/winter period
+        if(month_start == 6 or month_start == 7 or month_start==8): 
+            average_consumption=summer_mean_kwh
+        else:
+            average_consumption = yearly_mean_kwh
+        
+    elif (hour >= 180 and hour <= 211):
+        month = (hour//24) - 8
+        if(month <0):
+            month =12
+        month_start = month 
+        month_end =month+1
+
+        # Adjusting to the right summer/winter period
+        if(month_start == 10 or month_start==11 or month_start==12): 
+            average_consumption=winter_mean_kwh
+        else:
+            average_consumption = yearly_mean_kwh
+    
+    consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    data.append((start_date+(pd.DateOffset(hours=hour)),"{:.4f}".format(consumption)))
+
+# Print the generated electricity consumption data
+for line in data:
+   print(f"{line[0].strftime('%Y-%m-%d %H:%M')},{line[1]}")

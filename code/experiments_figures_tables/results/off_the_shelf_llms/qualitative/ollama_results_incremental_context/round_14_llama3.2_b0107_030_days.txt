@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+
+# Function to generate electricity consumption data
+def generate_electricity_consumption(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                                   summer_mean_kwh, winter_mean_kwh, days):
+    # Create a date range for 720 hours starting from January 1st, 2016
+    dates = pd.date_range(start='2016-01-01', periods=days)
+    
+    # Initialize lists to store the generated data
+    value = []
+    datetime_value = []
+    
+    # Set the seasonality of winter and summer months based on the given mean values
+    seasons = {
+        'winter': {'mean': winter_mean_kwh, 'min': yearly_min_kwh, 'max': yearly_max_kwh},
+        'summer': {'mean': summer_mean_kwh, 'min': yearly_min_kwh, 'max': yearly_max_kwh}
+    }
+    
+    # Iterate over the date range
+    for i in dates:
+        day_of_year = pd.to_datetime(i).toordinal()
+        
+        # Determine if it's a winter or summer month
+        if (day_of_year >= 365 and day_of_year < 366) or (day_of_year > 0 and day_of_year <= 100):
+            season_type = 'winter'
+        elif (day_of_year >= 181 and day_of_year < 222) or (day_of_year > 128 and day_of_year <= 256):
+            season_type = 'summer'
+        else:
+            season_type = None
+        
+        # Set the usage based on the current month
+        if season_type == 'winter':
+            value.append(seasons['winter']['min'])
+            value.append(seasons['winter']['mean'])
+            value.append(seasons['winter']['max'])
+        elif season_type == 'summer':
+            value.append(seasons['summer']['min'])
+            value.append(seasons['summer']['mean'])
+            value.append(seasons['summer']['max'])
+        else:
+            # If it's not a winter or summer month, set the usage to yearly_mean_kwh
+            value.append(yearly_mean_kwh)
+        
+        # Append the generated data as 'YYYY-MM-DD HH:MM,VALUE'
+        datetime_value.append(i.strftime('%Y-%m-%d %H:%M'))
+        if len(datetime_value) == 2:
+            datetime_value.append(','.join([str(val) for val in value]))
+    
+    # Return the generated dataset
+    return '\n'.join(datetime_value)
+
+# Generate electricity consumption data for building_id: 107
+building_data = generate_electricity_consumption(107, 'Education', 97532, 234.75676, 0.0405, 591.0, 212.6387, 265.17035, 720)
+
+print(building_data)

@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(1234)
+
+# Define constants
+BUILDING_ID = 1223
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 52141
+YEARLY_MEAN_KWH = 76.72134
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 174.64
+SUMMER_MEAN_KWH = 81.22173
+WINTER_MEAN_KWH = 83.83176
+
+# Convert stats to timedelta intervals for each month
+months = pd.date_range(start='2016-01-01', end='2017-12-31', freq='M')
+summer_intervals = [(i, i+1) for i in range(4)]  # Jun-Aug
+winter_intervals = [(i, i+1) for i in range(2, 9)]
+
+# Create a dataframe to hold the data
+data = pd.DataFrame(index=range(336), columns=['time', 'value'])
+
+# Fill in the values for each month
+for i, date in enumerate(months):
+    if (date.month in [6, 7, 8]) and i < len(summer_intervals):
+        # Summer months: use summer_mean_kwh
+        value = np.random.normal(SUMMER_MEAN_KWH, YEARLY_MEAN_KWH/12)
+    elif (date.month in [12, 1, 2]) and i < len(winter_intervals):
+        # Winter months: use winter_mean_kwh
+        value = np.random.normal(WINTER_MEAN_KWH, YEARLY_MEAN_KWH/12)
+    else:
+        # Other months: use yearly_mean_kwh
+        value = np.random.normal(YEARLY_MEAN_KWH, YEARLY_MEAN_KWH/12)
+
+    data.loc[i, 'time'] = date.strftime('%Y-%m-%d')
+    data.loc[i, 'value'] = round(value, 3)
+    if i < len(data)-1:
+        # Simulate some variance over the month
+        var = np.random.normal(0.05, 0.01)
+        data.loc[i+1, 'value'] += var
+
+# Ensure values are within bounds
+data['value'] = np.clip(data['value'], YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+
+print(data[['time', 'value']].to_string(index=False))

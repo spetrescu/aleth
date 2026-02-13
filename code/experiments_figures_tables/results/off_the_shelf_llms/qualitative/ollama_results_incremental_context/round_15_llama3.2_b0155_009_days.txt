@@ -1,0 +1,96 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+start_date = '2016-01-01 00:00'
+end_date = '2016-12-31 23:59'
+
+# Calculate the number of data points per month based on total data point count
+data_points_per_month = 216 // 12
+
+# Initialize lists to hold date and consumption values
+dates = []
+consumptions = []
+
+# Loop through each hour in the year, adding a random value between yearly_min_kwh and yearly_max_kwh
+for i in range(8640): # 8640 is number of hours in a year
+    date = start_date + str(i).zfill(2) + ':00'
+    consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    if (start_date.index(date) < 8) & (date[5:6] != '0'):
+        consumption = np.random.uniform(summer_mean_kwh, summer_mean_kwh+1)
+        
+    elif ((start_date.index(date) >= 8) & (start_date.index(date) <=11)):
+        consumption = np.random.uniform(winter_mean_kwh-1, winter_mean_kwh+1)
+
+    dates.append(date)
+    consumptions.append(consumption)
+
+# Create DataFrame
+df = pd.DataFrame({'date': dates, 'consumption': consumptions})
+
+# Ensure data points are evenly distributed throughout the year
+import pandas.tseries.holiday as holidays
+from datetime import datetime
+
+df['date'] = pd.to_datetime(df['date'])
+
+start_date = df['date'].min()
+end_date = df['date'].max()
+
+deltayear = (end_date - start_date).days // 365
+
+for i in range(deltayear):
+    date = str(start_date + pd.DateOffset(days=i)).split(' ')[0]
+    consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    if ((start_date + pd.DateOffset(days=i)).month in [6, 7, 8]):
+        consumption = np.random.uniform(summer_mean_kwh, summer_mean_kwh+1)
+        
+    elif ((start_date + pd.DateOffset(days=i)).month in [12, 1, 2]):
+        consumption = np.random.uniform(winter_mean_kwh-1, winter_mean_kwh+1)
+
+    df.loc[len(df.index)] = (date, consumption)
+
+# Ensure data points are evenly distributed throughout the year
+for i in range(deltayear):
+    date = str(start_date + pd.DateOffset(days=i)).split(' ')[0]
+    consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    if ((start_date + pd.DateOffset(days=i)).month in [6, 7, 8]):
+        consumption = np.random.uniform(summer_mean_kwh, summer_mean_kwh+1)
+        
+    elif ((start_date + pd.DateOffset(days=i)).month in [12, 1, 2]):
+        consumption = np.random.uniform(winter_mean_kwh-1, winter_mean_kwh+1)
+
+    df.loc[len(df.index)] = (date, consumption)
+
+# Ensure data points are evenly distributed throughout the year
+for i in range(deltayear):
+    date = str(start_date + pd.DateOffset(days=i)).split(' ')[0]
+    consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    if ((start_date + pd.DateOffset(days=i)).month in [6, 7, 8]):
+        consumption = np.random.uniform(summer_mean_kwh, summer_mean_kwh+1)
+        
+    elif ((start_date + pd.DateOffset(days=i)).month in [12, 1, 2]):
+        consumption = np.random.uniform(winter_mean_kwh-1, winter_mean_kwh+1)
+
+    df.loc[len(df.index)] = (date, consumption)
+
+# Ensure data points are evenly distributed throughout the year
+for i in range(deltayear):
+    date = str(start_date + pd.DateOffset(days=i)).split(' ')[0]
+    consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    if ((start_date + pd.DateOffset(days=i)).month in [6, 7, 8]):
+        consumption = np.random.uniform(summer_mean_kwh, summer_mean_kwh+1)
+        
+    elif ((start_date + pd.DateOffset(days=i)).month in [12, 1, 2]):
+        consumption = np.random.uniform(winter_mean_kwh-1, winter_mean_kwh+1)
+
+    df.loc[len(df.index)] = (date, consumption)
+
+print('\n'.join(f"{date} {consumption}" for date, consumption in zip(df['date'], df['consumption'])))

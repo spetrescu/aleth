@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Initialize empty list to store readings
+readings = []
+
+# Calculate total number of days in 600 measurements
+total_days = int(np.sqrt(600))
+
+# Loop through each day
+for i in range(total_days):
+    # Generate a random value within the allowed range for this day
+    daily_value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    # If it's summer (Jun-Aug), set the value to be around summer_mean_kwh
+    if (6 <= i % 12 + 1) < 4:  # June, July, August are months 6-8
+        daily_value = np.random.uniform(summer_mean_kwh - 0.5 * (summer_mean_kwh - yearly_max_kwh), summer_mean_kwh + 0.5 * (yearly_max_kwh - summer_mean_kwh))
+        
+    # If it's winter (Dec-Feb), set the value to be around winter_mean_kwh
+    elif (11 <= i % 12 + 1) < 3:  # December, January, February are months 11-13
+        daily_value = np.random.uniform(winter_mean_kwh - 0.5 * (winter_mean_kwh - yearly_min_kwh), winter_mean_kwh + 0.5 * (yearly_min_kwh - winter_mean_kwh))
+        
+    # Append the reading to the list with timestamp and value
+    start_date = datetime(2016,1,i+1)
+    for j in range(24):
+        readings.append(f"{start_date.strftime('%Y-%m-%d %H:%M')},{daily_value}")
+
+# Convert list of readings into a pandas DataFrame
+df = pd.DataFrame(readings, columns=['Timestamp', 'Value']).drop_duplicates()
+
+# Print the output
+for index, row in df.iterrows():
+    print(row['Timestamp'] + " " + str(row['Value']))

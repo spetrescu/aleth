@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+building_id = 105
+primary_use = 'Education'
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Generate date and time range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=527) # 528 measurements - first one is the start date
+dates = [start_date + timedelta(days=i) for i in range(528)]
+
+# Initialize lists to store values
+values = []
+
+for day in dates:
+    month = day.strftime('%m')
+    
+    if (month == '06' or month == '07' or month == '08') and \
+       ((day.month < 8) or (day.day > 15)):
+        # Summer months, average around summer_mean_kwh
+        value = np.random.normal(summer_mean_kwh, yearly_mean_kwh / 10)
+    elif (month == '12' or month == '01' or month == '02') and \
+         ((day.month > 2) or (day.day < 15)):
+        # Winter months, average around winter_mean_kwh
+        value = np.random.normal(winter_mean_kwh, yearly_mean_kwh / 10)
+    else:
+        # Other months, average around yearly_mean_kwh
+        value = np.random.normal(yearly_mean_kwh, yearly_mean_kwh / 10)
+    
+    # Ensure value is within valid range
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Add the value to the list
+    values.append(value)
+
+# Create a DataFrame and convert it to the required format
+df = pd.DataFrame({'date': dates, 'value': values})
+
+# Convert date to string and round value to two decimal places
+df['date'] = df['date'].dt.strftime('%Y-%m-%d %H:%M')
+df['value'] = df['value'].apply(lambda x: '{:.2f}'.format(x))
+
+# Print the DataFrame in the required format
+for index, row in df.iterrows():
+    print(f"{row['date']}, {row['value']}")

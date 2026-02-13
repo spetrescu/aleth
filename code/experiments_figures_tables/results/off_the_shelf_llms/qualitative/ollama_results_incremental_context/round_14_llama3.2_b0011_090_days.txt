@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Define parameters
+year = 2016
+days_in_year = 365
+summer_months = [6, 7, 8]  # June, July, August
+winter_months = [12, 1, 2]  # December, January, February
+
+# Function to generate random electricity consumption
+def gen_consumption():
+    return np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+# Generate data for each month of the year
+data = []
+for month in range(12):
+    start_date = date(year, winter_months[month] if winter_months[month] <= month else summer_months[month], 1)
+    end_date = (start_date + timedelta(days=days_in_year - 1)).replace(day=1) if month == 11 else start_date + timedelta(days=31)
+    
+    for day in range(int((end_date - start_date).days)):
+        date_ = start_date + timedelta(days=day)
+        value = gen_consumption()
+        
+        # Ensure winter months are not too high
+        if month in winter_months and value > summer_mean_kwh * 1.5:
+            value = int(summer_mean_kwh * 1.5)
+            
+        data.append((date_.isoformat(), round(value, 3)))
+
+# Generate data for each hour of the year
+for day in range(int(days_in_year)):
+    date_ = date(year, 1, 1) + timedelta(days=day)
+    
+    # Evenly distribute summer and winter months
+    if day < int((winter_months[0] - 1) / len(winter_months)):
+        value = gen_consumption()
+        
+    elif day < int(((winter_months[0] - 1) // len(winter_months)) * days_in_year):
+        value = gen_consumption() + np.random.uniform(-20, 10)
+            
+    else:
+        value = gen_consumption()
+
+    # Ensure values don't go below yearly_min_kwh or above yearly_max_kwh
+    if value > yearly_max_kwh:
+        value = yearly_max_kwh
+        
+    elif value < yearly_min_kwh:
+        value = yearly_min_kwh
+
+    data.append((date_.isoformat(), round(value, 3)))
+
+# Output the generated data
+for row in data:
+    print(f"{row[0]}, {row[1]}")

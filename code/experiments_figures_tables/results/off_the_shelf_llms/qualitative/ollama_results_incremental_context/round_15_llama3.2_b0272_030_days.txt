@@ -1,0 +1,38 @@
+import random
+from datetime import datetime, timedelta
+
+# Summary statistics
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Generate electricity consumption data for 720 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=719)
+
+while start_date < end_date:
+    # Determine the season and calculate the average kWh value
+    if start_date.month in [6, 7, 8]:  # Summer months (June-August)
+        avg_kwh = summer_mean_kwh
+    elif start_date.month in [12, 1, 2]:  # Winter months (December-February)
+        avg_kwh = winter_mean_kwh
+    else:  # Spring and fall seasons
+        avg_kwh = yearly_mean_kwh
+
+    # Generate a random value with the calculated average and some variability
+    value = round(avg_kwh + random.uniform(-1, 1), 6)
+
+    # Ensure the generated value is within the valid range
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    # Format and print the output line
+    formatted_date = start_date.strftime('%Y-%m-%d %H:%M')
+    print(f'{formatted_date}, {value}')  # Output only, no headers or extra text
+
+    # Move to the next hour
+    start_date += timedelta(hours=1)

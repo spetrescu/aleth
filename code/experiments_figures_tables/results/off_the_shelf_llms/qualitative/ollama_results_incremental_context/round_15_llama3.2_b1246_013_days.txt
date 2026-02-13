@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define parameters
+building_id = 1246
+primary_use = "Office"
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate date range for 312 hours (1 hour intervals)
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365 * 312 // 24)
+
+hours = []
+values = []
+
+current_month = [3, 4, 5]  # months with summer averages
+for n in range((end_date - start_date).days):
+    date = start_date + timedelta(n)
+    if winter_mean_kwh:
+        kwh = np.random.normal(winter_mean_kwh, yearly_min_kwh/10)  # add some variation for winter
+    else:
+        kwh = np.random.normal(yearly_mean_kwh, yearly_min_kwh/20)  # add more variation for summer
+
+    if date.month in current_month:  # months with summer averages
+        values.append(kwh)
+        hours.append(date.strftime('%Y-%m-%d %H:%M'))
+    else:
+        kwh = np.clip(kwh, yearly_min_kwh, yearly_max_kwh)  # ensure kwh stays within bounds
+        if winter_mean_kwh:
+            kwh = np.random.normal(winter_mean_kwh, (yearly_max_kwh - yearly_min_kwh)/20)
+        else:
+            kwh = np.random.normal(yearly_mean_kwh, (yearly_max_kwh - yearly_min_kwh)/15) 
+        values.append(kwh)
+        hours.append(date.strftime('%Y-%m-%d %H:%M'))
+
+for hour in hours:
+    print(f"{hour}, {values[-1]}")

@@ -1,0 +1,26 @@
+import random
+from datetime import timedelta, datetime
+
+# Initialize the start date and end date for the data generation process
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=240)
+
+# Define a list to store the generated data
+data = []
+
+while start_date <= end_date:
+    # Generate a random value between yearly_min_kwh and yearly_max_kwh
+    value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 6)
+    
+    # Format the date string
+    date_string = start_date.strftime('%Y-%m-%d %H:%M')
+    
+    # Add the generated data to the list
+    data.append((date_string, value))
+    
+    # Increment the date by one hour
+    start_date += timedelta(hours=1)
+
+# Print the generated data
+for row in data:
+    print(f"{row[0]}, {row[1]}")

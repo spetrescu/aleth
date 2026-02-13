@@ -1,0 +1,58 @@
+Here is a Python script that generates synthetic building electricity meter readings for ONE building based on the provided metadata and annual summary statistics:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 272
+primary_use = "Education"
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Function to generate synthetic meter readings
+def generate_meter_readings(start_date, end_date):
+    dates = [(start_date + timedelta(hours=i)).strftime("%Y-%m-%d %H:%M") for i in range(24*int((end_date - start_date).total_seconds()/3600)+1)]
+    
+    # Calculate mean and std dev of summer and winter months
+    summer_dates = [date for date in dates if (datetime.strptime(date, "%Y-%m-%d %H:%M").month >= 6) & (datetime.strptime(date, "%Y-%m-%d %H:%M").month <= 8)]
+    winter_dates = [date for date in dates if (datetime.strptime(date, "%Y-%m-%d %H:%M").month >= 12) | ((datetime.strptime(date, "%Y-%m-%d %H:%M").month == 1)) | ((datetime.strptime(date, "%Y-%m-%d %H:%M").month == 2))]
+    summer_mean = sum([random.uniform(yearly_min_kwh, yearly_max_kwh) for _ in range(1000)]) / 1000
+    winter_mean = sum([random.uniform(yearly_min_kwh, yearly_max_kwh) for _ in range(1000)]) / 1000
+    
+    # Generate synthetic meter readings for each hour
+    data = []
+    for date in dates:
+        value = random.uniform(min(summer_dates).strftime("%Y-%m"), max(winter_dates).strftime("%Y-%m")) == "June" or random.uniform(min(summer_dates).strftime("%Y-%m"), max(winter_dates).strftime("%Y-%m")) == "August"
+        
+        if value:
+            data.append((date, round(random.triangular(yearly_min_kwh, yearly_max_kwh, summer_mean), 2)))
+        else:
+            data.append((date, round(random.triangular(yearly_min_kwh, yearly_max_kwh, winter_mean), 2)))
+
+    return data
+
+# Generate and print synthetic meter readings for ONE building
+start_date = datetime(2016,1,1)
+end_date = start_date + timedelta(hours=575)
+
+data = generate_meter_readings(start_date, end_date)
+for row in data:
+    print(f"{row[0]},{row[1]}")
+```
+
+This code defines a function `generate_meter_readings` to calculate the synthetic meter readings. The function takes two datetime objects as input: the start and end dates of the time period for which the readings are required.
+
+The function first calculates the mean and standard deviation of summer and winter months by generating random values within the yearly_min_kwh and yearly_max_kwh limits, then calculating the average of these values.
+
+It then generates synthetic meter readings for each hour in the specified time period. For each hour, it checks if it falls within a summer or winter month; if so, it selects a random value from a triangular distribution centred on either the summer mean or the winter mean (respectively).
+
+Finally, it returns the list of synthetic meter readings as tuples containing the date and reading.
+
+The script then calls `generate_meter_readings` with the start and end dates specified in the task description and prints out the resulting data in the required format. 
+
+Please note that due to the nature of this task, the output will be different each time it's run because the synthetic meter readings are generated randomly based on a triangular distribution. If you want to reproduce the exact same result every time, you'll need to set a fixed seed for the random number generator.

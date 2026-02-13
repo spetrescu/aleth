@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Generate dates for each hour from 2016-01-01 to 2016-12-31
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Set the date range as the index of a new DataFrame
+df = pd.DataFrame(date_range, columns=['Date'])
+df['Value'] = np.random.uniform(df['Yearly_mean_kwh'], df['Yearly_max_kwh'])
+
+# Add seasonal variation by changing the value on every 8th hour for summer and winter months
+mask_summer_winter = (pd.to_datetime(df['Date']) >= '2016-06-01') & (pd.to_datetime(df['Date']) <= '2016-08-31')
+df.loc[mask_summer_winter, 'Value'] = np.random.uniform(df.loc[mask_summer_winter, 'Yearly_mean_kwh'], df.loc[mask_summer_winter, 'Yearly_max_kwh'])
+
+mask = (pd.to_datetime(df['Date']).dt.month >= 9) & (pd.to_datetime(df['Date']).dt.month <= 11)
+df.loc[mask, 'Value'] = np.random.uniform(df.loc[mask, 'Yearly_mean_kwh'], df.loc[mask, 'Yearly_max_kwh'])
+
+# Ensure values are not outside of yearly_min_kwh or yearly_max_kwh
+df['Value'] = np.clip(df['Value'], df['Yearly_min_kwh'], df['Yearly_max_kwh'])
+
+# Convert the DataFrame to a string with desired format
+output = ''
+for index, row in df.iterrows():
+    output += f"{row['Date'].strftime('%Y-%m-%d')} {row['Date'].time()} {row['Value']}\n"
+
+print(output)

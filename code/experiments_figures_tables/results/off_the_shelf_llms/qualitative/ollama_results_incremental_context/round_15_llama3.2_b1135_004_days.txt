@@ -1,0 +1,50 @@
+Here is a Python code snippet that can be used to generate synthetic building electricity meter readings:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Summary statistics for the building
+summary_stats = {
+    'yearly_mean_kwh': 263.43817,
+    'yearly_min_kwh': 125.06,
+    'yearly_max_kwh': 479.897,
+    'summer_mean_kwh': 263.8639,
+    'winter_mean_kwh': 250.41924
+}
+
+# Calculate hourly consumption for each hour of the year
+hourly_consumption = []
+start_date = datetime(2016,1,1)
+for i in range(96):
+    date = start_date + timedelta(hours=i)
+
+    # Randomly select usage type (summer or winter) based on the month
+    if (date.month > 5 and date.month < 8): 
+        use_type = 'summer'
+        avg_usage = summary_stats['summer_mean_kwh']
+    elif (12 <= date.month <= 2):
+        use_type = 'winter'
+        avg_usage = summary_stats['winter_mean_kwh']
+    else:
+        use_type = 'yearly'
+        avg_usage = summary_stats['yearly_mean_kwh']
+
+    # Randomly generate hourly consumption within the average usage range
+    value = random.uniform(summary_stats[use_type+'_min_kwh'],summary_stats[use_type+'_max_kwh'])
+    
+    # Ensure that it is not below yearly_min_kwh or above yearly_max_kwh
+    if use_type == 'yearly':
+        value = max(summary_stats['yearly_min_kwh'], min(value, summary_stats['yearly_max_kwh']))
+    elif use_type == 'summer' or use_type == 'winter': 
+        value = max(summary_stats[use_type+'_min_kwh'], min(value, summary_stats[use_type+'_max_kwh']))
+
+    hourly_consumption.append((date.strftime('%Y-%m-%d %H:%M'),value))
+
+# Generate output lines
+output_lines = '\n'.join([f"{line[0]} {line[1]}" for line in hourly_consumption])
+
+print(output_lines)
+```
+
+This Python code generates synthetic electricity consumption data at 1-hour intervals, starting on January 1st, 2016. The usage type (summer or winter) is randomly determined based on the month of the year.

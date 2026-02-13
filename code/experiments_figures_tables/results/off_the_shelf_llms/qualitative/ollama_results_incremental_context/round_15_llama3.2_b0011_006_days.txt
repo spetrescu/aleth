@@ -1,0 +1,41 @@
+import random
+from datetime import datetime, timedelta
+import pandas as pd
+
+# Building metadata and annual summary statistics (2016)
+building_id = 11
+primary_use = 'Education'
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*2-1)
+data = []
+for n in range((end_date-start_date).days):
+    date_time = start_date + timedelta(n)
+    value = round(random.gauss(yearly_mean_kwh, yearly_min_kwh+yearly_max_kwh)/144)
+    if not (0<=value<=yearly_max_kwh):
+        continue
+    data.append({
+        'date_time': str(date_time),
+        'VALUE': format(value, ".6f")
+    })
+
+df = pd.DataFrame(data)
+
+for i in range(len(df)):
+    row = df.iloc[i]
+    dayofyear = int(row['date_time'].split('-')[2])
+    if (dayofyear >= 160) and (dayofyear <= 210):
+        row["VALUE"] = round(random.gauss(summer_mean_kwh, summer_min_kwh+summer_max_kwh)/144)
+    else:
+        row["VALUE"] = round(random.gauss(winter_mean_kwh, winter_min_kwh+winter_max_kwh)/144)
+
+# Clean up and format data for output
+formatted_df = df.apply(lambda row: [row['date_time'], f"{row['VALUE']:.6f}"], axis=1)
+print('\n'.join(f"{date_time}, {value}" for date_time, value in formatted_df))

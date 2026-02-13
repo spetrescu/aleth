@@ -1,0 +1,50 @@
+To generate synthetic building electricity meter readings for one building, we will use a combination of Python and the NumPy library to simulate the energy consumption over time.
+
+Here is how you can achieve this:
+
+```python
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Constraints for summer and winter months
+summer_months = [6, 7, 8] # Jun-Aug
+winter_months = [12, 1, 2] # Dec-Feb
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 2160 measurements.
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365 * 24 // 3 - 1)
+
+data = []
+current_value = yearly_mean_kwh
+while start_date <= end_date:
+    # Append current date and value to the data list
+    data.append((start_date.strftime("%Y-%m-%d %H:%M"), round(current_value, 2)))
+
+    # Adjust current value based on day of year (DOY) for seasonal variation
+    if start_date.month in summer_months:
+        current_value = min(yearly_max_kwh, max(yearly_min_kwh, yearly_mean_kwh + (yearly_max_kwh - yearly_min_kwh) * np.random.uniform(-0.2, 0.3)))
+    elif start_date.month in winter_months:
+        current_value = min(yearly_max_kwh, max(yearly_min_kwh, yearly_mean_kwh + (yearly_max_kwh - yearly_min_kwh) * np.random.uniform(0.1, 0.4)))
+
+    # Move to next hour
+    start_date += timedelta(hours=1)
+
+# Print the data in "YYYY-MM-DD HH:MM,VALUE" format
+
+for date_value in data:
+    print(f"{date_value[0]},{date_value[1]}")
+```
+
+This code will generate synthetic electricity meter readings for one building for exactly 2160 measurements.

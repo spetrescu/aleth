@@ -1,0 +1,35 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Define the initial date and the number of measurements
+initial_date = '2016-01-01'
+num_measurements = 600
+
+# Calculate the end date
+end_date = (datetime.strptime(initial_date, '%Y-%m-%d') + 
+            timedelta(days=num_measurements - 1)).strftime('%Y-%m-%d')
+
+# Create a list to store the measurements
+measurements = []
+
+# Loop through each hour from initial to end dates
+current_date = initial_date
+while current_date <= end_date:
+    # Generate random value within yearly_mean_kwh and yearly_min_kwh limits
+    if current_date in ['2016-06-01', '2016-07-01', '2016-08-01'] or \
+       (current_date in ['2016-12-01', '2016-01-01', '2016-02-01']) and \
+        (current_date not in ['2016-06-01', '2016-07-01', '2016-08-01']):
+        value = round(363.97446 * 0.8 + (159.643 - 363.97446) * (1 - 0.8), 3)
+    else:
+        value = round(363.97446, 3)
+    
+    # Add the measurement to the list
+    measurements.append((current_date, f'{value:.3f}'))
+    
+    # Move to the next hour
+    current_date = (datetime.strptime(current_date, '%Y-%m-%d') + 
+                   timedelta(hours=1)).strftime('%Y-%m-%d')
+
+# Print the measurements
+for measurement in measurements:
+    print(f"{measurement[0]} {measurement[1]}")

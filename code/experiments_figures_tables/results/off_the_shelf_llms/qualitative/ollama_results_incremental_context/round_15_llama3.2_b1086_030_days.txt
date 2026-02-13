@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 1086
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER Mean_KWH = 393.1739
+WINTER_mean_KWH = 218.81273
+
+# Initialize the first hour with a value around yearly mean kwh
+hour = pd.DataFrame({
+    'date': [datetime(2016, 1, 1)],
+    'value': [YEARLY_MEAN_KWH]
+})
+
+# Initialize current date and time
+current_date = datetime(2016, 1, 1)
+for i in range(719):
+    # Generate a random value between yearly_min_kwh and yearly_max_kwh
+    value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    
+    # Calculate the next date
+    current_date += timedelta(hours=1)
+
+    # Determine if it's summer or winter based on the month
+    is_summer = (current_date.month >= 6) and (current_date.month <= 8)
+    is_winter = (current_date.month >= 12) and (current_date.month <= 2)
+
+    if is_summer:
+        target_value = SUMMER_mean_KWH
+    else:
+        target_value = WINTER_mean_KWH
+
+    # Calculate the difference between the target value and the generated value
+    diff = target_value - value
+
+    # Generate a new value that's within the allowed range (within 10% of the previous one)
+    if diff > 0:
+        factor = np.random.uniform(1, 2.1)  # slightly over 1 to avoid going below previous min kwh
+        value += np.abs(diff * factor)
+
+    hour = pd.concat([hour, pd.DataFrame({
+        'date': [current_date],
+        'value': [value]
+    })])
+
+# Convert the first row's date and value to strings
+hour['date'] = hour['date'].dt.strftime('%Y-%m-%d %H:%M')
+hour['value'] = hour['value'].astype(str)
+
+print(hour.to_string(index=False))

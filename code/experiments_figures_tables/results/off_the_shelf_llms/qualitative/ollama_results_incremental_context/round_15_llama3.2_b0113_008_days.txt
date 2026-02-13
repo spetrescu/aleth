@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(123)
+
+# Define the parameters
+building_id = 113
+primary_use = "Education"
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Generate a date range for the desired time period
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + pd.DateOffset(days=192*30)  # Assuming 30 days in each month
+
+# Initialize lists to store the values and dates
+values = []
+dates = []
+
+# Loop over each date in the range
+for i, date in enumerate(pd.date_range(start=start_date, end=end_date, freq='D')):
+    if pd.to_datetime(date).month in [6, 7, 8]:  # Summer months
+        kwh_value = summer_mean_kwh + (summer_mean_kwh - yearly_mean_kwh) * np.random.normal(0, 10)
+    else:
+        kwh_value = winter_mean_kwh + (winter_mean_kwh - yearly_mean_kwh) * np.random.normal(0, 10)
+
+    # Ensure the value is within the allowed range
+    if kwh_value < yearly_min_kwh:
+        kwh_value = yearly_min_kwh + np.random.uniform(-1, 0)
+    elif kwh_value > yearly_max_kwh:
+        kwh_value = yearly_max_kwh - np.random.uniform(0, 1)
+
+    values.append(kwh_value)
+    dates.append(date.strftime('%Y-%m-%d %H:%M'))
+
+# Combine the lists into dataframes
+df_values = pd.DataFrame(values, columns=['kWh'])
+df_dates = pd.DataFrame(dates, columns=['date'])
+
+# Print the combined dataframe
+for i in range(len(df_values)):
+    print(f"{df_dates['date'].iloc[i]} {df_values['kWh'].iloc[i]}")

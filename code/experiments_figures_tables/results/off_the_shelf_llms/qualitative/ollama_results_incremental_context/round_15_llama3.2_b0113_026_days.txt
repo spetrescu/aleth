@@ -1,0 +1,46 @@
+Here is the Python code to generate the synthetic electricity consumption data for the given building:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 113
+PRIMARY_USE = "Education"
+SQUARE_FEET = 100481
+YEARLY_MEAN_KWH = 363.97446
+YEARLY_MIN_KWH = 159.643
+YEARLY_MAX_KWH = 679.25
+SUMMER_MEAN_KWH = 365.49576
+WINTER_MEAN_KWH = 361.4717
+NUM_MEASUREMENTS = 624
+
+# Function to generate a random number between two values
+def rand_num(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 4)
+
+# Generate electricity consumption data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=NUM_MEASUREMENTS - 1)
+current_date = start_date
+
+while current_date <= end_date:
+    if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8) and \
+       (current_date.day >= 1 and current_date.day <= 31):
+        mean_kwh = SUMMER_MEAN_KWH
+    elif (current_date.month == 12 or current_date.month == 1 or current_date.month == 2) and \
+         (current_date.day >= 1 and current_date.day <= 28 or current_date.day >= 29):
+        mean_kwh = WINTER_MEAN_KWH
+    else:
+        mean_kwh = YEARLY_MEAN_KWH
+
+    value = rand_num(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    print(f"{current_date.strftime('%Y-%m-%d %H:%M')}, {mean_kwh + value}")
+
+    current_date += timedelta(hours=1)
+
+```
+
+This script generates a dataset of electricity consumption at 1-hour intervals for the specified building. The values are generated based on the given summary statistics and constraints.
+
+Please note that the actual output might vary due to the random nature of the generation process.

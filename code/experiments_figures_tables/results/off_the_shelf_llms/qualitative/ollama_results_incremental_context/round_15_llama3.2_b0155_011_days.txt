@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 155
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 51688
+YEARLY_MEAN_KWH = 81.997604
+YEARLY_MIN_KWH = 23.5
+YEARLY_MAX_KWH = 159.0
+SUMMER_MEAN_KWH = 73.1753
+WINTER_MEAN_KWH = 91.38757
+
+# Define the start and end dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=264)
+
+# Generate a list of all possible hours in the interval
+hours = [(start_date + timedelta(hours=i)).strftime('%Y-%m-%d %H:%M') for i in range(start_date.hour, end_date.hour+1)]
+
+# Initialize an empty list to hold our values
+values = []
+
+# Loop through each hour and generate a random value within the allowed range
+for i, hour in enumerate(hours):
+    if (hour.startswith('2016-06-') or hour.startswith('2016-07-') or hour.startswith('2016-08')) and (i >= 50 and i <= 159):  # Summer months
+        kWh = np.random.uniform(SUMMER_MEAN_KWH - 5, SUMMER_MEAN_KWH + 5)
+    elif (hour.startswith('2016-12-') or hour.startswith('2016-01-') or hour.startswith('2016-02')) and (i >= 0 and i <= 49):  # Winter months
+        kWh = np.random.uniform(WINTER_MEAN_KWH - 5, WINTER_MEAN_KWH + 5)
+    else:  
+        kWh = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    
+    values.append(f'{hour},{kWh:.6f}')
+
+# Join the list of hours with their corresponding kWh values into a single string
+output = '\n'.join(values)
+
+print(output)

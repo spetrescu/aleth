@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+
+# Set random seed for reproducibility
+np.random.seed(123)
+
+# Define metadata and summary statistics
+building_id = 105
+primary_use = 'Education'
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Generate date and time arrays for 456 measurements
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + pd.DateOffset(hours=1, days=len(pd.date_range(start=start_date, end=end_date)) - 456)
+dt_array = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate random values that are consistent with the summary statistics
+random_values = np.random.normal(yearly_mean_kwh, (yearly_max_kwh - yearly_min_kwh) / 10, len(dt_array))
+
+# Replace extreme values
+random_values[random_values < yearly_min_kwh] = yearly_min_kwh + (random_values[random_values < yearly_min_kwh] - yearly_min_kwh)
+random_values[random_values > yearly_max_kwh] = yearly_max_kwh - (random_values[random_values > yearly_max_kwh] - yearly_max_kwh)
+
+# Split the values into summer and winter months
+summer_monthly_mean = 78.177864 * len(pd.date_range(start=start_date, end=end_date, freq='MS')) / 3
+winter_monthly_mean = 76.68618 * len(pd.date_range(start=start_date, end=end_date, freq='MS')) / 3
+values = np.zeros(len(dt_array))
+for i in range(len(dt_array)):
+    if dt_array[i].month >= 6:  # June, July, August
+        values[i] = summer_monthly_mean + (np.random.normal(0, 5) * 10)
+    elif dt_array[i].month <= 2:  # December, January, February
+        values[i] = winter_monthly_mean + (np.random.normal(0, 5) * 10)
+
+# Round the values to 4 decimal places
+values = np.round(values, 4)
+
+# Combine date and time arrays with generated random values
+df = pd.DataFrame({'Date': dt_array, 'Value': values})
+
+# Print the dataset
+for index, row in df.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d')} {row['Value']:.4f}")

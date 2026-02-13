@@ -1,0 +1,50 @@
+Here is a Python script that generates synthetic building electricity meter readings:
+
+```python
+import datetime
+import random
+
+# Define constants
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+total_days = 288
+
+# Initialize lists to store data
+date_list = []
+value_list = []
+
+# Generate synthetic data for each hour
+for i in range(total_days):
+    date = datetime.date(2016, 1 + (i // 24), 1 + (i % 24))
+    
+    # Determine day type based on month and date
+    if 12 <= date.month < 3:
+        avg_kwh = winter_mean_kwh
+    elif 3 <= date.month < 6 or date.day >= 21:
+        avg_kwh = summer_mean_kwh
+    else:
+        avg_kwh = yearly_mean_kwh
+    
+    # Generate value within the range of min and max kwh
+    value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 2)
+    
+    # Ensure that most values are near the mean
+    if random.random() < 0.8:
+        value = round(avg_kwh, 2)
+    
+    date_list.append(date.strftime('%Y-%m-%d %H:%M'))
+    value_list.append(value)
+
+# Combine data into a single list of strings
+data = [' '.join([x, str(y)]) for x, y in zip(date_list, value_list)]
+
+# Output the synthetic data
+for line in data:
+    print(line)
+```
+
+This script will output exactly 288 lines with realistict values and consistent constraints.

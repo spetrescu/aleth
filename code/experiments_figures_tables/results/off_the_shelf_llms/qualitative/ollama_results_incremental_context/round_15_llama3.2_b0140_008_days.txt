@@ -1,0 +1,47 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_consumption_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh, summer_mean_kwh, winter_mean_kwh, num_measurements):
+    # Initialize lists to store dates and consumption values
+    dates = []
+    values = []
+
+    # Calculate the average daily consumption based on the mean annual consumption
+    avg_daily_consumption = yearly_mean_kwh / (365 * 24)
+
+    # Generate random daily consumptions for the year
+    for day in range(1, num_measurements + 1):
+        date_str = datetime(2016, 1, 1) + timedelta(days=day - 1)
+        dates.append(date_str.strftime('%Y-%m-%d'))
+
+        # Randomly select between summer and winter consumption pattern
+        if (date_str.month >= 6 and date_str.month <= 8) or (date_str.month >= 12 and date_str.month <= 2):
+            daily_consumption = random.gauss(summer_mean_kwh, avg_daily_consumption * 0.1)
+        else:
+            daily_consumption = random.gauss(winter_mean_kwh, avg_daily_consumption * 0.1)
+
+        # Ensure the consumption is within the allowed range
+        if daily_consumption < yearly_min_kwh / 365:
+            daily_consumption = yearly_min_kwh / 365 + random.uniform(0, (yearly_max_kwh - yearly_min_kwh) / 365)
+        elif daily_consumption > yearly_max_kwh / 365:
+            daily_consumption = yearly_max_kwh / 365 - random.uniform(0, (yearly_max_kwh - yearly_min_kwh) / 365)
+
+        values.append(daily_consumption)
+
+    # Create the output lines
+    for date_str, value in zip(dates, values):
+        print(f"{date_str} {value:.6f}")
+
+# Building metadata and annual summary statistics (2016)
+building_id = 140
+primary_use = "Office"
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate electricity consumption data for one year (365 days)
+num_measurements = 192
+generate_electricity_consumption_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh, summer_mean_kwh, winter_mean_kwh, num_measurements)

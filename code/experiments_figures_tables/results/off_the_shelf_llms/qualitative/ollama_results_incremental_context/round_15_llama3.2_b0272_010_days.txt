@@ -1,0 +1,36 @@
+Here is a Python script that generates electricity consumption data for the specified building:
+```python
+import random
+from datetime import datetime, timedelta, date
+
+def generate_electricity_consumption(building_id):
+    # Constants based on summary stats
+    yearly_mean_kwh = 17.38018
+    yearly_min_kwh = 0.8
+    yearly_max_kwh = 74.32
+    summer_mean_kwh = 25.539513
+    winter_mean_kwh = 11.742976
+
+    # Generate dates for the next 240 measurements
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=240*365)  # approximately one year and a quarter later
+
+    while start_date < end_date:
+        date_str = start_date.strftime('%Y-%m-%d')
+        if (start_date.month in [6, 7, 8]) or (start_date.month in [12, 1, 2]):
+            consumption = round(random.gauss(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh), 3)
+        else:
+            consumption = round(random.gauss(winter_mean_kwh, yearly_max_kwh - winter_mean_kwh), 3)
+
+        # Ensure the generated value is within min and max kwh
+        consumption = max(yearly_min_kwh, min(consumption, yearly_max_kwh))
+
+        print(f"{date_str} {start_date.strftime('%H:%M')}, {consumption}")
+
+        start_date += timedelta(hours=1)
+
+generate_electricity_consumption(272)
+```
+When you run this script, it will generate the requested dataset.
+
+Please note that I've used a normal distribution (Gaussian) to generate the values between summer_mean_kwh and yearly_max_kwh. You can adjust the `gauss` function call to suit your needs if you want more randomness in those months.

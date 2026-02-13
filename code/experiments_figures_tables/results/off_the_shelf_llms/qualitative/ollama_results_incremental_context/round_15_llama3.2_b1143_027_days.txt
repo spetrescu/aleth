@@ -1,0 +1,34 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_consumption_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                                         summer_mean_kwh, winter_mean_kwh):
+    # Initialize the data
+    data = []
+    
+    # Calculate the time step (1 hour)
+    t_step = timedelta(hours=1)
+
+    # Iterate over the 648 measurements
+    for i in range(648):
+        date_time = datetime(2016, 1, 1) + i * t_step
+        date_str = date_time.strftime('%Y-%m-%d %H:%M')
+        
+        if (date_time.month >= 6 and date_time.month <= 8): # Summer months
+            value = round(random.gauss(summer_mean_kwh, yearly_max_kwh / 5), 3)
+        elif (date_time.month >= 12 and date_time.month <= 2): # Winter months
+            value = round(random.gauss(winter_mean_kwh, yearly_min_kwh / 5), 3)
+        else:
+            value = round(random.gauss(yearly_mean_kwh, yearly_max_kwh / 10), 3)
+
+        # Ensure the value is within the specified range
+        if value < yearly_min_kwh:
+            value = yearly_min_kwh
+        elif value > yearly_max_kwh:
+            value = yearly_max_kwh
+        
+        data.append(f"{date_str}, {value}")
+
+    return '\n'.join(data)
+
+print(generate_electricity_consumption_data(1143, "Office", 96612, 79.257515, 25.0, 187.0, 85.378174, 74.83288))

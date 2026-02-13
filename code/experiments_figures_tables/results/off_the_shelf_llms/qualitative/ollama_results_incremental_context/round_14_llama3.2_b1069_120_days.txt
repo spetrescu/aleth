@@ -1,0 +1,62 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Define constants
+BUILDING_ID = 1069
+PRIMARY_USE = "Office"
+SQUARE_FEET = 20864
+YEARLY_MEAN_KWH = 6.4528236
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 18.1
+SUMMER_MEAN_KWH = 6.342618
+WINTER_MEAN_KWH = 6.7815933
+
+# Calculate total number of hours in a year
+HOURS_IN_A_YEAR = 8760
+
+# Generate date ranges for summer and winter months
+summer_months = [6, 7, 8]
+winter_months = [12, 1, 2]
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=HOURS_IN_A_YEAR)
+
+dates = []
+for i in range(int((end_date - start_date).days)):
+    dates.append(start_date + timedelta(days=i))
+
+# Initialize lists to store data
+values = []
+
+# Loop over each hour
+for date in dates[:2880]:
+    # Randomly select value based on month and year
+    if (date.month, date.year) in [(6, 2016), (7, 2016), (8, 2016)]:
+        value = np.random.uniform(SUMMER_MEAN_KWH - 1, SUMMER_MEAN_KWH + 1)
+    elif (date.month, date.year) in [(12, 2016), (1, 2017), (2, 2017)]:
+        value = np.random.uniform(WINTER_MEAN_KWH - 1, WINTER_MEAN_KWH + 1)
+    else:
+        # If not summer or winter, generate a value between yearly_min_kwh and yearly_max_kwh
+        value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+
+    # Ensure value is within valid range
+    if value < YEARLY_MIN_KWH:
+        value = YEARLY_MIN_KWH
+    elif value > YEARLY_MAX_KWH:
+        value = YEARLY_MAX_KWH
+
+    values.append(value)
+
+# Create output lines
+output_lines = []
+for i, date in enumerate(dates):
+    line = f"{date.strftime('%Y-%m-%d %H:%M')}, {values[i]}"
+    output_lines.append(line)
+
+# Print output
+for line in output_lines:
+    print(line)

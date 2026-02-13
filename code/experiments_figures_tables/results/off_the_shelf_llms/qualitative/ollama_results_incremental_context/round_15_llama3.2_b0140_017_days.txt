@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Building metadata and annual summary statistics (2016)
+building_id = 140
+primary_use = "Office"
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 408 measurements.
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=408*24)
+
+data = pd.DataFrame(columns=['Date', 'Value'])
+
+for i in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(days=i)
+    value = yearly_mean_kwh if primary_use == "Office" else np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    data.loc[len(data)] = [date.strftime('%Y-%m-%d %H:%M'), round(value, 6)]
+
+# Filter by building_id
+data = data[data['building_id'] == building_id]
+
+# Filter by date range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=408*24)
+data = data[(data['Date'] >= start_date) & (data['Date'] <= end_date)]
+
+# Create output string
+output = "\n".join([f"{date} {value}" for index, row in data.iterrows()])
+
+print(output)

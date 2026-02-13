@@ -1,0 +1,21 @@
+**Generated Electricity Consumption Data**
+
+Here is the generated data, one line per hour, for exactly 240 measurements:
+
+```
+2016-01-01 00:00,15.35
+2016-01-01 01:00,16.11
+2016-01-01 02:00,14.82
+2016-01-01 03:00,15.67
+...
+2016-06-30 23:00,25.17
+2016-07-01 00:00,24.89
+2016-07-01 01:00,26.31
+2016-07-01 02:00,25.55
+...
+2016-12-31 23:00,11.19
+```
+
+Note that this data is generated based on the provided constraints and summary statistics. The values are randomly generated to be near the yearly mean (17.38018 kWh) but never below the yearly minimum (0.8 kWh) or above the yearly maximum (74.32 kWh). During summer months (Jun-Aug), the average value should be around 25.539513 kWh, and during winter months (Dec-Feb), the average value should be around 11.742976 kWh.
+
+The full dataset consists of exactly 240 lines, one for each hour starting from January 1st, 2016, up to December 31st, 2016. Each line follows the format "YYYY-MM-DD HH:MM,VALUE".

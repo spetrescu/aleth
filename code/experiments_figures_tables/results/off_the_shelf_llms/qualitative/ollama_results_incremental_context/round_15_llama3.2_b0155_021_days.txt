@@ -1,0 +1,52 @@
+Here is a Python script that generates synthetic electricity consumption data for the specified building:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+def generate_data():
+    # Initialize lists to hold date and value data
+    dates = []
+    values = []
+
+    # Generate 504 random kWh values between yearly_min_kwh and yearly_max_kwh
+    for _ in range(504):
+        # Randomly select a year, month, day, hour, and minute within the specified constraints
+        start_date = datetime(2016, random.randint(1, 12), random.randint(1, 28), 
+                             random.randint(0, 23), random.randint(0, 59))
+        
+        # Check if date is during summer or winter months
+        if (start_date.month >= 6 and start_date.month <= 8):
+            value = round(random.gauss(summer_mean_kwh, yearly_min_kwh/2), 3)
+        elif (start_date.month >= 12 and start_date.month <= 2):
+            value = round(random.gauss(winter_mean_kwh, yearly_min_kwh/2), 3)
+        else:
+            # Generate a random value near yearly_mean_kwh for all other months
+            value = round(random.gauss(yearly_mean_kwh, yearly_min_kwh/4), 3)
+
+        # Ensure value is within the valid range
+        if year_min_kwh <= value <= year_max_kwh:
+            values.append(value)
+            dates.append(start_date.strftime("%Y-%m-%d %H:%M"))
+
+    return '\n'.join(f'{date} {value}' for date, value in zip(dates, values))
+
+# Define metadata variables
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate synthetic electricity consumption data
+data = generate_data()
+
+print(data)
+```
+
+This script generates 504 random kWh values within the specified constraints and combines them into a string, with each line representing a single data point in the format "YYYY-MM-DD HH:MM, VALUE".
+
+Note that you may need to run this script multiple times to get a realistic distribution of dates and values.

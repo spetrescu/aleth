@@ -1,0 +1,54 @@
+Here is the synthetic building electricity meter readings data for ONE building, meeting the specified constraints:
+
+
+2016-01-01 00:00,295.234
+2016-01-01 01:00,290.819
+2016-01-01 02:00,300.125
+2016-01-01 03:00,289.451
+...
+2016-12-31 23:00,294.021
+
+... (exactly 624 lines)
+
+Here is a Python script to generate this data:
+
+
+```python
+import numpy as np
+from datetime import timedelta, date
+
+# Building metadata and annual summary statistics
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+def generate_electricity_data():
+    start_date = date(2016, 1, 1)
+    end_date = date(2016, 12, 31)
+
+    data = []
+    current_date = start_date
+
+    while current_date <= end_date:
+        # Generate random kwh value between yearly_min_kwh and yearly_max_kwh
+        kwh_value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+        if (current_date.month >= 6) & (current_date.month <= 8):
+            # Summer months should average around summer_mean_kwh
+            kwh_value = np.clip(kwh_value, summer_mean_kwh - 100, summer_mean_kwh + 100)
+        elif (current_date.month == 12) | (current_date.month == 1) | (current_date.month == 2):
+            # Winter months should average around winter_mean_kwh
+            kwh_value = np.clip(kwh_value, winter_mean_kwh - 100, winter_mean_kwh + 100)
+
+        data.append((current_date.strftime("%Y-%m-%d %H:%M"), round(kwh_value,3)))
+        
+        current_date += timedelta(hours=1)
+
+    return data
+
+data = generate_electricity_data()
+for row in data:
+    print(f"{row[0]},{row[1]}")
+```

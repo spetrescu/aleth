@@ -1,0 +1,45 @@
+Here is a Python script to generate the synthetic building electricity meter readings:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Function to generate random values within the specified range
+def rand_range(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 2)
+
+# Generate electricity consumption data (kWh) at 1-hour intervals
+data = []
+start_date = datetime(2016, 1, 1)
+for i in range(3600):
+    date = start_date + timedelta(hours=i)
+    if date.month in [6, 7, 8]: # Summer months (Jun-Aug)
+        value = rand_range(summer_mean_kwh - 5, summer_mean_kwh + 5)
+    elif date.month in [12, 1, 2]: # Winter months (Dec-Feb)
+        value = rand_range(winter_mean_kwh - 5, winter_mean_kwh + 5)
+    else: # Other months
+        value = rand_range(yearly_mean_kwh - 10, yearly_mean_kwh + 10)
+    
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+    
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value:.2f}")
+
+# Print the full dataset
+for line in data:
+    print(line)
+```
+
+This script will output 3600 lines of synthetic building electricity meter readings, one for each hour starting from January 1, 2016. The values are generated randomly within realistic ranges, ensuring that they never go below `yearly_min_kwh` or above `yearly_max_kwh`.

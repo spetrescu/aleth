@@ -1,0 +1,37 @@
+import random
+from datetime import datetime, timedelta, timezone
+
+def generate_electricity_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh, 
+                             summer_mean_kwh, winter_mean_kwh):
+    # Initialize data with 480 random samples from the specified ranges
+    data = [
+        f"{datetime(2016,1,1).strftime('%Y-%m-%d %H:%M')},{random.uniform(yearly_min_kwh, yearly_max_kwh)}"
+        for _ in range(456)  # Only 480 measurements needed, but we need 4 more to be consistent
+    ]
+
+    data.extend([
+        f"{datetime(2016,6,1).strftime('%Y-%m-%d %H:%M')},{random.uniform(summer_mean_kwh-50, summer_mean_kwh+50)}"
+            for _ in range(60)
+    ])
+
+    data.extend([
+        f"{datetime(2016,12,1).strftime('%Y-%m-%d %H:%M')},{random.uniform(winter_mean_kwh-50, winter_mean_kwh+50)}"
+            for _ in range(60)
+    ])
+
+    return data
+
+# Specify the parameters
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Generate data
+data = generate_electricity_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                                 summer_mean_kwh, winter_mean_kwh)
+
+# Print output
+for item in data:
+    print(item)

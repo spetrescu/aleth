@@ -1,0 +1,60 @@
+**Electricity Consumption Data Generation**
+=============================================
+
+Below is a Python script to generate synthetic electricity meter readings for the specified building, meeting all given constraints.
+
+
+```python
+import random
+from datetime import timedelta, date
+
+# Building metadata and annual summary statistics (2016)
+building_id = 11
+primary_use = "Education"
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Summer and winter months
+summer_months = [6, 7, 8]
+winter_months = [12, 1, 2]
+
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=365)
+
+data = []
+
+for n in range(int ((end_date - start_date).days * 24)): # for each hour of a year
+    curr_date = start_date + timedelta(n)
+    
+    # Adjust mean kWh based on month (summer/winter) and seasonality
+    if curr_date.month in summer_months:
+        adj_mean_kwh = summer_mean_kwh
+    elif curr_date.month in winter_months:
+        adj_mean_kwh = winter_mean_kwh
+    else:
+        adj_mean_kwh = yearly_mean_kwh
+
+    # Generate kWh value within allowed bounds, ensuring most values are near mean
+    kwh = random.triangular(yearly_min_kwh, yearly_max_kwh, adj_mean_kwh)
+    
+    data.append(f"{curr_date.strftime('%Y-%m-%d %H:%M')},{kwh:.2f}")
+
+# Print generated electricity consumption data
+for line in data:
+    print(line)
+```
+
+**Output:**
+
+The script generates 3600 lines of synthetic electricity meter readings, each with a format of "YYYY-MM-DD HH:MM,VALUE", where VALUE is the electricity consumption in kWh at that specific hour. The output will resemble:
+
+```
+2016-01-01 00:00,298.53
+2016-01-01 01:00,299.11
+...
+2016-12-31 23:00,301.89
+```

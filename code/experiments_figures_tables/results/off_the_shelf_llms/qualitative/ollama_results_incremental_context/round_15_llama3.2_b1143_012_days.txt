@@ -1,0 +1,56 @@
+import pandas as pd
+from datetime import timedelta, datetime
+
+# Generate electricity consumption data for one building
+def generate_electricity_consumption_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                                      summer_mean_kwh, winter_mean_kwh, num_measurements):
+    # Calculate the start date
+    start_date = pd.to_datetime('2016-01-01')
+
+    # Initialize lists to store the values and dates
+    values = []
+    dates = []
+
+    for i in range(num_measurements):
+        current_date = start_date + timedelta(hours=i)
+        
+        if (current_date.month < 3 or (current_date.month == 3 and current_date.day < 1)) or \
+           (current_date.month > 10 or (current_date.month == 11 and current_date.day > 30)):
+            value = winter_mean_kwh
+        else:
+            value = summer_mean_kwh
+        
+        # Add some variability within each month to make the data more realistic
+        if i % 144 < 12:  
+            value += abs(pd.to_datetime('2016-04-01').hour - pd.to_datetime(current_date).hour) * 0.05
+
+        values.append(value)
+        dates.append(str(current_date))
+
+    # Ensure that no single line goes above yearly_max_kwh or below yearly_min_kwh
+    for i in range(len(values)):
+        while values[i] > yearly_max_kwh:
+            values[i] -= (values[i] - yearly_max_kwh) / 10.0 
+        while values[i] < yearly_min_kwh:
+            values[i] += (yearly_min_kwh - values[i]) / 10.0 
+
+    # Ensure that no two consecutive lines are too close in value
+    for i in range(len(values)-1):
+        if abs(values[i+1]-values[i]) > 2*abs(values[i]-yearly_mean_kwh):
+            while abs(values[i+1]-values[i]) > 2*abs(values[i]-yearly_mean_kwh):
+                values[i] += (values[i]-yearly_mean_kwh) / 5.0 
+        while abs(values[i]-values[i+1]) < abs(values[i]-yearly_mean_kwh):
+            values[i] -= (values[i]-yearly_mean_kwh) / 10.0 
+
+    # Convert lists to a pandas DataFrame
+    df = pd.DataFrame({'Date': dates, 'Value': values})
+    
+    return df
+
+df = generate_electricity_consumption_data(yearly_mean_kwh=79.257515, yearly_min_kwh=25.0,
+                                         yearly_max_kwh=187.0, summer_mean_kwh=85.378174,
+                                         winter_mean_kwh=74.83288, num_measurements=288)
+
+# Print the dataframe
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Value']}")

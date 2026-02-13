@@ -1,0 +1,55 @@
+import pandas as pd
+from datetime import timedelta, date
+import random
+
+def generate_data(start_date, end_date):
+    # Define the dates for summer and winter periods
+    start_summer = '2016-06-01'
+    end_summer = '2016-08-31'
+    start_winter = '2016-12-01'
+    end_winter = '2016-02-28'
+
+    data = []
+    current_date = start_date
+
+    while len(data) < 480:
+        if (current_date >= start_summer and 
+            current_date <= end_summer):
+          avg_usage = 42.024456
+        elif (current_date >= start_winter and 
+              current_date <= end_winter):
+          avg_usage = 46.382324
+        else:
+          avg_usage = 46.317394
+        
+        # Generate a random value within the allowed range for this period
+        usage = round(random.gauss(avg_usage, 0.5), 3)
+        
+        # Ensure generated value is not below or above limits set by yearly stats
+        if (current_date >= start_summer and 
+            usage < 42.024456):
+          usage = max(usage, 42.024456)
+        elif (current_date >= start_winter and 
+              usage > 46.382324):
+          usage = min(usage, 46.382324)
+
+        # Ensure generated value is not below yearly_min_kwh or above yearly_max_kwh
+        if usage < 0:
+          usage = 0
+        elif usage > 82:
+          usage = 82
+
+        data.append((current_date.strftime('%Y-%m-%d %H:%M'), usage))
+        
+        # Increment to next hour in the current day
+        hours = (pd.to_datetime(current_date) + timedelta(hours=1)).time()
+        if hours == pd.to_datetime(current_date).time():
+          current_date += timedelta(days=1)
+        else:
+          current_date = date.today()
+
+    return data
+
+data = generate_data('2016-01-01', '2016-12-31')
+for value in data:
+  print(f"{value[0]},{value[1]}")

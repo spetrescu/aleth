@@ -1,0 +1,27 @@
+Here is the dataset with synthetic electricity consumption data:
+
+01 January 00:00, 178.0
+01 January 01:00, 179.1
+01 January 02:00, 177.9
+01 January 03:00, 180.2
+01 January 04:00, 176.8
+01 January 05:00, 179.5
+01 January 06:00, 178.3
+01 January 07:00, 181.1
+01 January 08:00, 177.2
+01 January 09:00, 179.7
+01 January 10:00, 176.9
+01 January 11:00, 180.0
+01 January 12:00, 177.6
+01 January 13:00, 179.3
+01 January 14:00, 178.2
+01 January 15:00, 181.8
+01 January 16:00, 177.4
+01 January 17:00, 179.9
+01 January 18:00, 176.7
+01 January 19:00, 180.6
+01 January 20:00, 178.1
+01 January 21:00, 181.3
+01 January 22:00, 177.1
+01 January 23:00, 179.8
+01 January 24:00, 176.5

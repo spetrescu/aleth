@@ -1,0 +1,57 @@
+Here is a Python script that generates synthetic electricity consumption data for the specified building:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 105
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 50623
+YEARLY_MEAN_KWH = 78.12403
+YEARLY_MIN_KWH = 23.3036
+YEARLY_MAX_KWH = 173.945
+SUMMER_MEAN_KWH = 78.177864
+WINTER_MEAN_KWH = 76.68618
+MEASUREMENTS_PER_YEAR = 8760
+HOUR_IN_SECONDS = 3600
+
+# Function to generate synthetic readings
+def generate_readings(start_date, end_date):
+    start_time = int(start_date.timestamp())
+    end_time = int(end_date.timestamp())
+
+    readings = []
+    date = start_date + timedelta(seconds=start_time)
+
+    for hour in range(HOUR_IN_SECONDS):
+        day_of_year = (date - start_date).days // 24
+        if day_of_year < 182:
+            reading_value = WINTER_MEAN_KWH * random.random() + (
+                SUMMER_MEAN_KWH - WINTER_MEAN_KWH) * random.random()
+        else:
+            reading_value = YEARLY_MEAN_KWH * random.random()
+
+        reading_value = max(YEARLY_MIN_KWH, min(reading_value, YEARLY_MAX_KWH))
+        
+        # Ensure summer month averages
+        if (6 <= date.month < 9):
+            reading_value = SUMMER_MEAN_KWH * random.random()
+        
+        readings.append((date.strftime('%Y-%m-%d %H:%M'), round(reading_value)))
+
+        day_of_year += 1
+
+    return readings
+
+# Generate data for a year
+start_date = datetime(2016, 1, 1)
+end_date = datetime(2017, 12, 31)
+
+data = generate_readings(start_date, end_date)
+
+for reading in data:
+    print(f"{reading[0]}, {reading[1]}")
+```
+
+Please note that this script generates random electricity readings that should be consistent with the provided metadata. This means the values are usually near `yearly_mean_kwh`, but can sometimes fluctuate within a range around it. The summer months are more likely to average around `summer_mean_kwh` and winter months around `winter_mean_kwh`.

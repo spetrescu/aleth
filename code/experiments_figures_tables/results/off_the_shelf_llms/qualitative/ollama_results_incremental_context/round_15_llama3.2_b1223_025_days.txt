@@ -1,0 +1,50 @@
+import random
+from datetime import datetime, timedelta
+
+# Function to generate a random number between two values
+def rand(min_val, max_val):
+    return min_val + (max_val - min_val) * random.random()
+
+# Building metadata and annual summary statistics
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate electricity consumption data (kWh) at 1-hour intervals
+consumption_data = []
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*600)
+
+for day in range(int((end_date - start_date).days)):
+    current_date = start_date + timedelta(days=start_date.day + day)
+    
+    # Get season (month) of the current date
+    month = current_date.month
+    
+    if 6 <= month <= 8:
+        consumption = round(summer_mean_kwh * rand(0.9, 1.1), 3)
+    elif 12 <= month <= 2:
+        consumption = round(winter_mean_kwh * rand(0.9, 1.1), 3)
+    else:
+        consumption = round(yearly_mean_kwh * rand(0.8, 1.2), 3)
+
+    # Ensure consumption is within the allowed range
+    if consumption < yearly_min_kwh or consumption > yearly_max_kwh:
+        if consumption < yearly_min_kwh:
+            consumption = yearly_min_kwh
+        else:
+            consumption = yearly_max_kwh
+
+    # Add 1-hour interval data to the list
+    hour = current_date.replace(minute=0, second=0)
+    hours = [f"{hour.strftime('%Y-%m-%d %H:%M')}: {kWh}" for kWh in [consumption] * 24]
+    consumption_data.extend(hours)
+
+# Print the generated data as required
+for line in consumption_data:
+    print(line)

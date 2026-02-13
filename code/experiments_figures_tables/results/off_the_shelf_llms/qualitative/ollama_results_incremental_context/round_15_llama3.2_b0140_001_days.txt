@@ -1,0 +1,31 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define building metadata and annual summary statistics
+building_id = 140
+primary_use = 'Office'
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate date and time values for the 24-hour period, starting from January 1st
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=23*24)
+dates = [start_date + timedelta(hours=i) for i in range(24)]
+
+# Create a dataframe to store the electricity consumption data
+data = pd.DataFrame({'Date': dates, 'Value (kWh)': np.random.uniform(yearly_min_kwh, yearly_max_kwh, 24)})
+
+# Ensure values are realistic and consistent with summary statistics
+data['Value (kWh)'] = data['Value (kWh)'].apply(lambda x: min(max(x, yearly_min_kwh), yearly_max_kwh))
+data.loc[data['Date'].dt.month.between(6, 8), 'Value (kWh)'] = data.loc[data['Date'].dt.month.between(6, 8), 'Value (kWh)'].apply(lambda x: np.random.uniform(summer_mean_kwh - 0.5, summer_mean_kwh + 0.5))
+data.loc[data['Date'].dt.month.between(12, 2), 'Value (kWh)'] = data.loc[data['Date'].dt.month.between(12, 2), 'Value (kWh)'].apply(lambda x: np.random.uniform(winter_mean_kwh - 0.5, winter_mean_kwh + 0.5))
+
+# Convert the dataframe to a list of strings
+output = [f"{date.strftime('%Y-%m-%d %H:%M')}, {val:.6f}" for date, val in data.iterrows()]
+
+print('\n'.join(output))

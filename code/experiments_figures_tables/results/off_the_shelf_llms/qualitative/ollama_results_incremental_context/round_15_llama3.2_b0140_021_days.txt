@@ -1,0 +1,61 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants
+building_id = 140
+primary_use = "Office"
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate data for each month
+months = [
+    {"name": "January", "mean_kwh": yearly_min_kwh},
+    {"name": "February", "mean_kwh": yearly_min_kwh},
+    {"name": "March", "mean_kwh": (yearly_min_kwh + yearly_max_kwh) / 2},
+    {"name": "April", "mean_kwh": (yearly_min_kwh + yearly_max_kwh) / 2},
+    {"name": "May", "mean_kwh": summer_mean_kwh},
+    {"name": "June", "mean_kwh": summer_mean_kwh},
+    {"name": "July", "mean_kwh": summer_mean_kwh},
+    {"name": "August", "mean_kwh": summer_mean_kwh},
+    {"name": "September", "mean_kwh": (summer_mean_kwh + yearly_max_kwh) / 2},
+    {"name": "October", "mean_kwh": (summer_mean_kwh + yearly_max_kwh) / 2},
+    {"name": "November", "mean_kwh": winter_mean_kwh},
+    {"name": "December", "mean_kwh": winter_mean_kwh}
+]
+
+# Function to generate random data
+def generate_data(start, end):
+    total_days = (end - start).days
+    days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    current_date = start + timedelta(days=1)
+    data = []
+    for month in months:
+        while days_per_month[months.index(month)] > 0:
+            days_in_month = min(30, days_per_month[months.index(month)])
+            daily_mean_kwh = month["mean_kwh"] * (random.random() ** (5 - months.index(month)))
+            for _ in range(days_in_month):
+                data.append((current_date, round(random.gauss(daily_mean_kwh, yearly_min_kwh / 10))))
+            current_date += timedelta(days=1)
+            days_per_month[months.index(month)] -= 1
+    return data
+
+# Generate data for each hour of the year
+data = []
+start = datetime(2016, 1, 1)
+end = start + timedelta(days=504 * 24) # Exacty 504 measurements 
+while (end - start).days > 0:
+    hour = start + timedelta(hours=random.randint(0, 23))
+    data.append((hour.strftime('%Y-%m-%d %H:%M'), round(random.gauss(yearly_mean_kwh, yearly_min_kwh / 10))))
+    start += timedelta(hours=1)
+
+# Filter and format the data
+filtered_data = []
+for hour, value in data:
+    if year == 2016:
+        filtered_data.append(f'{hour} {value}')
+
+print('\n'.join(filtered_data))

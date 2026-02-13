@@ -1,0 +1,56 @@
+To generate electricity consumption data at 1-hour intervals for exactly 168 measurements, I'll use a Python script with some basic statistical calculations and random number generation to simulate realistic values based on the provided constraints.
+
+
+```python
+import datetime
+import math
+from random import randint, uniform
+
+# Constants from building metadata
+building_id = 1223
+primary_use = 'Office'
+square_feet = 52141
+
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# List to hold the generated values and dates for output
+data_points = []
+
+# Start date
+start_date = datetime.datetime(2016, 1, 1)
+
+# Calculate a value close to yearly mean
+def generate_value(yearly_mean):
+    # Apply some random deviation within the bounds of yearly_min_kwh to yearly_max_kwh
+    min_bound = max(0.95 * yearly_mean, yearly_min_kwh)
+    max_bound = min(1.05 * yearly_mean, yearly_max_kwh)
+
+    return uniform(min_bound, max_bound)
+
+# Generate and store data for each hour of the year (ignoring timezone complexities)
+for i in range(168):
+    date = start_date + datetime.timedelta(hours=i)
+    
+    # Determine season
+    if date.month >= 6 and date.month <= 8:  # June to August, summer months
+        mean_kwh = summer_mean_kwh
+    elif date.month < 3 or date.month > 11:  # Not in the specified winter months (Dec, Jan, Feb)
+        mean_kwh = yearly_mean_kwh  # Default back to yearly mean for other times of year
+    else:
+        mean_kwh = winter_mean_kwh
+        
+    value = generate_value(mean_kwh)
+
+    data_points.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value:.2f}")
+
+# Output the generated data
+for point in data_points:
+    print(point)
+```
+
+This script will output 168 lines, each representing a 1-hour interval from January 1st, 2016, until after midnight on February 10th (168 hours). Each value is randomly generated within constraints to be realistic and consistent with the summary statistics provided for building 1223.

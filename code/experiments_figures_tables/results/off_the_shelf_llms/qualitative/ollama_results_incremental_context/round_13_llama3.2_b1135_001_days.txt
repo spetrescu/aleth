@@ -1,0 +1,31 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Generate dates and hours
+start_date = pd.to_datetime('01 January 2016')
+dates = [start_date + pd.DateOffset(hours=h) for h in range(24)]
+
+# Generate random values within the constraints
+values = []
+for date in dates:
+    if (date.month >= 6 and date.month <= 8): # Summer months (Jun-Aug)
+        value = np.random.uniform(summer_mean_kwh - 10, summer_mean_kwh + 10)
+    else: # Winter months (Dec-Feb)
+        value = np.random.uniform(winter_mean_kwh - 10, winter_mean_kwh + 10)
+        
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+        
+    # Ensure most values are near yearly_mean_kwh
+    value += np.random.normal(0, (yearly_max_kwh - yearly_min_kwh)/10)
+    
+    values.append(value)
+
+# Print the data in the required format
+for date, value in zip(dates, values):
+    print(f"{date.strftime('%Y-%m-%d %H:%M')}, {value:.6f}")

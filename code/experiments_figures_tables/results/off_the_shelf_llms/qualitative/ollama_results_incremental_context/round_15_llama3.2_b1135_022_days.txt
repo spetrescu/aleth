@@ -1,0 +1,40 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 1135
+SQUARE_FEET = 150393
+YEARLY_MEAN_KWH = 263.43817
+YEARLY_MIN_KWH = 125.06
+YEARLY_MAX_KWH = 479.897
+SUMMER_MEAN_KWH = 263.8639
+WINTER_MEAN_KWH = 250.41924
+
+# Generate electricity consumption data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=528 * 365) # Exactly 528 measurements for one year
+
+# Initialize list to store data
+data = []
+
+for i in range(528):
+    date = start_date + timedelta(days=i)
+    if summer_months(date):
+        value = random.gauss(SUMMER_MEAN_KWH, 0.01*SUMMER_MEAN_KWH) # Average around SUMMER_MEAN_KWH with some variation
+    elif winter_months(date):
+        value = round(random.gauss(WINTER_MEAN_KWH, 0.01*WINTER_MEAN_KWH), 3)
+    else:
+        value = random.gauss(YEARLY_MEAN_KWH, 0.01*YEARLY_MEAN_KWH) # Average around YEARLY_MEAN_KWH with some variation
+    
+    # Ensure values are realistic
+    if value < YEARLY_MIN_KWH:
+        value = YEARLY_MIN_KWH
+    elif value > YEARLY_MAX_KWH:
+        value = YEARLY_MAX_KWH
+
+    # Append data to the list
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {value:.6f}")
+
+# Print the data
+for line in data:
+    print(line)

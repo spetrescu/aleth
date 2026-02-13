@@ -1,0 +1,34 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 11
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 49073
+YEARLY_MEAN_KWH = 296.39252
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 1052.0
+SUMMER Mean_KWH = 486.43784
+WINTER_mean_kWh = 162.72496
+
+# Generate random data for each hour
+data = []
+start_date = datetime(2016, 1, 1)
+for i in range(168):
+    date = start_date + timedelta(hours=i)
+    value = round(random.gauss(YEARLY_MEAN_KWH, 20), 5) # use the mean plus/minus 20% standard deviation
+    if value < YEARLY_MIN_KWH or value > YEARLY_MAX_KWH:
+        value = max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH))
+    
+    if (date.month in [6,7,8] and date.month != 10): 
+       # Summer month
+       value = round(random.gauss(SUMMER_mean_kWh, 20), 5)
+       value = max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH))
+    elif (date.month in [12,1,2] and date.month != 10): 
+      # Winter month
+      value = round(random.gauss(WINTER_mean_kWh, 20), 5)
+      value = max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH))
+    
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+print('\n'.join(data))

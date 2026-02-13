@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define constants
+BUILDING_ID = 1135
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 150393
+YEARLY_MEAN_KWH = 263.43817
+YEARLY_MIN_KWH = 125.06
+YEARLY_MAX_KWH = 479.897
+SUMMER Mean_KWH = 263.8639
+WINTER_MEAN_KWH = 250.41924
+
+# Generate a DataFrame with the given data
+data = {
+    'building_id': [BUILDING_ID],
+    'primary_use': [PRIMARY_USE],
+    'square_feet': [SQUARE_FEET],
+    'yearly_mean_kwh': [YEARLY_MEAN_KWH],
+    'yearly_min_kwh': [YEARLY_MIN_KWH],
+    'yearly_max_kwh': [YEARLY_MAX_KWH],
+    'summer_mean_kwh': [SUMMER Mean_KWH],
+    'winter_mean_kwh': [WINTER_MEAN_KWH]
+}
+
+df = pd.DataFrame(data)
+
+# Function to generate random electricity consumption data
+def generate_electricity_consumption():
+    values = []
+    df['consumption'] = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH, len(df))
+    for index, row in df.iterrows():
+        time = datetime.now() + timedelta(days=index)
+        if 6 <= time.month <= 8:  # Summer months
+            value = int(row['consumption'] * SUMMER Mean_KWH / YEARLY_MEAN_KWH) * np.random.uniform(0.9, 1.1)
+        else:
+            value = int(row['consumption'] * WINTER_MEAN_KWH / YEARLY_MEAN_KWH) * np.random.uniform(0.9, 1.1)
+        if value < row['yearly_min_kwh']:
+            value = row['yearly_min_kwh']
+        elif value > row['yearly_max_kwh']:
+            value = row['yearly_max_kwh']
+        values.append(f"{time.strftime('%Y-%m-%d %H:%M')},{value}")
+    return values
+
+# Generate electricity consumption data
+values = generate_electricity_consumption()
+
+# Print the generated data
+for value in values:
+    print(value)

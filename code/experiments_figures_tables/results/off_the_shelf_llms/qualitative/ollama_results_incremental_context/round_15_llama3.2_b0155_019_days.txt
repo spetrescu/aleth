@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Calculate time difference between each measurement (1 hour)
+time_diff = timedelta(hours=1)
+
+# Create a date range from 01 January 2016 to 10 June 2017 (last measurement before the last day of 2023, which was not in your data)
+start_date = datetime(2016, 1, 1)
+end_date = datetime(2017, 6, 10)
+
+# Generate date range
+date_range = [start_date + t for t in range(int((end_date - start_date).total_seconds() / time_diff.total_seconds()))]
+
+# Create an array of kWh values based on the given statistics and constraints
+kwh_values = np.random.normal(yearly_mean_kwh, yearly_min_kwh/100 * 0.1) # standard deviation is 10% of mean value
+kwh_values[kwh_values < yearly_min_kwh] = yearly_min_kwh
+kwh_values[kwh_values > yearly_max_kwh] = yearly_max_kwh
+
+# Split values by season (June-August and December-February)
+summer_values = kwh_values[(date_range.index(datetime(2016, 6, 1)) - date_range.index(datetime(2016, 1, 1))] % 365 / 90 < 2]
+winter_values = kwh_values[(date_range.index(datetime(2016, 12, 1)) - date_range.index(datetime(2016, 1, 1))] % 365 / 90 >= 2]
+
+# Generate random summer and winter kWh values
+summer_random = np.random.normal(summer_mean_kwh, summer_mean_kwh/100 * 0.1) 
+winter_random = np.random.normal(winter_mean_kwh, winter_mean_kwh/100 * 0.1)
+
+# Create an array of all values
+kwh_values_total = np.concatenate((summer_random, winter_random))
+
+# Convert kWh_values to string format
+values_str = [f"{date.strftime('%Y-%m-%d')},{val:.2f}" for date, val in zip(date_range, kwh_values_total)]
+
+# Ensure there are exactly 456 values in the output
+if len(values_str) < 456:
+    # pad with most common value of summer and winter months to reach desired length
+    if np.mean(kwh_values[summer_random < summer_mean_kwh]) > np.mean(kwh_values[winter_random < winter_mean_kwh]):
+        values_str += [f"{date.strftime('%Y-%m-%d')},{kwh_values_total[-1]:.2f}" for date in [date_range[i] for i in range(len(values_str), 456)]]
+    else:
+        values_str += [f"{date.strftime('%Y-%m-%d')},{kwh_values_total[0]:.2f}" for date in [date_range[i] for i in range(len(values_str), 456)]]
+
+# Print the output
+for value in values_str:
+    print(value)

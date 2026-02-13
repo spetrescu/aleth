@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+
+# Generate date range
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+# Create a date index with 1-hour intervals
+date_index = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize arrays to store the data
+value = np.full(len(date_index), yearly_mean_kwh)
+
+# Summer months (Jun-Aug)
+for i, dt in enumerate(date_index):
+    if dt.month in [6, 7, 8]:
+        value[i] = summer_mean_kwh
+
+# Winter months (Dec-Feb)
+for i, dt in enumerate(date_index):
+    if dt.month in [12, 1, 2]:
+        value[i] = winter_mean_kwh
+
+# Fill missing values
+value = np.nanwhere(value, yearly_min_kwh, value)
+
+# Ensure the minimum and maximum values are within the range of summary stats
+value = np.clip(value, yearly_min_kwh, yearly_max_kwh)
+
+# Convert to strings in the desired format
+data = [f"{dt.strftime('%Y-%m-%d %H:%M')}, {val:.6f}" for dt, val in zip(date_index, value)]
+
+print('\n'.join(data))

@@ -1,0 +1,44 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_data(building_id, primary_use, square_feet, yearly_mean_kwh,
+                              yearly_min_kwh, yearly_max_kwh, summer_mean_kwh,
+                              winter_mean_kwh):
+    # Initialize data with header
+    result = f"{building_id}\t{primary_use}\t{square_feet}\t{yearly_mean_kwh}\t{yearly_min_kwh}\t{yearly_max_kwh}\t{summer_mean_kwh}\t{winter_mean_kwh}"
+
+    # Start from the beginning of the year
+    date = datetime(2016, 1, 1)
+    
+    for _ in range(384):
+        hour = int(date.strftime('%H'))
+        
+        # Calculate daily average based on season
+        if (date.month == 6 or date.month == 7 or date.month == 8) and \
+           (yearly_min_kwh <= random.uniform(0, summer_mean_kwh) <= yearly_max_kwh):
+            avg = round(random.uniform(yearly_min_kwh, summer_mean_kwh),1)
+        elif (date.month >= 12 and date.month <= 2) and \
+             (yearly_min_kwh <= random.uniform(winter_mean_kwh, yearly_max_kwh) <= yearly_max_kwh):
+            avg = round(random.uniform(winter_mean_kwh, yearly_max_kwh),1)
+        else:
+            avg = round(yearly_mean_kwh, 1)
+
+        # Set the hourly consumption
+        value = round(avg + random.uniform(-avg/10, avg/10))
+
+        # Ensure value is within bounds
+        if value < yearly_min_kwh:
+            value = yearly_min_kwh
+        elif value > yearly_max_kwh:
+            value = yearly_max_kwh
+
+        
+        result += f"\n{date.strftime('%Y-%m-%d %H:%M')}, {value}"
+
+        # Increment the date by 1 hour
+        date += timedelta(hours=1)
+
+    return result
+
+
+print(generate_electricity_data(107, "Education", 97532, 234.75676, 0.0405, 591.0, 212.6387, 265.17035))

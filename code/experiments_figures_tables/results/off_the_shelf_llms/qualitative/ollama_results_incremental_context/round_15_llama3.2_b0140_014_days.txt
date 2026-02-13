@@ -1,0 +1,78 @@
+Here is a Python script that generates the electricity consumption data:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics
+building_id = 140
+primary_use = 'Office'
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate electricity consumption data for 336 measurements
+def generate_consumption_data(start_date, end_date):
+    now = datetime.now()
+    date_range = [(start_date + timedelta(days=i), end_date - timedelta(days=i)) for i in range(int((end_date-start_date).days)+1)]
+    
+    # Select dates that are within the summer or winter months
+    if start_date.month < 3:
+        summer_dates = [d for d in date_range if (d[0].month >= 6 and d[0].month <= 8) or (d[1].month >= 12 and d[1].month <= 2)]
+    else:
+        winter_dates = [d for d in date_range if (d[0].month >= 3 and d[0].month <= 5) or (d[1].month >= 9 and d[1].month <= 11)]
+    
+    # Split the data into summer and winter months
+    summer_data, winter_data = [], []
+    for date, end_date in summer_dates:
+        # Generate consumption values that are close to the mean
+        total_consumption = 0
+        for _ in range(24*7):
+            value = round(random.uniform(yearly_mean_kwh * 0.8, yearly_mean_kwh * 1.2),3)
+            if value < yearly_min_kwh:
+                value = yearly_min_kwh
+            elif value > yearly_max_kwh:
+                value = yearly_max_kwh
+            total_consumption += value
+        
+        # Divide the consumption into days of the month
+        for day in range(31):
+            daily_consumption = round(total_consumption / (day+1),3)
+            summer_data.append((date + timedelta(days=day), daily_consumption))
+            
+    for date, end_date in winter_dates:
+        # Generate consumption values that are close to the mean
+        total_consumption = 0
+        for _ in range(24*7):
+            value = round(random.uniform(winter_mean_kwh * 0.8, winter_mean_kwh * 1.2),3)
+            if value < yearly_min_kwh:
+                value = yearly_min_kwh
+            elif value > yearly_max_kwh:
+                value = yearly_max_kwh
+            total_consumption += value
+        
+        # Divide the consumption into days of the month
+        for day in range(31):
+            daily_consumption = round(total_consumption / (day+1),3)
+            winter_data.append((date + timedelta(days=day), daily_consumption))
+    
+    return summer_data, winter_data
+
+# Generate the dataset
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=336)
+
+summer_data, winter_data = generate_consumption_data(start_date, end_date)
+
+# Combine the data and print it out
+for i in range(len(summer_data)):
+    print(f"{summer_data[i][0].strftime('%Y-%m-%d %H:%M')},{summer_data[i][1]}")
+
+for i in range(len(winter_data)):
+    print(f"{winter_data[i][0].strftime('%Y-%m-%d %H:%M')},{winter_data[i][1]}")
+```
+
+Please note that the generated data will be close to but not exactly equal to `yearly_mean_kwh` due to the random nature of the generation. The range around this value is set to 20% (`*0.8` and `*1.2`) so values are more likely to be near mean, but can occasionally exceed or fall below it.

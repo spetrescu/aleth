@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+def generate_synthetic_data(building_id, primary_use, square_feet,
+                            yearly_mean_kwh, yearly_min_kwh,
+                            yearly_max_kwh, summer_mean_kwh,
+                            winter_mean_kwh):
+
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=365*144)
+
+    data = []
+
+    for i in range(int((end_date - start_date).days)):
+        date = start_date + timedelta(days=i)
+
+        if (date.month < 3 or date.month > 5) and date.day >= 1:
+            kwh_consumption = winter_mean_kwh * 24 / 8
+        elif date.month >= 6 and date.month <= 8:
+            kwh_consumption = summer_mean_kwh * 24 / 3
+        else:
+            if (date.month < 3 or date.month > 5) and date.day < 1:
+                kwh_consumption = winter_mean_kwh
+            elif date.month >= 6 and date.month <= 8:
+                kwh_consumption = summer_mean_kwh
+            else:
+                kwh_consumption = yearly_mean_kwh
+
+        value = round(kwh_consumption, 4)
+        data.append((date.strftime('%Y-%m-%d %H:%M'), value))
+
+    return pd.DataFrame(data, columns=['Date', 'Value'])
+
+df = generate_synthetic_data(105, "Education", 50623,
+                             yearly_mean_kwh=78.12403,
+                             yearly_min_kwh=23.3036,
+                             yearly_max_kwh=173.945,
+                             summer_mean_kwh=78.177864,
+                             winter_mean_kwh=76.68618)
+
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Value']}")

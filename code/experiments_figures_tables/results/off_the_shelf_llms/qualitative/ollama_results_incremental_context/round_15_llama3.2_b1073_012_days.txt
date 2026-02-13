@@ -1,0 +1,34 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 1073
+primary_use = "Office"
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Generate dates and time values for 288 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=288*24)  # 288 days * 24 hours/day
+values = []
+
+for i in range((int)(end_date - start_date).days):
+    date_value = (start_date + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')
+    time = start_date.strftime('%H:%M') # Set to 12:00 PM for simplicity, will change if you want other times.
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+    if ((i >= 0 and i <= 183) or (i == 191)): # June, July, August
+        value = np.random.uniform(summer_mean_kwh, summer_mean_kwh + 10)
+    elif ((i >= 184 and i <= 292) or (i == 311)): # December, January, February
+        value = np.random.uniform(winter_mean_kwh - 10, winter_mean_kwh)
+
+    values.append((date_value, time, round(value, 4)))
+
+# Print generated data
+for date, time, value in values:
+    print(f"{date} {time}, {value}")

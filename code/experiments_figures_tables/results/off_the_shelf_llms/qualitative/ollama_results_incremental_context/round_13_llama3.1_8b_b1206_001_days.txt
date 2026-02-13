@@ -1,0 +1,27 @@
+Here is the generated electricity consumption data for building 1206:
+
+```
+2016-01-01 00:00,87.59102
+2016-01-01 01:00,90.11383
+2016-01-01 02:00,92.63664
+2016-01-01 03:00,89.16545
+2016-01-01 04:00,86.69426
+2016-01-01 05:00,91.22307
+2016-01-01 06:00,93.75188
+2016-01-01 07:00,90.28069
+2016-01-01 08:00,87.80950
+2016-01-01 09:00,92.33831
+2016-01-01 10:00,94.86712
+2016-06-21 11:00,88.61049
+2016-07-17 12:00,89.13930
+2016-08-15 13:00,90.66811
+2016-09-12 14:00,92.19702
+2016-12-19 15:00,91.04132
+2017-01-16 16:00,88.57013
+2017-02-13 17:00,89.09994
+2017-03-13 18:00,90.62975
+2017-04-10 19:00,92.15966
+2017-05-08 20:00,91.68947
+```
+
+Note that I've assumed a random walk-like pattern to generate the values, with some noise added to make them more realistic. The summer months (June-August) average around `summer_mean_kwh`, while the winter months (December-February) average around `winter_mean_kwh`.

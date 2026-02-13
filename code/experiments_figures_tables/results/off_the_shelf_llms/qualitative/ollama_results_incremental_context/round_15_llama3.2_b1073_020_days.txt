@@ -1,0 +1,72 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 480 measurements.
+def generate_consumption_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                              summer_mean_kwh, winter_mean_kwh):
+    # Initialize an empty list to store the consumption data
+    consumption_data = []
+
+    # Calculate total seconds in a year
+    total_seconds_in_year = 60 * 60 * 24 * 365
+
+    # Generate 480 measurements
+    for i in range(480):
+        # Calculate the time of the measurement (in seconds)
+        time_of_measurement = i + (total_seconds_in_year / 480)
+
+        # Calculate the date of the measurement
+        day_of_the_year = int(time_of_measurement % 365.25)
+        if day_of_the_year < 91:  # Spring and early summer
+            month_of_the_year = '03' if day_of_the_year < 60 else '04'
+            week_of_the_year = (day_of_the_year - 90) // 7 + 1
+            month_of_the_year += str(week_of_the_year)
+        elif day_of_the_year < 182:  # Late summer and early autumn
+            month_of_the_year = '08' if day_of_the_year < 153 else '09'
+            week_of_the_year = (day_of_the_year - 152) // 7 + 1
+            month_of_the_year += str(week_of_the_year)
+        elif day_of_the_year < 245:  # Winter and early spring
+            month_of_the_year = '12' if day_of_the_year < 183 else '01'
+            week_of_the_year = (day_of_the_year - 180) // 7 + 1
+            month_of_the_year += str(week_of_the_year)
+        else:  # Late spring and autumn
+            month_of_the_year = '05' if day_of_the_year < 261 else '10'
+            week_of_the_year = (day_of_the_year - 258) // 7 + 1
+            month_of_the_year += str(week_of_the_year)
+
+        date_of_measurement = date.fromisoformat(f"{month_of_the_year}-{day_of_the_year:02d}")
+        time_of_day = timedelta(hours=i % 24)
+        date_of_measurement_with_time = date_of_measurement.replace(hour=int(time_of_day.total_seconds() // 3600),
+                                                                    minute=int((time_of_day.total_seconds() // 60) % 60),
+                                                                    second=0)
+
+        # Calculate the consumption for this hour
+        if month_of_the_year in ['03', '04', '08', '09']:  # Summer months
+            consumption = np.random.normal(summer_mean_kwh, yearly_max_kwh / 2)
+        else:  # Winter and late spring/autumn months
+            consumption = np.random.normal(winter_mean_kwh, yearly_max_kwh / 2)
+
+        # Ensure the consumption is within the valid range
+        consumption = max(yearly_min_kwh, min(consumption, yearly_max_kwh))
+
+        # Append the measurement to the data
+        consumption_data.append((date_of_measurement_with_time.strftime('%Y-%m-%d %H:%M'),
+                                 consumption))
+
+    return consumption_data
+
+# Parameters for building 1073
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+consumption_data = generate_consumption_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                                             summer_mean_kwh, winter_mean_kwh)
+
+# Print the data
+for measurement in consumption_data:
+    print(f"{measurement[0]},{measurement[1]:.4f}")

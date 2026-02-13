@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define parameters
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Generate a date range for 696 hours, starting from January 1st, 2016
+start_date = '2016-01-01'
+end_date = pd.to_datetime(start_date)
+date_range = pd.date_range(start_date, periods=696)
+
+# Initialize lists to store the values
+values = []
+
+# Loop through each hour in the date range
+for i, date in enumerate(date_range):
+    # Determine if it's summer or winter based on the month
+    if (date.month >= 6 and date.month <= 8) or (date.month >= 12 and date.month <= 2):
+        value = np.random.normal(summer_mean_kwh, yearly_min_kwh/3)
+    else:
+        value = np.random.normal(winter_mean_kwh, yearly_min_kwh/3)
+
+    # Ensure the value is within the valid range
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+
+    # Round the value to 6 decimal places
+    value = round(value, 6)
+
+    # Append the value to the list
+    values.append(str(date) + ' ' + str(value))
+
+# Join the values into a single string
+output = '\n'.join(values)
+
+print(output)

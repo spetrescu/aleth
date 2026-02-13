@@ -1,0 +1,56 @@
+Here is a Python script using pandas and numpy libraries to generate random electricity consumption data for one building:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+def generate_electricity_data(building_id, primary_use, square_feet, 
+                            yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                            summer_mean_kwh, winter_mean_kwh):
+    # Initialize lists to store date and value
+    dates = []
+    values = []
+
+    # Generate 360 data points, spaced out at 1-hour intervals
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=361)
+
+    for n in range(int ((end_date - start_date).days)):
+        date = start_date + timedelta(n)
+        
+        # Determine season based on month
+        if (date.month >= 6) & (date.month <= 8):
+            mean_kwh = summer_mean_kwh
+        elif (date.month >= 12) & (date.month <= 2):
+            mean_kwh = winter_mean_kwh
+        else:
+            # If not in summer or winter, use yearly_mean_kwh
+            mean_kwh = yearly_mean_kwh
+        
+        # Generate random value within the given range
+        val = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+        
+        # Add 10% variation to ensure data stays realistic
+        val *= 1.1
+        val /= 1.1
+        
+        # Append date and value to lists
+        dates.append(date.strftime('%Y-%m-%d %H:%M'))
+        values.append(val)
+
+    # Create DataFrame with generated data
+    df = pd.DataFrame({'date': dates, 'value': values})
+    
+    return df
+
+# Usage:
+df = generate_electricity_data(1135, 'Education', 150393, 
+                             263.43817, 125.06, 479.897,
+                             263.8639, 250.41924)
+
+for index, row in df.iterrows():
+    print(f"{row['date']}, {row['value']}")
+```
+
+This script generates a DataFrame with 360 rows of electricity consumption data at 1-hour intervals for one building over the course of 2016. The values are generated within realistic ranges based on the provided summary statistics, and some variation is introduced to keep the data interesting but still consistent.

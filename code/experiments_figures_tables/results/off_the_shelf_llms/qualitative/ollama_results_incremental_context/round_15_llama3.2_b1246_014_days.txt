@@ -1,0 +1,43 @@
+import random
+from datetime import timedelta, datetime
+
+# Building metadata and annual summary statistics (2016)
+buildings = {
+    '1246': {
+        'primary_use': 'Office',
+        'square_feet': 50327,
+        'yearly_mean_kwh': 46.317394,
+        'yearly_min_kwh': 0.0,
+        'yearly_max_kwh': 82.0,
+        'summer_mean_kwh': 42.024456,
+        'winter_mean_kwh': 46.382324
+    }
+}
+
+# Generate electricity consumption data (kWh) at 1-hour intervals
+def generate_consumption_data(building_id, days):
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=days)
+    consumption_values = []
+
+    for day in range(int((end_date - start_date).days)):
+        date = start_date + timedelta(days=day)
+        # Generate random kWh values that are realistic and consistent with the summary stats
+        if (date.month >= 6) and (date.month <= 8):
+            value = round(random.gauss(buildings['1246']['summer_mean_kwh'], buildings['1246']['yearly_max_kwh'] / 3), 3)
+        elif (date.month >= 12) and (date.month <= 2):
+            value = round(random.gauss(buildings['1246']['winter_mean_kwh'], buildings['1246']['yearly_min_kwh'] / 3), 3)
+        else:
+            value = round(random.gauss(buildings['1246']['yearly_mean_kwh'], buildings['1246']['yearly_max_kwh'] / 3), 3)
+
+        if (value < buildings['1246']['yearly_min_kwh']) or (value > buildings['1246']['yearly_max_kwh']):
+            value = min(max(value, buildings['1246']['yearly_min_kwh']), buildings['1246']['yearly_max_kwh'])
+
+        consumption_values.append((date.strftime('%Y-%m-%d %H:%M'), value))
+
+    return consumption_values
+
+# Print the generated data
+consumption_data = generate_consumption_data('1246', 336)
+for date, value in consumption_data:
+    print(f"{date}, {value}")

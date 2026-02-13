@@ -1,0 +1,65 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+def generate_electricity_consumption_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                                         summer_mean_kwh, winter_mean_kwh, start_date, end_date):
+    # Convert dates to datetime objects
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    # Create a date range
+    date_range = [start_date + timedelta(days=i) for i in range((end_date - start_date).days + 1)]
+
+    # Create a DataFrame with the date and time
+    df = pd.DataFrame({'Date': date_range, 'Time': ['00:00'] * len(date_range)})
+
+    # Generate random values based on the mean and standard deviation of the yearly consumption data
+    std_dev = (yearly_max_kwh - yearly_min_kwh) / 2
+    df['Value'] = np.random.normal(yearly_mean_kwh, std_dev)
+
+    # Ensure that values are within the minimum and maximum allowed
+    df.loc[df['Value'] < yearly_min_kwh, 'Value'] = yearly_min_kwh
+    df.loc[df['Value'] > yearly_max_kwh, 'Value'] = yearly_max_kwh
+
+    # Adjust for summer months (June to August)
+    summer_months = [date_range[i] for i in range(date_range.index(6*12).timestamp(), date_range.index(len(date_range)).timestamp())]
+    df.loc[df['Date'].isin(summer_months), 'Value'] = np.random.normal(summer_mean_kwh, std_dev)
+
+    # Adjust for winter months (December to February)
+    winter_months = [date_range[i] for i in range(date_range.index(0*12).timestamp(), date_range.index((2*12)-1).timestamp())]
+    df.loc[df['Date'].isin(winter_months), 'Value'] = np.random.normal(winter_mean_kwh, std_dev)
+
+    # Filter out dates and times that don't match the building's usage (education)
+    # Since education is not explicitly defined in terms of hours or days,
+    # we'll assume it's evenly distributed across all 24 hours
+    df['Value'] = np.where(df['Date'].dt.month % 12 == 0 or df['Date'].dt.dayofmonth > 20, df['Value'], 
+                           (df['Value'] + np.random.normal(0, std_dev)).clip(lower=yearly_min_kwh, upper=yearly_max_kwh))
+
+    return df
+
+# Generate the electricity consumption data
+building_id = 272
+primary_use = 'Education'
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+start_date = '2016-01-01'
+end_date = '2017-12-31'
+
+df = generate_electricity_consumption_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                                         summer_mean_kwh, winter_mean_kwh, start_date, end_date)
+
+# Format the output as required
+output = ''
+for index, row in df.iterrows():
+    output += f'{row["Date"].strftime("%Y-%m-%d")} {row["Time"]}: {row["Value"]}\n'
+
+print(output.strip())

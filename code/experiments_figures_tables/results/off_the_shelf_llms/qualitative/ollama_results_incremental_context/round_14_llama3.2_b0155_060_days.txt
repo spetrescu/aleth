@@ -1,0 +1,47 @@
+Here is a Python script that generates the synthetic electricity consumption data:
+
+```python
+import datetime
+import random
+
+# Constants
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Lists to store data
+data_list = []
+start_date = datetime.datetime(2016,1,1)
+end_date = start_date + datetime.timedelta(days=730)
+
+# Function to generate a random hour value within the specified range
+def generate_hour_value():
+    return round(random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+
+# Generate data for each day
+for i in range(730):
+    date = start_date + datetime.timedelta(days=i)
+    if (date.month >= 6 and date.month <= 8): # Summer months
+        mean_value = summer_mean_kwh
+    elif (date.month >= 12 and date.month <= 2): # Winter months
+        mean_value = winter_mean_kwh
+    else: # Spring/Fall months
+        if random.random() < 0.6:
+            mean_value = summer_mean_kwh
+        else:
+            mean_value = yearly_mean_kwh
+    for hour in range(24):
+        value = generate_hour_value()
+        data_list.append((date.strftime('%Y-%m-%d %H:%M'), value))
+
+# Print the generated data
+for line in data_list:
+    print(line[0] + ", " + str(line[1]))
+```
+
+This script generates 730 days of data, with a mix of summer and winter month patterns. The `generate_hour_value` function ensures that each hour's consumption is within the specified minimum and maximum ranges.

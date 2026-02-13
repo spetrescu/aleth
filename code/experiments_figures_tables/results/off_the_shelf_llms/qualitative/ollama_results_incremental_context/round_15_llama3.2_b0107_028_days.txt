@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Calculate number of hours in a year
+hours_in_year = 8760
+
+# Create an array of timestamps starting from January 1, 2016
+start_date = pd.to_datetime('2016-01-01')
+timestamps = start_date + pd.Timedelta(hours=np.arange(0, hours_in_year))
+
+# Generate random values based on the summary statistics
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=hours_in_year)
+
+# Split values into summer and winter months
+summer_months = 3 * 24 * (8 + 1)  # Jun-Aug, inclusive
+winter_months = hours_in_year - summer_months
+
+summer_values = np.random.uniform(summer_mean_kwh, summer_mean_kwh*2, size=sumer_months)
+winter_values = np.random.uniform(winter_mean_kwh, winter_mean_kwh*2, size=winter_months)
+
+# Combine values for each timestamp
+values = np.concatenate((summer_values, winter_values))
+
+# Convert to a pandas Series and rename it as 'VALUE'
+series = pd.Series(values, index=timestamps)
+series.name = 'VALUE'
+
+# Add the building ID
+series.index = series.index.map(lambda x: f'{x.year}-{x.month}-{x.day} {x.hour:02d}:{x.minute:02d}')
+
+# Print the output
+for index, value in series.iterrows():
+    print(f"{index}, {value}")

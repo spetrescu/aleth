@@ -1,0 +1,38 @@
+import random
+from datetime import datetime, timedelta
+import pandas as pd
+
+# Set seed for reproducibility
+random.seed(123)
+
+def generate_electricity_data(building_id, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                              summer_mean_kwh, winter_mean_kwh, num_measurements):
+    # Initialize data frame
+    data = {
+        'YYYY-MM-DD HH:MM': [],
+        'VALUE': []
+    }
+
+    # Start date and end date
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=num_measurements)
+
+    for day in range(int((end_date - start_date).days)):
+        current_day = start_date + timedelta(days=day)
+        
+        if current_day.month in [6, 7, 8]:
+            # Summer month
+            value = random.uniform(summer_mean_kwh * 0.9, summer_mean_kwh * 1.1)
+        else:
+            # Winter month
+            value = random.uniform(winter_mean_kwh * 0.9, winter_mean_kwh * 1.1)
+
+        if (yearly_min_kwh <= value <= yearly_max_kwh) and \
+           ((summer_mean_kwh == 0 or summer_mean_kwh < value < summer_mean_kwh * 1.1) and current_day.month in [6, 7, 8]) or \
+           ((winter_mean_kwh == 0 or winter_mean_kwh < value < winter_mean_kwh * 1.1) and not (current_day.month in [6, 7, 8])):
+            data['YYYY-MM-DD HH:MM'].append(current_day.strftime('%Y-%m-%d %H:%M'))
+            data['VALUE'].append(value)
+
+    return pd.DataFrame(data).sort_values(by='YYYY-MM-DD HH:MM').to_string(index=False)
+
+print(generate_electricity_data(1246, 46.317394, 0.0, 82.0, 42.024456, 46.382324, 240))

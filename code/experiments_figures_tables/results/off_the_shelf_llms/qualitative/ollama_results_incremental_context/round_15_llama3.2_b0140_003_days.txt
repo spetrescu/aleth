@@ -1,0 +1,43 @@
+import pandas as pd
+from datetime import timedelta, date
+import random
+
+# Building metadata and annual summary statistics (2016)
+building_id = 140
+primary_use = 'Office'
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 72 measurements.
+data = []
+for i in range(72):
+    date_obj = date(2016, 1, 1) + timedelta(days=i)
+    
+    # Randomly choose a usage pattern based on the time of day
+    if 8 <= date_obj.hour < 18:  # afternoon/evening
+        value = yearly_mean_kwh * random.uniform(0.7, 1.3)
+    elif 6 <= date_obj.hour < 8 or 18 <= date_obj.hour < 20:  # morning/evening
+        if date_obj.month in [6, 7, 8]:  # summer months
+            value = summer_mean_kwh * random.uniform(0.7, 1.3)
+        else:
+            value = winter_mean_kwh * random.uniform(0.7, 1.3)
+    else:  # nighttime
+        value = yearly_min_kwh + (yearly_max_kwh - yearly_min_kwh) * random.random()
+    
+    # Ensure the generated data is within the valid range
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+    
+    # Append the generated data to the list
+    data.append(f"{date_obj.strftime('%Y-%m-%d')} {date_obj.strftime('%H:%M')}, {value:.4f}")
+
+# Print the generated dataset
+for line in data:
+    print(line)

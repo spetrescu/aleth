@@ -1,0 +1,57 @@
+import pandas as pd
+import numpy as np
+
+# Define building metadata and annual summary statistics
+building_id = 113
+primary_use = 'Education'
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Calculate total number of hours in a year
+total_hours_in_year = 8760
+
+# Define months and their corresponding summer and winter averages
+months = {
+    'Jan': {'avg': yearly_min_kwh, 'season': 'winter'},
+    'Feb': {'avg': yearly_min_kwh, 'season': 'winter'},
+    'Mar': {'avg': (yearly_mean_kwh + yearly_max_kwh) / 2, 'season': 'spring'},
+    'Apr': {'avg': (yearly_mean_kwh + yearly_max_kwh) / 2, 'season': 'spring'},
+    'May': {'avg': summer_mean_kwh, 'season': 'summer'},
+    'Jun': {'avg': summer_mean_kwh, 'season': 'summer'},
+    'Jul': {'avg': summer_mean_kwh, 'season': 'summer'},
+    'Aug': {'avg': summer_mean_kwh, 'season': 'summer'},
+    'Sep': {'avg': (yearly_max_kwh + yearly_mean_kwh) / 2, 'season': 'autumn'},
+    'Oct': {'avg': (yearly_max_kwh + yearly_mean_kwh) / 2, 'season': 'autumn'},
+    'Nov': {'avg': winter_mean_kwh, 'season': 'winter'},
+    'Dec': {'avg': winter_mean_kwh, 'season': 'winter'}
+}
+
+# Generate 552 hours of data
+hours = []
+for i in range(1, 553):
+    month, season = months[str(i).zfill(2)]
+    if season == 'spring' or season == 'autumn':
+        avg = (yearly_mean_kwh + yearly_max_kwh) / 2
+    elif season == 'summer':
+        avg = summer_mean_kwh
+    else:
+        avg = winter_mean_kwh
+
+    # Generate a random hour value between the mean and max kWh
+    value = np.random.uniform(avg, yearly_max_kwh)
+    
+    if np.random.rand() < (1 - 0.5 * (yearly_min_kwh / yearly_max_kwh)):
+        value = max(yearly_min_kwh, min(value, yearly_mean_kwh))
+
+    hours.append({
+        'datetime': f'2016-01-{i:02d} 00:00',
+        'value': round(value, 3)
+    })
+
+# Create a DataFrame and print the output
+df = pd.DataFrame(hours)
+print('\n'.join([f'{row["datetime"]}, {row["value"]}' for index, row in df.iterrows()]))

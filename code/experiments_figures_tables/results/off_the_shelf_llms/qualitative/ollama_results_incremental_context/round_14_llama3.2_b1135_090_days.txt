@@ -1,0 +1,29 @@
+import pandas as pd
+from datetime import timedelta, datetime
+
+# Define constants
+BUILDING_ID = 1135
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 150393
+YEARLY_MEAN_KWH = 263.43817
+YEARLY_MIN_KWH = 125.06
+YEARLY_MAX_KWH = 479.897
+SUMMER Mean_KWH = 263.8639
+WINTER_mean_KWH = 250.41924
+
+# Initialize an empty list to store the data
+data = []
+
+# Generate 2160 hours of data, starting from January 1st, 2016
+start_date = datetime(2016, 1, 1)
+for i in range(2160):
+    current_date = start_date + timedelta(hours=i)
+    value = calculate_value(current_date, PRIMARY_USE, SQUARE_FEET, YEARLY_MEAN_KWH, YEARLY_MIN_KWH, YEARLY_MAX_KWH, SUMMER_mean_KWH, WINTER_mean_KWH)
+
+    # Round the value to two decimal places
+    value = round(value, 2)
+    data.append((current_date.strftime('%Y-%m-%d %H:%M'), value))
+
+# Print the data in the required format
+for date, value in data:
+    print(f'{date}, {value}')

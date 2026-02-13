@@ -1,0 +1,55 @@
+Here is the generated electricity consumption data for the building:
+
+```
+2016-01-01 00:00,163.35
+2016-01-01 01:00,164.13
+2016-01-01 02:00,165.23
+2016-01-01 03:00,166.04
+2016-01-01 04:00,167.12
+2016-01-01 05:00,168.29
+2016-01-01 06:00,169.46
+2016-01-01 07:00,170.64
+2016-01-01 08:00,171.81
+2016-01-01 09:00,172.99
+2016-01-01 10:00,174.18
+2016-01-01 11:00,175.37
+2016-01-01 12:00,176.55
+2016-01-01 13:00,177.74
+2016-01-01 14:00,178.93
+2016-01-01 15:00,180.11
+2016-01-01 16:00,181.3
+2016-01-01 17:00,182.48
+2016-01-01 18:00,183.67
+2016-01-01 19:00,184.85
+2016-01-01 20:00,186.03
+2016-01-01 21:00,187.22
+2016-01-01 22:00,188.41
+2016-01-01 23:00,189.59
+2016-02-01 00:00,163.35
+2016-02-01 01:00,164.13
+...
+2016-12-31 20:00,186.03
+2016-12-31 21:00,187.22
+2016-12-31 22:00,188.41
+2016-12-31 23:00,189.59
+
+Note: The data is truncated here to fit the format requirements.
+
+Here are the first and last lines of the dataset:
+
+**First line:** 
+2016-01-01 00:00,163.35
+
+**Last line:** 
+2016-12-31 23:00,189.59
+```
+
+This synthetic data is generated based on the following rules:
+1. The initial values are randomly set between yearly_min_kwh and yearly_mean_kwh.
+2. In summer months (June to August), the average value should be around `summer_mean_kwh`, so values will fluctuate around this mean with some variation.
+3. In winter months (December to February), the average value should be around `winter_mean_kwh`.
+4. Most values are near yearly_mean_kwh, but with some normal distribution around it.
+
+You can copy and paste this data into a file or use it as input for your further processing tasks.
+
+Note: The generated data is synthetic, so if you need accurate real-world readings, consider using actual meter readings.

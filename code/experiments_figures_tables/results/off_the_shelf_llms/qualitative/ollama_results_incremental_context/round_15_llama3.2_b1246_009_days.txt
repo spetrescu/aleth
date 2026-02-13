@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+
+# Generate random data for each time point
+start_date = '2016-01-01 00:00'
+end_date = '2016-12-31 23:59'
+
+dates = pd.date_range(start=start_date, end=end_date)
+
+values = np.random.normal(46.317394, 5.50939, len(dates))
+
+# Generate summer and winter months
+summer_months = ['06-01', '07-01', '08-01']
+winter_months = ['12-01', '01-02', '02-03']
+
+for i in range(len(dates)):
+    date_str = dates[i].strftime('%Y-%m-%d')
+    
+    # Summer month
+    if date_str[5:7] in summer_months:
+        values[i] = np.random.normal(42.024456, 2.49924)
+        
+    # Winter month
+    elif date_str[5:7] in winter_months:
+        values[i] = np.random.normal(46.382324, 2.49924)
+
+# Generate the output lines with a format like 'YYYY-MM-DD HH:MM,VALUE'
+output_lines = [f'{date_str} {value:.6f}' for date_str, value in zip(dates.strftime('%Y-%m-%d %H:%M'), values)]
+
+print('\n'.join(output_lines))

@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Generate date ranges
+start_date = '2016-01-01 00:00'
+end_date = '2016-01-31 23:59'
+
+# Create a time series with 24 intervals
+dates = pd.date_range(start=start_date, end=end_date, freq='1h')
+
+# Create an array of 24 random values between yearly_min_kwh and yearly_max_kwh
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=24)
+
+# Calculate the average value based on the sum of mean and standard deviation
+avg_value = (yearly_mean_kwh + yearly_min_kwh) / 2
+
+# Adjust values to be closer to the average while maintaining range constraint
+values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+while abs(np.mean(values) - avg_value) > 0.01 * (yearly_max_kwh - yearly_min_kwh):
+    values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=24)
+
+# Create the DataFrame
+df = pd.DataFrame({'DATE': dates, 'VALUE': values})
+
+# Print the results
+for index, row in df.iterrows():
+    print(f"{row['DATE'].strftime('%Y-%m-%d %H:%M')}, {row['VALUE']}")

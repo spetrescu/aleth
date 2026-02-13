@@ -1,0 +1,63 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+BUILID = 1086
+YEARLY_MEAN_KWH = 296.72125
+YEARS = [2016]
+MONTHS_PER_YEAR = 12
+
+def generate_readings(year):
+    readings = []
+    start_date = datetime(year, 1, 1)
+    end_date = start_date + timedelta(days=365*720)
+
+    for i in range(0, int((end_date - start_date).days)):
+        hour = (i//1440) % 24
+        date = start_date + timedelta(hours=hour, days=i)
+
+        kwh = get_kwh(date)
+        reading = f"{date.strftime('%Y-%m-%d')} {hour:02d}:{kwh:.6f}"
+        readings.append(reading)
+
+    return readings
+
+def get_kwh(date):
+    if date.month in [6, 7, 8]:
+        kwh = round(random.gauss(summer_mean_kwh, kwh_stddev))
+        # Ensure value is within the summer_max_range
+        if kwh < summer_min_kwh:
+            kwh = summer_min_kwh
+        elif kwh > summer_max_kwh:
+            kwh = summer_max_kwh
+    else:
+        kwh = round(random.gauss(winter_mean_kwh, kwh_stddev))
+        # Ensure value is within the winter_max_range
+        if kwh < winter_min_kwh:
+            kwh = winter_min_kwh
+        elif kwh > winter_max_kwh:
+            kwh = winter_max_kwh
+
+    return kwh
+
+# Set constants for simulation
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+kwh_stddev = 20
+
+# Generate dataset for each year
+readings = []
+for year in YEARS:
+    readings.extend(generate_readings(year))
+
+# Ensure that there are at least as many days of winter as summer 
+summer_days = len([month for month in MONTHS_PER_YEAR if 6 <= month <= 8])
+winter_days = (720 - sum(1 for month in MONTHS_PER_YEAR if 3 <= month <= 5)) // 2
+if summer_days < winter_days:
+    # Add more winter days to the readings
+    for i in range(summer_days, winter_days):
+        readings.append(generate_readings(2016)[i])
+
+# Print dataset
+for reading in readings:
+    print(reading)

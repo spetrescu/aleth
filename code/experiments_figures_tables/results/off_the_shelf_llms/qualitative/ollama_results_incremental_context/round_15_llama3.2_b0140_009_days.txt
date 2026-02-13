@@ -1,0 +1,69 @@
+import random
+import datetime
+
+# Constants from summary stats
+BUILDING_ID = "140"
+PRIMARY_USE = "Office"
+SQUARE_FEET = 50020
+YEARLY_MEAN_KWH = 31.697405
+YEARLY_MIN_KWH = 8.0204
+YEARLY_MAX_KWH = 61.0
+SUMMER_MEAN_KWH = 32.27265
+WINTER_MEAN_KWH = 30.24863
+
+# Generate time series data
+def generate_data():
+    # Initialize output lines
+    output_lines = []
+
+    start_date = datetime.datetime(2016,1,1)
+    end_date = start_date + datetime.timedelta(days=216)
+
+    while start_date <= end_date:
+        hour = int(start_date.hour) if start_date.weekday() < 5 else -1
+        date_str = f"{start_date.strftime('%Y-%m-%d')} {hour:02d}:00"
+        # Generate value for this time step (kWh)
+        value = calculate_value(date_str, start_date)
+
+        output_lines.append(f"{date_str},{value}")
+
+        if start_date.month in [6,7,8]:
+            summer_mean_kwh = SUMMER_MEAN_KWH
+        else:
+            summer_mean_kwh = WINTER_MEAN_KWH
+
+        # Add some randomness to values (kWh)
+        random_value = random.uniform(YEARLY_MIN_KWH,WYEARLY_MAX_KHW)
+        value += random_value*0.1
+        if value < YEARLY_MIN_KWH:
+            value = YEARLY_MIN_KWH
+        elif value > YEARLY_MAX_KWH:
+            value = YEARLY_MAX_KWH
+
+        # Make the values for summer and winter months consistent with seasonal averages
+        if hour >= 0 and start_date.month in [6,7,8]:
+            value = (value - summer_mean_kwh) / (summer_mean_kwh * 0.1) + summer_mean_kwh
+        else:
+            value = (value - winter_mean_kwh) / (winter_mean_kwh * 0.1) + winter_mean_kwh
+
+        # Ensure that values stay within the range of yearly_min_kwh and yearly_max_kwh 
+        if value < yearly_min_kwh:
+            value = yearly_min_kwh
+        elif value > yearly_max_kwh:
+            value = yearly_max_kwh
+
+        start_date += datetime.timedelta(hours=1)
+
+    return output_lines
+
+# Calculate a realistic kWh value for this time step based on the seasonal averages and an added random component.
+def calculate_value(date_str, date):
+    # Determine if we are in summer or winter
+    if date.month in [6,7,8]:
+        avg = SUMMER_MEAN_KWH
+    else:
+        avg = WINTER_MEAN_KHW
+
+    # Generate a realistic value using the average kWh and an added random component.
+    random_component = round(random.uniform(-5, 5),2)
+    return avg + random_component

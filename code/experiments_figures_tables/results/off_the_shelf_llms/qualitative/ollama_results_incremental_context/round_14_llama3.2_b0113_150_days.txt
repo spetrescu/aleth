@@ -1,0 +1,49 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Define building parameters
+building_id = 113
+primary_use = 'Education'
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Initialize lists to store data and time values
+data = []
+time_values = []
+
+# Loop through each hour from January 1, 2016, to December 31, 2016
+for i in range(3600):
+    current_date = datetime(2016, 1 + i//24, (i%24)+1) # 24 hours * 365 days
+    time_value = str(current_date.strftime('%Y-%m-%d %H:%M'))
+    
+    if (current_date.month in [6,7,8]) and (current_date.weekday() < 2): 
+        avg_kwh = summer_mean_kwh
+    elif (current_date.month in [12,1,2]) and (current_date.weekday() > 4):
+        avg_kwh = winter_mean_kwh
+    else: # rest of the year 
+        avg_kwh = yearly_mean_kwh
+    
+    # Randomly introduce variation within daily averages
+    kwh = round(avg_kwh + (avg_kwh * (0.1 - 0.01)), 3)
+    
+    if current_date.month in [6,7,8]:  
+        if (current_date.weekday() < 2): 
+            avg_kwh = summer_mean_kwh
+    elif (current_date.month in [12,1,2]): 
+        if (current_date.weekday() > 4):
+            avg_kwh = winter_mean_kwh
+            
+    # Make sure that the values stay within the valid range of yearly_min_kwh to yearly_max_kwh.
+    kwh = min(max(kwh, yearly_min_kwh), yearly_max_kwh)
+    
+    data.append(str(kwh))
+    time_values.append(time_value)
+
+# Combine data and time into one string
+output_data= ", ".join([str(x) for x in zip(time_values, data)])
+
+print(output_data)

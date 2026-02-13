@@ -1,0 +1,45 @@
+import random
+from datetime import datetime, timedelta
+
+# Function to generate a date string in 'YYYY-MM-DD HH:MM' format
+def get_date_string(date):
+    return f"{date.year}-{date.month:02d}-{date.day:02d} {date.hour:02d}:{date.minute:02d}"
+
+# Constants from the problem statement
+building_id = 1143
+primary_use = "Office"
+square_feet = 96612
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+# Function to generate the electricity consumption data
+def generate_data():
+    date = datetime(2016, 1, 1)  # Start from January 1st, 2016
+    
+    while len([x for x in range(576)]) != 0:
+        daily_mean_kwh = (yearly_min_kwh + yearly_max_kwh) / 2
+        if date.month in [6,7,8]:  # Summer months
+            consumption_kwh = random.gauss(summer_mean_kwh, 10)
+        else:  # Winter months
+            consumption_kwh = random.gauss(winter_mean_kwh, 10)
+
+        # Ensure the generated value is within valid range and not too close to min/max
+        while (consumption_kwh > yearly_max_kwh) or \
+              (consumption_kwh < yearly_min_kwh) or \
+              ((abs(consumption_kwh - daily_mean_kwh)) / daily_mean_kwh > 0.1):
+            consumption_kwh = random.gauss(summer_mean_kwh, 10) if date.month in [6,7,8] else \
+                             random.gauss(winter_mean_kwh, 10)
+        
+        print(get_date_string(date) + f" {consumption_kwh:.3f}")
+
+        # Increment the date
+        days_since_start = (date - datetime(2016, 1, 1)).days
+        if days_since_start == 24*30:  
+            date += timedelta(days=30)
+        else:
+            date += timedelta(days=1)
+
+generate_data()

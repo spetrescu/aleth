@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set the seed for reproducibility
+np.random.seed(42)
+
+# Define constants
+BUILDING_ID = 155
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 51688
+YEARLY_MEAN_KWH = 81.997604
+YEARLY_MIN_KWH = 23.5
+YEARLY_MAX_KWH = 159.0
+SUMMER_MEAN_KWH = 73.1753
+WINTER_MEAN_KWH = 91.38757
+
+# Generate dates and hours
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*312)  # 312 days
+dates = [start_date + timedelta(days=i) for i in range(int((end_date-start_date).days)+1)]
+
+hours = [i for i in range(24)] * 13
+
+# Create a DataFrame with dates and hours
+df = pd.DataFrame({'DATE': dates, 'HH': hours})
+
+# Generate electricity consumption values based on seasons
+summer_months = ['Jun', 'Jul', 'Aug']
+winter_months = ['Dec', 'Jan', 'Feb']
+
+season_values = []
+for i in range(len(df)):
+    day_of_year = (datetime(df['DATE'].iloc[i]).timetuple().tm_yday) % 365
+    if day_of_year >= (i//13)*365:
+        season = summer_months[0] if day_of_year < (len(dates)) // 3 else winter_months[1]
+        value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+        season_values.append(value)
+    elif day_of_year >= ((i//13)-1)*365:
+        season = summer_months[2] if day_of_year < (len(dates)) // 3 else winter_months[0]
+        value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+        season_values.append(value)
+    else:
+        season_values.append(np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH))
+
+# Create the output data
+output = []
+for i in range(len(df)):
+    date = df['DATE'].iloc[i].strftime('%Y-%m-%d')
+    hour = str(df['HH'].iloc[i]).zfill(2)
+    value = round(season_values[i], 6) # Round the value to 6 decimal places
+    output.append(f'{date} {hour},{value}')
+
+# Print the output
+print('\n'.join(output))

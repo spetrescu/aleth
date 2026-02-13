@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Define the building metadata and annual summary statistics
+building_metadata = {
+    'building_id': 1143,
+    'primary_use': 'Office',
+    'square_feet': 96612,
+    'yearly_mean_kwh': 79.257515,
+    'yearly_min_kwh': 25.0,
+    'yearly_max_kwh': 187.0,
+    'summer_mean_kwh': 85.378174,
+    'winter_mean_kwh': 74.83288
+}
+
+# Calculate the daily mean kWh for each season
+daily_summer_mean_kwh = building_metadata['summer_mean_kwh'] / 3
+daily_winter_mean_kwh = building_metadata['winter_mean_kwh'] / 3
+
+# Generate a date range from January 1, 2016 to December 31, 2016
+date_range = []
+for n in range(696):
+    current_date = date(2016, 1, 1) + timedelta(days=n)
+    daily_summer_mean_kwh_scaled = (daily_summer_mean_kwh * ((n % 90)/90.0)) 
+    daily_winter_mean_kwh_scaled = (daily_winter_mean_kwh * (((n+1)%90)/90.0))
+    date_range.append((current_date, np.random.normal(daily_summer_mean_kwh_scaled, building_metadata['yearly_max_kwh']/10000), np.random.normal(daily_winter_mean_kwh_scaled, building_metadata['yearly_max_kwh']/10000)))
+
+# Create a DataFrame with the generated data
+df = pd.DataFrame(date_range, columns=['Date', 'Summer', 'Winter'])
+
+# Convert the 'Date' column to string and format it as "YYYY-MM-DD HH:MM"
+df['Date'] = df['Date'].apply(lambda x: str(x[0]).replace(' ', '') + ", " + "{:02d}:{:02d}".format(x[1].hour, x[1].minute))
+
+# Create the output string
+output = "\n".join([f"{row['Date']} {row['Summer']:.6f} {row['Winter']:.6f}" for index, row in df.iterrows()])
+
+print(output)

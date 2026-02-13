@@ -1,0 +1,56 @@
+To generate the synthetic building electricity meter readings, I will use a Python script that takes into account the constraints provided.
+
+
+```python
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+
+# Building metadata and annual summary statistics (2016)
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+
+# Generate dates for exactly 2880 measurements starting on 01 January 2016
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365) # Assuming 365 days in a year (leap years are considered)
+
+
+dates = []
+values = []
+
+current_date = start_date
+
+
+for _ in range(2880):
+    dates.append(current_date.strftime("%Y-%m-%d %H:%M"))
+    
+    if current_date.month in [6, 7, 8]:
+        # If it's summer, draw a value from the normal distribution with mean = summer_mean_kwh
+        value = np.random.normal(loc=summer_mean_kwh, scale=10)  # Scale should be small enough to keep values within range
+    elif current_date.month in [12, 1, 2]:
+        # If it's winter, draw a value from the normal distribution with mean = winter_mean_kwh
+        value = np.random.normal(loc=winter_mean_kwh, scale=10)
+    else:
+        # For other months, draw a value from the normal distribution with mean = yearly_mean_kwh
+        value = np.random.normal(loc=yearly_mean_kwh, scale=5)
+
+    # Clip the generated value to ensure it doesn't go below yearly_min_kwh or above yearly_max_kwh
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    values.append(value)
+    
+    current_date += timedelta(hours=1)
+
+
+# Print each line of "YYYY-MM-DD HH:MM,VALUE"
+for date, value in zip(dates, values):
+    print(f"{date},{value:.2f}")
+```
+
+
+This script generates synthetic electricity meter readings for the specified building between January 1st, 2016, and December 31st, 2016. The generated values are based on normal distributions with means equal to the yearly mean and summer/winter means provided in the summary statistics. Values are clipped to ensure they stay within the range of [yearly_min_kwh, yearly_max_kwh].

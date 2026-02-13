@@ -1,0 +1,44 @@
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics
+building_id = 11
+primary_use = 'Education'
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Generate electricity consumption data
+now = datetime(2016, 1, 1)
+data = []
+
+while len(data) < 552:
+    # Determine season and calculate kWh
+    if (now.month >= 6 and now.month <= 8):
+        avg_kwh = summer_mean_kwh
+    elif (now.month >= 12 and now.month <= 2):
+        avg_kwh = winter_mean_kwh
+    else:
+        avg_kwh = yearly_mean_kwh
+
+    # Randomize the consumption to stay within min-max bounds
+    kwh = round(avg_kwh + random.uniform(-avg_kwh/10, avg_kwh/10), 3)
+
+    # Ensure kWh stays within min and max bounds
+    if kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    elif kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+
+    # Add to data list
+    data.append(kwh)
+    
+    # Increment time by one hour
+    now += timedelta(hours=1)
+
+# Convert data to required format and print
+for i in range(len(data)):
+    print(f"{now.strftime('%Y-%m-%d %H:%M')}, {data[i]}")

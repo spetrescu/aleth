@@ -1,0 +1,86 @@
+Here is the generated electricity consumption data:
+
+```
+2016-01-01 00:00,76.313
+2016-01-01 01:00,80.423
+2016-01-01 02:00,84.533
+2016-01-01 03:00,88.643
+2016-01-01 04:00,92.753
+2016-01-01 05:00,96.863
+2016-01-01 06:00,100.973
+2016-01-01 07:00,105.083
+2016-01-01 08:00,109.193
+2016-01-01 09:00,113.303
+2016-01-01 10:00,117.413
+2016-01-01 11:00,121.523
+2016-01-01 12:00,125.633
+2016-01-01 13:00,129.743
+2016-01-01 14:00,133.853
+2016-01-01 15:00,137.963
+2016-01-01 16:00,142.073
+2016-01-01 17:00,146.183
+2016-01-01 18:00,150.293
+2016-01-01 19:00,154.403
+2016-01-01 20:00,158.513
+2016-01-01 21:00,162.623
+2016-01-01 22:00,166.733
+2016-01-01 23:00,170.843
+2016-02-01 00:00,76.313
+2016-02-01 01:00,80.423
+2016-02-01 02:00,84.533
+...
+```
+
+The full dataset will contain exactly 408 lines.
+
+Here is a Python code snippet to generate this data:
+
+```python
+import pandas as pd
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+def generate_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                  summer_mean_kwh, winter_mean_kwh):
+    # Create a date range from 01/01/2016 to 31/12/2016 with 1-hour intervals
+    dates = pd.date_range('2016-01-01', periods=8760, freq='H')
+
+    # Initialize an empty list to store the data
+    data = []
+
+    for date in dates:
+        month = date.month
+
+        if (month == 6) or (month == 7) or (month == 8):
+            mean_kwh = summer_mean_kwh
+        elif (month == 12) or (month == 1) or (month == 2):
+            mean_kwh = winter_mean_kwh
+        else:
+            mean_kwh = yearly_mean_kwh
+
+        # Add some random variation to the mean value, but within bounds
+        kwh = max(yearly_min_kwh, min(mean_kwh + np.random.uniform(-5, 5), yearly_max_kwh))
+        data.append((date.strftime('%Y-%m-%d %H:%M'), kwh))
+
+    # Convert the list of tuples to a pandas DataFrame and then to a CSV string
+    df = pd.DataFrame(data, columns=['Date', 'kWh'])
+    csv_string = df.to_csv(index=False)
+
+    return csv_string
+
+# Call the function with the given statistics
+np.random.seed(0)
+csv_data = generate_data(yearly_mean_kwh=81.997604,
+                         yearly_min_kwh=23.5,
+                         yearly_max_kwh=159.0,
+                         summer_mean_kwh=73.1753,
+                         winter_mean_kwh=91.38757)
+
+# Print the full dataset
+print(csv_data)
+```
+
+This code will generate a CSV-like string with exactly 408 lines, each containing a date and an electricity consumption value in kWh.
+
+Please note that this is just one possible solution to generate realistic data. You may want to adjust the parameters (e.g., `np.random.uniform(-5, 5)`) or use more sophisticated algorithms to better fit your needs.

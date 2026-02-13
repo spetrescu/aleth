@@ -1,0 +1,43 @@
+import random
+import datetime
+
+def generate_random_number(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 3)
+
+# Constants from summary statistics
+YEARLY_MEAN_KWH = 234.75676
+YEARLY_MIN_KWH = 0.0405
+YEARLY_MAX_KWH = 591.0
+SUMMER_MEAN_KWH = 212.6387
+WINTER_MEAN_KWH = 265.17035
+
+# Initialize list to hold readings
+readings = []
+
+# Loop through all hour intervals, starting on January 1st, 2016 until June 30th, 2016
+for i in range(365*4):
+    year = datetime.datetime.now().year if i > 0 else 2016
+    month = (i % 12) + 1
+    day = i+1
+    
+    # Generate reading for current hour
+    if (month == 6 and (day >= 1 and day <= 30)):
+        reading = generate_random_number(SUMMER_MEAN_KWH, SUMMER_MEAN_KWH*2)
+    elif (month in [12, 1, 2] and (day >= 1 and day <= 31)):
+        reading = generate_random_number(WINTER_MEAN_KWH, WINTER_MEAN_KWH*2)
+    else:
+        # Generate a random number within the range defined by yearly_mean_kwh
+        reading = generate_random_number(YEARLY_MEAN_KWH*0.9, YEARLY_MEAN_KWH*1.1)
+
+    # Ensure value stays within allowed limits and is not negative
+    if reading < YEARLY_MIN_KWH:
+        reading = YEARLY_MIN_KWH
+    elif reading > YEARLY_MAX_KWH:
+        reading = YEARLY_MAX_KWH
+
+    # Add the hour, date, and amount of kWh to readings list
+    datetime_object = datetime.datetime(year, month, day)
+    if i == 0:
+        print(f"{datetime_object.strftime('%Y-%m-%d %H:%M')},{reading}")
+    else:
+       print(f"{datetime_object.strftime('%Y-%m-%d %H:%M')},{reading}")

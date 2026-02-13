@@ -1,0 +1,38 @@
+import random
+from datetime import datetime, timedelta
+
+building_id = 140
+primary_use = "Office"
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*384)
+
+data = []
+for i in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(days=i)
+    hour = date.hour
+    if (date.month == 6 or date.month == 7 or date.month == 8) and \
+       ((date.day >= 1 and date.day <= 31) or
+        (date.day >= 22 and date.day <= 31)):
+        value = random.gauss(summer_mean_kwh, yearly_max_kwh / 10)
+    elif (date.month in [12, 1, 2] and \
+          (date.day >= 1 and date.day <= 28) or
+           (date.day == 29 and not (date.year % 4 == 0 and
+                                    date/year % 400 == 0))):
+        value = random.gauss(winter_mean_kwh, yearly_max_kwh / 10)
+    else:
+        value = random.gauss(yearly_mean_kwh, yearly_max_kwh / 50)
+
+    # Clip to limits of range [yearly_min_kwh, yearly_max_kwh]
+    value = min(max(value, yearly_min_kwh), yearly_max_kwh)
+
+    data.append((date.strftime("%Y-%m-%d %H:%M"), round(value)))
+
+for date_str, value in data:
+    print(f"{date_str}, {value}")

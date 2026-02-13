@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define the building metadata
+building_id = 1206
+primary_use = 'Office'
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate the time series data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=168)
+
+data = []
+for n in range(int ((end_date - start_date).days)):
+    current_date = start_date + timedelta(n)
+    hour = (current_date.hour * 3600) + (current_date.minute * 60)
+    # Randomly generate values between yearly_min_kwh and yearly_max_kwh.
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    if current_date.month in [6,7,8]:
+        desired_mean_value = summer_mean_kwh
+    else:
+        desired_mean_value = winter_mean_kwh
+    
+    # Ensure that the generated value is close to the desired mean.
+    value += np.random.normal(0, 5) 
+    # Clip it so that it does not exceed yearly_max_kwh or yearly_min_kwh.
+    if value > yearly_max_kwh:
+        value = yearly_max_kwh
+    elif value < yearly_min_kwh:
+        value = yearly_min_kwh
+
+    data.append((current_date.strftime('%Y-%m-%d %H:%M'), round(value, 5)))
+
+# Output the data as requested
+for date, value in data:
+    print(f"{date}, {value}")

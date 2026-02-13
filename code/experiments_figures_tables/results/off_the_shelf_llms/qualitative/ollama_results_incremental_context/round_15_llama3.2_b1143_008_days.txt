@@ -1,0 +1,46 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDDATA = {
+    '1143': {
+        'primary_use': 'Office',
+        'square_feet': 96612,
+        'yearly_mean_kwh': 79.257515,
+        'yearly_min_kwh': 25.0,
+        'yearly_max_kwh': 187.0,
+        'summer_mean_kwh': 85.378174,
+        'winter_mean_kwh': 74.83288
+    }
+}
+
+start_date = datetime(2016,1,1)
+end_date = start_date + timedelta(days=365*192)
+
+output = []
+
+def generate_readings(start_date, end_date):
+    while start_date <= end_date:
+        # Randomly select a value between yearly_min_kwh and yearly_max_kwh
+        if start_date.month in [6,7,8]:
+            consumption = round(random.uniform(BUILDDATA['1143']['summer_mean_kwh'], BUILDDATA['1143']['yearly_max_kwh']), 2)
+        else:
+            consumption = round(random.uniform(BUILDDATA['1143']['winter_mean_kwh'], BUILDDATA['1143']['yearly_min_kwh']), 2)
+
+        # Ensure the generated value is within valid range
+        if start_date.month in [6,7,8]:
+            if consumption < BUILDDATA['1143']['summer_mean_kwh']:
+                consumption = round(random.uniform(BUILDDATA['1143']['summer_mean_kwh'], BUILDDATA['1143']['yearly_max_kwh']), 2)
+        else:
+            if consumption > BUILDDATA['1143']['winter_mean_kwh']:
+                consumption = round(random.uniform(BUILDDATA['1143']['winter_mean_kwh'], BUILDDATA['1143']['yearly_min_kwh']), 2)
+
+        # Generate the output line
+        time_string = start_date.strftime('%Y-%m-%d %H:%M')
+        output.append(f'{time_string},{consumption}')
+
+        # Increment by one hour
+        start_date += timedelta(hours=1)
+generate_readings(start_date, end_date)
+for i in range(192):
+    print(output[i])

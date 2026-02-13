@@ -1,0 +1,58 @@
+Here is a Python script that generates synthetic electricity meter readings for the specified building:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1135
+primary_use = "Education"
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 624 measurements.
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365)
+
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+values = []
+
+for date in date_range:
+    day_of_year = date.timetuple().tm_yday
+    
+    # Determine summer or winter month
+    if (6 <= date.month <= 8) or (12 <= date.month <= 2):
+        target_mean_kwh = winter_mean_kwh
+    else:
+        target_mean_kwh = summer_mean_kwh
+
+    # Generate value around yearly mean, bounded by min and max values
+    target_value = np.random.uniform(
+        min(yearly_min_kwh, target_mean_kwh * 0.9),
+        min(yearly_max_kwh, target_mean_kwh * 1.1)
+    )
+    
+    # Apply random jitter to simulate real-world fluctuations
+    target_value += (np.random.rand() - 0.5) * 10
+    
+    values.append((date.strftime('%Y-%m-%d %H:%M'), round(target_value, 3)))
+
+# Ensure final value is within valid range
+values[-1] = (
+    date_range[-1].strftime('%Y-%m-%d %H:%M'),
+    min(max(yearly_min_kwh, values[-1][1]), yearly_max_kwh)
+)
+
+print('\n'.join([f'{date_value[0]},{value}' for date_value in values]))
+```
+
+This script uses the `pandas` and `numpy` libraries to generate synthetic electricity meter readings. It first calculates the number of days between start and end dates, then iterates over each hour to generate a value around the yearly mean, bounded by min and max values. The script also applies random jitter to simulate real-world fluctuations.
+
+Note that this is one possible way to generate realistic electricity consumption data for a building, but there are many other ways to do it as well. The generated data may not perfectly match the specified constraints, so you might need to adjust parameters or use different algorithms to better suit your needs.

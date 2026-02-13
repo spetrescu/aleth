@@ -1,0 +1,45 @@
+import pandas as pd
+from datetime import timedelta, datetime
+import random
+
+# Build metadata
+build_id = 11
+primary_use = 'Education'
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Generate dates and kWh values
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=240*365)
+
+dates = []
+kwh_values = []
+
+for i in range(240):
+    current_date = end_date - timedelta(days=i)
+    # Set summer or winter month (Jun-Aug and Dec-Feb respectively) based on the day of the year
+    if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8) or \
+       (current_date.month == 12 or current_date.month == 1 or current_date.month == 2):
+        value = round(random.uniform(summer_mean_kwh, yearly_max_kwh), 3)
+    else:
+        value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    dates.append(current_date.strftime('%Y-%m-%d %H:%M'))
+    kwh_values.append(value)
+
+# Create dataframe and output to lines of format "YYYY-MM-DD HH:MM,VALUE"
+df = pd.DataFrame({'Date': dates, 'kWh': kwh_values})
+output = ""
+for index, row in df.iterrows():
+    output += f"{row['Date']},{row['kWh']}\n"
+
+print(output)

@@ -1,0 +1,48 @@
+import random
+from datetime import timedelta, date
+
+def generate_electricity_data():
+    # Define constants from building metadata and annual summary statistics
+    BUILDING_ID = 1135
+    PRIMARY_USE = "Education"
+    SQUARE_FEET = 150393
+    YEARLY_MEAN_KWH = 263.43817
+    YEARLY_MIN_KWH = 125.06
+    YEARLY_MAX_KWH = 479.897
+    SUMMER_MEAN_KWH = 263.8639
+    WINTER_MEAN_KWH = 250.41924
+
+    # Generate electricity consumption data at 1-hour intervals for exactly 168 measurements
+    start_date = date(2016, 1, 1)
+    end_date = start_date + timedelta(days=168)
+
+    for n in range(int ((end_date - start_date).days) // 24):
+        current_date = start_date + timedelta(n*24)
+        day_type = "Summer" if (current_date.month >= 6 and 
+                                current_date.month <= 8) else "Winter"
+        
+        # Randomly select a value from the range of yearly mean, min, or max
+        if random.random() > 0.1:
+            value = round(random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH), 3)
+        elif day_type == "Summer":
+            value = round(random.uniform(SUMMER_MEAN_KWH - 10, SUMMER_MEAN_KWH + 10), 3)
+        else:
+            value = round(random.uniform(WINTER_MEAN_KWH - 10, WINTER_MEAN_KWH + 10), 3)
+        
+        # Ensure values are realistic and consistent with the summary stats
+        if value < YEARLY_MIN_KWH or value > YEARLY_MAX_KWH:
+            continue
+        
+        yield f"{current_date.strftime('%Y-%m-%d %H:%M')}, {value}"
+
+# Generate electricity consumption data
+data = list(generate_electricity_data())
+
+for entry in data[:8]:
+    print(entry)
+
+for entry in data[8:]:
+    if entry.startswith("2016-12-"):
+        break
+
+print(entry)

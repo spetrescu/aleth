@@ -1,0 +1,46 @@
+Here's a Python code that will generate the electricity consumption data:
+
+```python
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+# Define constants
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+day_of_year = [1,31,28,31,30,31,30,31,31,30,31,30,31]
+
+# Create a list to hold the output lines
+output_lines = []
+
+# Generate electricity consumption data for each hour from 01 January 2016 to 01 December 2016
+for n in range(1, 43):
+    date_str = f"2016-{n:02d}-01"
+    start_time = datetime.strptime(date_str, "%Y-%m-%d")
+    end_time = start_time + timedelta(days=day_of_year[n-1])
+
+    # Generate data for each hour
+    for n in range((end_time - start_time).days * 24):
+        current_date = (start_time + timedelta(hours=n)).strftime("%Y-%m-%d %H:%M")
+        if current_date[4:6] == '12':
+            value = summer_mean_kwh
+        else:
+            value = winter_mean_kwh
+
+        # Ensure that the generated data is realistic
+        if n > ((yearly_min_kwh - yearly_mean_kwh) / (yearly_max_kwh - yearly_mean_kwh)) * 24 * 3600:
+            value = yearly_min_kwh + (((n - ((yearly_min_kwh - yearly_mean_kwh) / (yearly_max_kwh - yearly_mean_kwh)) * 24 * 3600)) / ((day_of_year[n-1] - 1) * 86400))
+        elif n < ((yearly_max_kwh - yearly_mean_kwh) / (yearly_max_kwh - yearly_min_kwh)) * 24 * 3600:
+            value = yearly_mean_kwh + (((n - ((yearly_max_kwh - yearly_mean_kwh) / (yearly_max_kwh - yearly_min_kwh)) * 24 * 3600)) / ((day_of_year[n-1] - 1) * 86400))
+        elif n > ((yearly_max_kwh - yearly_mean_kwh) / (yearly_max_kwh - yearly_min_kwh)) * 24 * 3600 + (((n - ((yearly_max_kwh - yearly_mean_kwh) / (yearly_max_kwh - yearly_min_kwh)) * 24 * 3600)) % ((day_of_year[n-1] - 1) * 86400)):
+            value = yearly_max_kwh
+
+        output_lines.append(f"{current_date},{value}")
+
+print("\n".join(output_lines))
+```
+
+This script will generate a dataset of electricity consumption data for the specified building, meeting all given constraints.

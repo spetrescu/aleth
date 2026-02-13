@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Constants
+Builiding_Id = 140
+primary_use = "Office"
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate dates
+start_date = datetime(2016,1,1)
+end_date = start_date + timedelta(days=696*24)
+
+dates = [start_date + timedelta(days=i) for i in range(696)]
+
+# Generate random consumption values
+consumption_values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, 696)
+
+# Summer and winter months
+summer_months = [(6,8), (9,11)]
+winter_months = [(12,2)]
+
+for date, consumption in zip(dates, consumption_values):
+    month = date.month
+    if month in summer_months:
+        consumption_value = np.random.uniform(summer_mean_kwh-10, summer_mean_kwh+10)
+    elif month in winter_months:
+        consumption_value = np.random.uniform(winter_mean_kwh-10, winter_mean_kwh+10)
+    else:
+        consumption_value = np.random.uniform(yearly_mean_kwh-10, yearly_mean_kwh+10)
+
+    print(f"{date.strftime('%Y-%m-%d %H:%M')},{consumption_value:.6f}")

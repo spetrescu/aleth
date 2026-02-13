@@ -1,0 +1,31 @@
+import random
+import datetime
+
+def generate_electricity_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                             summer_mean_kwh, winter_mean_kwh, days_in_year=365):
+    # Generate a list of dates for 720 measurements
+    start_date = datetime.date(2016, 1, 1)
+    end_date = start_date + datetime.timedelta(days=days_in_year*3)
+    dates = [start_date + datetime.timedelta(days=i) for i in range((end_date - start_date).days)]
+    
+    # Generate electricity data for each date
+    for date in dates:
+        if (date.month == 6 or date.month == 7 or date.month == 8) and \
+           (date.day >= 1 and date.day <= 31):
+            hourly_consumption = summer_mean_kwh + random.gauss(0, yearly_max_kwh - 2*summer_mean_kwh)
+        elif (date.month in [12, 1, 2] and 
+              date.day >= 1 and date.day <= 28):
+            hourly_consumption = winter_mean_kwh + random.gauss(0, yearly_min_kwh - 2*winter_mean_kwh)
+        else:
+            hourly_consumption = yearly_mean_kwh + random.gauss(0, yearly_max_kwh - 2*yearly_mean_kwh)
+        
+        # Ensure the consumption is within the valid range
+        hourly_consumption = max(yearly_min_kwh, min(hourly_consumption, yearly_max_kwh))
+        
+        # Add the data to the list of measurements
+        yield (date.strftime('%Y-%m-%d %H:%M'), round(hourly_consumption, 5))
+
+# Generate electricity consumption data
+for measurement in generate_electricity_data(17.38018, 0.8, 74.32,
+                                          25.539513, 11.742976):
+    print(measurement)

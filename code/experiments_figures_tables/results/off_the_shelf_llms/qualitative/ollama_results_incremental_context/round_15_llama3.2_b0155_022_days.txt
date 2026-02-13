@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define parameters
+year = 2016
+num_measures = 528
+
+# Create a date range with 1-hour intervals starting from January 1st, 2016
+start_date = datetime(year, 1, 1)
+date_range = pd.date_range(start=start_date, periods=num_measures, freq='H')
+
+# Initialize an empty list to store the electricity consumption data
+consumption_data = []
+
+# Loop through each date in the range
+for i, date in enumerate(date_range):
+    # Determine if it's summer or winter month
+    if (date.month >= 6 and date.month <= 8) or (date.month >= 12 and date.month <= 2):
+        consumption = np.random.normal(summer_mean_kwh, 10)
+    else:
+        consumption = np.random.normal(yearly_mean_kwh, 10)
+
+    # Ensure the consumption value is within the valid range
+    consumption = max(yearly_min_kwh, min(consumption, yearly_max_kwh))
+
+    # Add the consumption data to the list as a string in the desired format
+    consumption_data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{consumption:.4f}")
+
+# Join all the values in the list into a single string with newline characters in between
+full_dataset = "\n".join(consumption_data)
+
+print(full_dataset)

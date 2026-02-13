@@ -1,0 +1,45 @@
+import random
+import datetime
+
+# Constants
+N Measurements = 456
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate random hours within a day and month
+def random_day():
+    now = datetime.datetime.now()
+    year = now.year
+    month = (now.month + random.randint(-12, 13)) % 12
+    first_day_year = datetime.date(year, month, 1)
+    date_random = (first_day_year + datetime.timedelta(days=random.randint(0,365)))
+    while date_random.month == month:
+        hours = [i for i in range(24)]
+        if len(hours) > random.randint(2,15):
+            return f"{date_random.strftime('%Y-%m-%d')} {random.choice(hours)}:00,{random.uniform(yearly_min_kwh,yearly_max_kwh):.4f}"
+    month += 1
+    while month == 12:
+        year += 1
+        month = 1
+    return random_day()
+
+# Generate the synthetic electricity consumption data for one building
+def generate_data():
+    start = datetime.date(2016, 1, 1)
+    end = datetime.timedelta(days=N Measurements*24)
+    while start <= end:
+        date_random = (start + datetime.timedelta(hours=random.randint(0,23)))
+        return f"{date_random.strftime('%Y-%m-%d')} {date_random.strftime('%H:%M')},{random.uniform(yearly_min_kwh,yearly_max_kwh):.4f}"
+
+# Main script
+data_list = []
+for _ in range(N Measurements):
+    data_list.append(generate_data())
+
+print('\n'.join(data_list))

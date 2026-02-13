@@ -1,0 +1,49 @@
+import random
+from datetime import datetime, timedelta
+
+# Initialize lists to store date and energy consumption values
+dates = []
+energy_consumption_values = []
+
+# Define constants for building statistics
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Define date range (01 January 2016 to 24 June 2016)
+start_date = datetime(2016, 1, 1)
+end_date = datetime(2016, 6, 24)
+
+# Generate date and energy consumption values
+current_date = start_date
+while len(dates) < 240:
+    if (datetime(current_date.year, 3, 20).month > current_date.month or 
+        (datetime(current_date.year, 3, 20).month == current_date.month and datetime(current_date.year, 3, 21).day >= current_date.day)):
+        energy_consumption_value = winter_mean_kwh
+    else:
+        energy_consumption_value = summer_mean_kwh
+
+    # Randomly adjust the value to be within a reasonable range of the mean
+    adjustment_range = (yearly_mean_kwh - yearly_min_kwh) / 2.5
+    if current_date.month in [3, 4, 5]:
+        energy_consumption_value += random.uniform(-adjustment_range, adjustment_range)
+    else:
+        energy_consumption_value += random.uniform(0, adjustment_range)
+
+    # Ensure value is within allowed range
+    energy_consumption_value = max(yearly_min_kwh, min(energy_consumption_value, yearly_max_kwh))
+
+    dates.append(current_date.strftime('%Y-%m-%d %H:%M'))
+    energy_consumption_values.append(round(energy_consumption_value, 4))
+    
+    # Increment the current date by one hour
+    if current_date.hour < 23:
+        current_date = current_date + timedelta(hours=1)
+    else:
+        current_date = datetime(current_date.year, current_date.month, current_date.day) 
+
+# Print out energy consumption values in required format
+for i in range(240):
+    print(f"{dates[i]} {energy_consumption_values[i]}")

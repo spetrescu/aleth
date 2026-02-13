@@ -1,0 +1,41 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 1135
+SQUARE_FEET = 150393
+YEARLY_MEAN_KWH = 263.43817
+YEARLY_MIN_KWH = 125.06
+YEARLY_MAX_KWH = 479.897
+SUMMER_MEAN_KWH = 263.8639
+WINTER_MEAN_KWH = 250.41924
+
+# Initialize list to store kWh readings
+kwh_readings = []
+
+# Function to generate random number within a range
+def get_random_value(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 3)
+
+# Generate kWh readings for each hour of the year
+start_date = datetime(2016, 1, 1)
+for i in range(408):
+    date = start_date + timedelta(hours=i)
+    if (date.month == 6 or date.month == 7 or date.month == 8) and \
+       (date.weekday() >= 5): # Summer months
+        reading = get_random_value(SUMMER_MEAN_KWH - 10, SUMMER_MEAN_KWH + 10)
+    elif (date.month in [12, 1, 2]) and \
+         (date.weekday() < 4): # Winter months
+        reading = get_random_value(WINTER_MEAN_KWH - 10, WINTER_MEAN_KWH + 10)
+    else: # Other months
+        reading = get_random_value(YEARLY_MEAN_KWH - 10, YEARLY_MEAN_KWH + 10)
+
+    # Ensure reading is within valid range and not too close to min or max value
+    while reading < YEARLY_MIN_KWH:
+        reading += random.uniform(0.001, 1)
+    while reading > YEARLY_MAX_KWH:
+        reading -= random.uniform(0.001, 1)
+
+    kwh_readings.append(f"{date.strftime('%Y-%m-%d %H:%M')},{reading}")
+
+print('\n'.join(kwh_readings))

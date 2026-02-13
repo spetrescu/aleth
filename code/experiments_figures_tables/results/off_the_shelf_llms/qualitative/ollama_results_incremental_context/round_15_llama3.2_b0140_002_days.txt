@@ -1,0 +1,45 @@
+Here is a Python script that generates synthetic electricity consumption data for the specified building:
+
+```python
+import random
+from datetime import datetime, timedelta, date
+
+# Define constants
+BUILDING_ID = 140
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 50020
+YEARLY_MEAN_KWH = 31.697405
+YEARLY_MIN_KWH = 8.0204
+YEARLY_MAX_KWH = 61.0
+SUMMER_MEAN_KWH = 32.27265
+WINTER_MEAN_KWH = 30.24863
+
+# Function to generate a random value within a range
+def generate_random_value(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 4)
+
+# Generate electricity consumption data for one year
+def generate_electricity_consumption(year_start, yearly_mean_kwh, min_kwh, max_kwh):
+    current_date = date.fromisoformat(f'{year_start}-01-01')
+    while current_date <= date.fromisoformat(f'{year_start+1}-01-01'):
+        if (current_date.month in [6, 7, 8]) or (current_date.month in [12, 1, 2]):
+            value = generate_random_value(WINTER_MEAN_KWH * 0.9, WINTER_MEAN_KWH * 1.1)
+        else:
+            value = generate_random_value(YEARLY_MEAN_KWH * 0.8, YEARLY_MEAN_KWH * 1.2)
+
+        # Ensure the generated value is within the allowed range
+        if value < min_kwh or value > max_kwh:
+            continue
+
+        print(f'{current_date.isoformat()} {value}:00,{value}')
+
+        # Move to the next hour
+        current_date += timedelta(hours=1)
+        if current_date > date.fromisoformat(f'{year_start+1}-01-01'):
+            break
+
+# Generate electricity consumption data for one year
+generate_electricity_consumption(2016, YEARLY_MEAN_KWH, YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+```
+
+Please note that the generated values are realistic but random and not necessarily consistent with any real-world electricity usage patterns.

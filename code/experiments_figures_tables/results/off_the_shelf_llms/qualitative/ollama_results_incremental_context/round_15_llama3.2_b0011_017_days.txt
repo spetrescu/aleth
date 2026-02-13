@@ -1,0 +1,47 @@
+import random
+import datetime
+
+# Building metadata and annual summary statistics (2016)
+building_id = 11
+primary_use = 'Education'
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Generate electricity consumption data (kWh) at 1-hour intervals
+start_date = datetime.datetime(2016, 1, 1)
+end_date = start_date + datetime.timedelta(days=408*365)
+
+values = []
+for n in range(408):
+    current_date = start_date + datetime.timedelta(n)
+    
+    # Select month and year based on the date (e.g. summer, winter, spring or fall)
+    day_of_year = current_date.timetuple().tm_yday
+    if 172 >= day_of_year <= 214:  # June to August
+        expected_value = summer_mean_kwh
+    elif 29 <= day_of_year <= 271:  # September to November
+        expected_value = (summer_mean_kwh + yearly_mean_kwh)/2
+    elif 1 <= day_of_year <= 72:  # December to February
+        expected_value = winter_mean_kwh
+    else:
+        expected_value = (yearly_max_kwh + yearly_min_kwh) / 2
+
+    # Apply some noise around the mean value
+    expected_value += random.uniform(-0.1, 0.1)
+
+    # Ensure values are within the valid range
+    if expected_value < yearly_min_kwh:
+        values.append(yearly_min_kwh)
+    elif expected_value > yearly_max_kwh:
+        values.append(yearly_max_kwh)
+    else:
+        values.append(round(expected_value,2))
+
+# Output data in the required format
+for n, value in enumerate(values):
+    date = start_date + datetime.timedelta(n)
+    print(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")

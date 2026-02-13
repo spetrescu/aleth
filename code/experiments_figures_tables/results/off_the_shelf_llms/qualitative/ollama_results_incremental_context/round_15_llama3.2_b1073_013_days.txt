@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Build metadata
+building_id = 1073
+primary_use = 'Office'
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Generate dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*312)
+
+# Initialize list to store measurements
+measurements = []
+
+# Loop over each hour
+for n in range(int((end_date - start_date).days)):
+    current_date = start_date + timedelta(n)
+    # Convert to date format: YYYY-MM-DD
+    date_str = f"{current_date.strftime('%Y-%m-%d')} {current_date.time()}"
+    
+    if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8) and \
+       (current_date.day >= 1 and current_date.day <= 31):
+        # Summer month, use summer_mean_kwh
+        consumption = np.random.normal(summer_mean_kwh, yearly_min_kwh/10)
+    elif (current_date.month == 12 or current_date.month == 1 or current_date.month == 2) and \
+         (current_date.day >= 1 and current_date.day <= 31):
+        # Winter month, use winter_mean_kwh
+        consumption = np.random.normal(winter_mean_kwh, yearly_min_kwh/10)
+    else:
+        # Other months, use mean kwh
+        consumption = np.random.normal(yearly_mean_kwh, yearly_min_kwh/10)
+
+    # Ensure the value is within the allowed range and not below 0
+    if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8) and \
+       (current_date.day >= 1 and current_date.day <= 31):
+        consumption = max(consumption, summer_mean_kwh)
+    elif (current_date.month == 12 or current_date.month == 1 or current_date.month == 2) and \
+         (current_date.day >= 1 and current_date.day <= 31):
+        consumption = max(consumption, winter_mean_kwh)
+
+    # Ensure the value is not above yearly_max_kwh
+    consumption = min(consumption, yearly_max_kwh)
+
+    # Round to two decimal places for a more readable format
+    consumption = round(consumption, 2)
+    
+    measurements.append((date_str, consumption))
+
+# Convert list of tuples into a DataFrame and print it out:
+print('\n'.join([f"{date_str}, {consumption}" for date_str, consumption in measurements]))

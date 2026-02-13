@@ -1,0 +1,60 @@
+import random
+from datetime import timedelta, datetime
+
+def generate_electricity_data(building_id):
+    # Initialize data with summary stats
+    data = {
+        'building_id': building_id,
+        'primary_use': 'Education',
+        'square_feet': 100481,
+        'yearly_mean_kwh': 363.97446,
+        'yearly_min_kwh': 159.643,
+        'yearly_max_kwh': 679.25,
+        'summer_mean_kwh': 365.49576,
+        'winter_mean_kwh': 361.4717
+    }
+
+    # Calculate the number of data points per hour in a year
+    hours_per_year = 24 * 365
+
+    # Initialize current date and consumption
+    start_date = datetime(2016, 1, 1)
+    current_consumption = random.uniform(data['yearly_min_kwh'], data['yearly_max_kwh'])
+    current_hour = 0
+
+    while current_hour < hours_per_year * 504 // 24:
+        # Convert to date string
+        year = start_date.year
+        month = start_date.month
+        day = start_date.day
+        hour = start_date.hour + current_hour
+        minute = 0  # Always 00 minutes
+
+        # Determine season and adjust consumption accordingly
+        if (year == 2016 and 
+            (month >= 6 and month <= 8) or  # Summer months in 2016
+            (month > 8)):
+            consumption = data['summer_mean_kwh']
+        else:
+            consumption = data['winter_mean_kwh']
+
+        # Randomly adjust the consumption based on its historical data distribution
+        adjustment_factor = random.uniform(data['yearly_min_kwh'], data['yearly_max_kwh']) / (data['yearly_max_kwh'] - data['yearly_min_kwh'])
+        current_consumption *= 1 + adjustment_factor
+
+        # Ensure consumption stays within the valid range
+        current_consumption = max(data['yearly_min_kwh'], min(current_consumption, data['yearly_max_kwh']))
+
+        # Append to data output
+        print(f"{start_date.strftime('%Y-%m-%d %H:%M')}, {current_consumption:.2f}")
+
+        # Advance the date and consumption for the next hour
+        if hour < 23:
+            start_date = start_date + timedelta(hours=1)
+            current_hour += 1
+        else:
+            year = (year+1) % 100
+            start_date = datetime(year, month, day)
+
+# Generate the dataset
+generate_electricity_data(113)

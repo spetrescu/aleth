@@ -1,0 +1,38 @@
+import random
+from datetime import datetime, timedelta
+import pandas as pd
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Set parameters
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=168)
+
+# Generate data for each day
+for n in range(int ((end_date - start_date).days)):
+    date = start_date + timedelta(n)
+    month = 'Jan' if n < 32 else 'Feb' if n < 61 else 'Mar'
+    
+    # Randomly select summer or winter based on the month
+    if (month == 'Aug' or month == 'Jul') and n != 31:
+        mean_kwh = 85.378174
+    elif (month == 'Dec' or month == 'Jan' or month == 'Feb') and n != 59:
+        mean_kwh = 74.83288
+    else:
+        mean_kwh = 79.257515
+        
+    # Generate random values around the mean, but never below min or above max
+    value = round(random.gauss(mean_kwh, mean_kwh / 2),3)
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+    
+    dates.append(date.strftime('%Y-%m-%d'))
+    values.append(value)
+
+# Print data
+for i in range(len(dates)):
+    print(f"{dates[i]} {values[i]:.3f}")

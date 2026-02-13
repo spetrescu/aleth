@@ -1,0 +1,73 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Generate random consumption data
+def generate_consumption_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh):
+    # Initialize lists to hold date and consumption values
+    dates = []
+    values = []
+
+    # Start on January 1st of the year
+    start_date = datetime(2016, 1, 1)
+
+    # Loop through each hour in a day
+    for _ in range(24):
+        # Get current time as string
+        time_str = start_date.strftime('%Y-%m-%d %H:%M')
+
+        # Generate random consumption value within specified limits
+        consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+        # Add to lists
+        dates.append(time_str)
+        values.append(consumption)
+
+        # Increment time by one hour
+        start_date += timedelta(hours=1)
+
+    return pd.DataFrame({'Date': dates, 'Consumption (kWh)': values})
+
+# Generate data for the entire year
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+
+df_2016 = generate_consumption_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh)
+
+# Adjust data for summer and winter months
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+for i in range(len(df_2016)):
+    date = df_2016.loc[i, 'Date']
+    consumption = df_2016.loc[i, 'Consumption (kWh)']
+
+    if date[5:7] in ['06', '07', '08']:  # June, July, August
+        adjusted_consumption = np.random.uniform(consumption - summer_mean_kwh/3, consumption + summer_mean_kwh/3)
+    elif date[5:7] in ['12', '01', '02']:  # December, January, February
+        adjusted_consumption = np.random.uniform(consumption - winter_mean_kwh/3, consumption + winter_mean_kwh/3)
+
+    df_2016.loc[i, 'Consumption (kWh)'] = adjusted_consumption
+
+# Select data for first 168 days of the year (i.e., January to August)
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=168)
+
+df_2016_selected = df_2016.loc[(df_2016['Date'] >= start_date) & (df_2016['Date'] < end_date)]
+
+# Convert to desired output format
+output = ''
+for index, row in df_2016_selected.iterrows():
+    date_str = row['Date']
+    consumption = row['Consumption (kWh)']
+
+    # Format as 'YYYY-MM-DD HH:MM,VALUE'
+    if date_str[-2:] == ':02':
+        hour = int(date_str[:-3].split(':')[0])
+        minute = int(date_str.split(':')[-1])
+        output += f"{date_str[:10]} {hour:02d}:{minute:02d},{consumption:.6f}\n"
+    else:
+        output += f"{date_str},{consumption:.6f}\n"
+
+print(output)

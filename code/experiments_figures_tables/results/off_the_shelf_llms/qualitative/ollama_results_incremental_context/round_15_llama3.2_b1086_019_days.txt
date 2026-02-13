@@ -1,0 +1,39 @@
+import random
+import datetime
+
+# Define constants
+BUILDING_ID = 1086
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER Mean_kWH = 393.1739
+WINTER Mean_kWH = 218.81273
+
+# Generate electricity consumption data
+start_date = datetime.date(2016, 1, 1)
+end_date = start_date + datetime.timedelta(days=456)
+
+for n in range(456):
+    # Calculate day of the year and month for current measurement
+    day_of_year = (datetime.date(start_date.year, start_date.month, start_date.day) - start_date).days // 365.25
+    if (start_date.month == 12 and start_date.day > 31 or 
+        start_date.month < 3):
+        day_of_year += 1
+
+    # Check if summer month
+    if (6 <= start_date.month <= 8):
+        consumption = random.gauss(SUMMER Mean_kWH, 50)
+    else:
+        consumption = random.gauss(YEARLY Mean_kWh, 50)
+
+    # Ensure value is within valid range
+    if consumption < YEARLY_MIN_KWH:
+        consumption = YEARLY_MIN_KWH
+    elif consumption > YEARLY_MAX_KWH:
+        consumption = YEARLY_MAX_KWH
+
+    # Generate line of output data
+    current_date = start_date + datetime.timedelta(days=n)
+    print(f"{current_date.strftime('%Y-%m-%d')} {current_date.strftime('%H:%M')} {consumption:.6f}")

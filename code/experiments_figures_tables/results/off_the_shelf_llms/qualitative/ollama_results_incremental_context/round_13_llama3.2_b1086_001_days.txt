@@ -1,0 +1,45 @@
+import random
+from datetime import datetime, timedelta
+
+# Summary statistics
+buildings = {
+    '1086': {
+        'primary_use': 'Office',
+        'square_feet': 143973,
+        'yearly_mean_kwh': 296.72125,
+        'yearly_min_kwh': 85.275,
+        'yearly_max_kwh': 595.904,
+        'summer_mean_kwh': 393.1739,
+        'winter_mean_kwh': 218.81273
+    }
+}
+
+def generate_readings(building_id, start_date, end_date, count):
+    readings = []
+    current_date = start_date
+
+    while len(readings) < count:
+        date_str = current_date.strftime('%Y-%m-%d')
+        hour = current_date.hour + 1 # starting at 01:00
+        time_str = f'{date_str} {hour:02d}:00'
+        
+        value = round(random.uniform(buildings[building_id]['yearly_min_kwh'], buildings[building_id]['yearly_max_kwh']), 3)
+        readings.append((time_str, value))
+        
+        if current_date.month in [6, 7, 8]: # summer
+            if random.random() < 0.5:
+                value = round(buildings[building_id]['summer_mean_kwh'], 3)
+        else: # winter
+            if random.random() < 0.5:
+                value = round(buildings[building_id]['winter_mean_kwh'], 3)
+
+        current_date += timedelta(hours=1)
+
+    return readings
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=23) # 24 hours before end of year
+readings = generate_readings('1086', start_date, end_date, 24)
+
+for reading in readings:
+    print(f'{reading[0]} {reading[1]}')

@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Generate data
+start_date = '2016-01-01 00:00'
+dates = []
+values = []
+
+for i in range(384):
+    date = start_date + pd.date_range('1s', periods=384).dt.strftime('%Y-%m-%d %H:%M')
+    value = np.random.normal(yearly_mean_kwh, yearly_min_kwh/100) * 0.8 + yearly_min_kwh/100
+    values.append(value)
+    dates.append(date)
+
+# Ensure that the generated data is consistent with the constraints
+for i in range(384):
+    if i % 90 < 30:  # Summer months (June-August)
+        values[i] = np.random.normal(summer_mean_kwh, summer_min_kwh/100) * 0.8 + summer_min_kwh/100
+    elif i % 90 < 60:  # Winter months (December-February)
+        values[i] = np.random.normal(winter_mean_kwh, winter_min_kwh/100) * 0.8 + winter_min_kwh/100
+
+# Validate that the generated data is within the specified limits
+for value in values:
+    if value < yearly_min_kwh or value > yearly_max_kwh:
+        print(f'Error: Value {value} outside of valid range')
+
+# Print the generated dataset
+for date, value in zip(dates, values):
+    print(f'{date},{value}')

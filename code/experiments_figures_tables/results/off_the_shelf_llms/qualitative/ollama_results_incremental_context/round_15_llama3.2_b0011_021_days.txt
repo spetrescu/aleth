@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Initialize lists to hold the data
+years = []
+months = []
+days = []
+hours = []
+values = []
+
+# Loop over 504 hours starting from January 1st, 2016
+for h in range(504):
+    t = datetime(2016, 1, 1) + timedelta(hours=h)
+    
+    # Convert the time to a string with format YYYY-MM-DD HH:MM
+    year_str = str(t.year).zfill(4)
+    month_str = str(t.month).zfill(2)
+    day_str = str(t.day).zfill(2)
+    hour_str = str(t.hour).zfill(2)
+
+    # Generate a random value between yearly_min_kwh and yearly_max_kwh
+    kwh = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+    # If it's summer or winter month, generate a random value 
+    # around the mean of those months.
+    if (t.month < 8) or (t.month > 2):
+        kwh = np.random.normal(summer_mean_kwh, yearly_max_kwh - yearly_min_kwh)
+    else:
+        kwh = np.random.normal(winter_mean_kwh, yearly_max_kwh - yearly_min_kwh)
+
+    # Ensure the generated value is within min and max
+    kwh = np.clip(kwh, yearly_min_kwh, yearly_max_kwh)
+    
+    years.append(year_str)
+    months.append(month_str)
+    days.append(day_str)
+    hours.append(hour_str)
+    values.append(str(np.round(kwh, 3)))
+
+# Print the data in the required format
+for year, month, day, hour, value in zip(years, months, days, hours, values):
+    print(f"{year}-{month}-{day} {hour}:{value}")

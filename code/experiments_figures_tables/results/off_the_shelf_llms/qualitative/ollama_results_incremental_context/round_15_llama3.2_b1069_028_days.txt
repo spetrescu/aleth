@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set a seed for reproducibility
+np.random.seed(42)
+
+# Define constants
+YEAR = 2016
+BUILDING_ID = 1069
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 20864
+YEARLY_MEAN_KWH = 6.4528236
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 18.1
+SUMMER_MEAN_KWH = 6.342618
+WINTER_MEAN_KWH = 6.7815933
+
+# Create a list of dates for the simulation period
+start_date = datetime(YEAR, 1, 1)
+end_date = start_date + timedelta(days=365*672) # Exactly 672 measurements
+dates = [start_date + timedelta(days=i) for i in range(0, (end_date - start_date).days + 1)]
+
+# Create a list to store the kWh values
+kwh_values = []
+
+for date in dates:
+    # Determine if it's summer or winter based on month
+    is_summer = datetime(date.year, 6, 20) <= date < datetime(date.year, 9, 1)
+    
+    # Generate a random kwh value for this day that's within the bounds of the yearly_mean_kwh and the appropriate seasonal mean
+    if is_summer:
+        kwh_value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH) * SUMMER_MEAN_KWH / YEARLY_MEAN_KWH +YEARLY_MEAN_KWH 
+    else:        
+        kwh_value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH) * WINTER_MEAN_KWH / YEARLY_MEAN_KWH + YEARLY_MEAN_KWH 
+
+    # Append the value to the list
+    kwh_values.append(kwh_value)
+
+# Create a dataframe with the date and corresponding kWh values
+df = pd.DataFrame({'DATE': dates, 'VALUE': kwh_values})
+
+# Convert the date column to datetime format and then export it as required:
+for index, row in df.iterrows():
+    print(f"{row['DATE'].strftime('%Y-%m-%d %H:%M')},{int(row['VALUE'])}")

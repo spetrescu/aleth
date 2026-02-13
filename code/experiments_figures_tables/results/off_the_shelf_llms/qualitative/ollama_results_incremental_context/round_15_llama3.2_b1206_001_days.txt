@@ -1,0 +1,46 @@
+import random
+from datetime import timedelta, datetime
+
+building_data = {
+    '1206': {
+        'yearly_mean_kwh': 87.59102,
+        'yearly_min_kwh': 0.0,
+        'yearly_max_kwh': 153.733,
+        'summer_mean_kwh': 88.61049,
+        'winter_mean_kwh': 91.04132
+    }
+}
+
+def generate_electricity_consumption_data(building_id):
+    data = building_data[building_id]
+    
+    # Set initial time to start of the year
+    now = datetime(2016,1,1)
+    previous_day = now
+    
+    # Generate readings at 1-hour intervals for exactly 24 measurements
+    for i in range(24):
+        # If it's a summer month (Jun-Aug), use the summer_mean_kwh average
+        if now.month in [6,7,8]:
+            avg_value = data['summer_mean_kwh']
+        # Otherwise, use the yearly_mean_kwh average
+        else:
+            avg_value = data['yearly_mean_kwh']
+        
+        # Generate a random value around the average with 10% variation
+        val = round(avg_value + (avg_value * 0.1 - avg_value / 2), 3)
+        
+        # Ensure the generated value does not go below yearly_min_kwh or above yearly_max_kwh
+        if val < data['yearly_min_kwh']:
+            val = data['yearly_min_kwh']
+        elif val > data['yearly_max_kwh']:
+            val = data['yearly_max_kwh']
+        
+        # Print the generated value in the required format
+        print(f"{previous_day.strftime('%Y-%m-%d')} {previous_day.strftime('%H:%M')}, {val}")
+        
+        # Move to the next hour
+        now += timedelta(hours=1)
+        previous_day = now
+
+generate_electricity_consumption_data('1206')

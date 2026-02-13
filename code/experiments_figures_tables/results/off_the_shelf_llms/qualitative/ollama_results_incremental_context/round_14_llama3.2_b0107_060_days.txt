@@ -1,0 +1,44 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 107
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 97532
+YEARLY_MEAN_KWH = 234.75676
+YEARLY_MIN_KWH = 0.0405
+YEARLY_MAX_KWH = 591.0
+SUMMER_MEAN_KWH = 212.6387
+WINTER_MEAN_KWH = 265.17035
+
+# Define days in a month and weeks in a year
+DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+DAYS_IN_YEAR = DAYS_IN_MONTH + [31]
+
+# Generate 1440 measurements at 1-hour intervals
+measurements = []
+start_date = datetime(2016, 1, 1)
+while len(measurements) < 1440:
+    date_str = start_date.strftime('%Y-%m-%d')
+    hour = start_date.hour
+    if (date_str == '2016-12-31' and hour >= 9):
+        continue
+
+    # Generate a random value within the allowed range for each measurement
+    kwh = round(random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH), 3)
+
+    # Use summer or winter mean based on season
+    if (start_date.month in [6, 7, 8]) or (start_date.month == 9 and start_date.day < 10):
+        kwh = round(random.uniform(SUMMER_MEAN_KWH, SUMMER_MEAN_KWH + 50), 3)
+    elif (start_date.month in [12, 1, 2]) or (start_date.month == 3 and start_date.day >= 10):
+        kwh = round(random.uniform(WINTER_MEAN_KWH, WINTER_MEAN_KWH - 50), 3)
+
+    # Adjust the value to be within yearly_mean_kwh
+    kwh = min(max(kwh, YEARLY_MIN_KWH), YEARLY_MAX_KWH)
+    measurements.append((date_str + ' ' + str(hour).zfill(2) + ', ' + str(round(kwh))))
+
+    start_date += timedelta(hours=1)
+
+# Print the dataset
+for line in measurements:
+    print(line)

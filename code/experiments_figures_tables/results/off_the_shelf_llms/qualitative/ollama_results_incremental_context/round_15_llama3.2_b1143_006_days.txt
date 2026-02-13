@@ -1,0 +1,44 @@
+Here is a Python script that generates electricity consumption data for the specified building:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+import random
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+def generate_reading(mean_kwh):
+    return round(random.normalvariate(mean_kwh, 1.5), 3) # mean +/- 1.5 standard deviations
+
+start_date = '2016-01-01'
+end_date = date.today()
+
+# Generate readings for each hour
+readings = []
+for n in range(int((end_date - start_date).days)):
+    current_date = start_date + timedelta(n)
+    month = current_date.strftime('%b')
+    if month in ['Jun', 'Jul', 'Aug']:
+        mean_kwh = 85.378174 # Summer mean kWh
+    elif month in ['Dec', 'Jan', 'Feb']:
+        mean_kwh = 74.83288 # Winter mean kWh
+    else:
+        mean_kwh = 79.257515 # Annual mean kWh
+    
+    reading = generate_reading(mean_kwh)
+    
+    # Ensure reading is within min and max limits
+    if reading < yearly_min_kwh or reading > yearly_max_kwh:
+        reading = random.choice([yearly_min_kwh, yearly_max_kwh])
+    
+    readings.append((current_date.strftime('%Y-%m-%d %H:%M'), reading))
+
+# Format output as required
+output = '\n'.join(f"{date_str} {reading}" for date_str, reading in readings)
+
+print(output)
+```
+
+This script generates a CSV of the specified format using Python libraries `pandas`, `numpy`, and `datetime`. The code ensures that each value is within the given limits.

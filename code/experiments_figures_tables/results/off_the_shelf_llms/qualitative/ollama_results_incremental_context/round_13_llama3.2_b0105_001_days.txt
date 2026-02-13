@@ -1,0 +1,29 @@
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 105
+primary_use = "Education"
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 24 measurements.
+data = []
+for i in range(24):
+    date = (datetime(2016, 1, 1) + timedelta(i)).date()
+    time = datetime(2016, 1, 1) + timedelta(i)
+    value = random.gauss(yearly_mean_kwh, yearly_min_kwh - yearly_max_kwh)
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+    data.append(f"{date} {time.strftime('%H:%M')}, {value:.6f}")
+
+# Print the generated dataset.
+for line in data:
+    print(line)

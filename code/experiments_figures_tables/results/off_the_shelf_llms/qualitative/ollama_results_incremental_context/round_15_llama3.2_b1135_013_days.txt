@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta
+
+building_data = {
+    "yearly_mean_kwh": 263.43817,
+    "yearly_min_kwh": 125.06,
+    "yearly_max_kwh": 479.897,
+    "summer_mean_kwh": 263.8639,
+    "winter_mean_kwh": 250.41924
+}
+
+def generate_random_number(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 6)
+
+def is_valid(value):
+    if value < building_data["yearly_min_kwh"] or value > building_data["yearly_max_kwh"]:
+        return False
+    if value < building_data["summer_mean_kwh"] and (datetime.now().month < 7 or datetime.now().month > 8) or \
+       value < building_data["winter_mean_kwh"] and (datetime.now().month < 12 or datetime.now().month > 2):
+        return False
+    return True
+
+# Start date is 2016-01-01
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=312 - 1)
+
+values = []
+current_date = start_date
+
+while current_date <= end_date:
+    hour_value = generate_random_number(building_data["yearly_mean_kwh"], building_data["yearly_max_kwh"])
+    if is_valid(hour_value):
+        values.append(f"{current_date.strftime('%Y-%m-%d %H:%M')}, {hour_value}")
+    current_date += timedelta(hours=1)
+
+print('\n'.join(values))

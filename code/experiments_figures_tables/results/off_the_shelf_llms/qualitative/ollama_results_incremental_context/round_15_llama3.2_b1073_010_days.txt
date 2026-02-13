@@ -1,0 +1,28 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Calculate total hours in a year
+total_hours = 8760 * 2 # accounting for both summer and winter months
+
+# Generate time array from January 1st, 2016 to December 31st, 2016
+start_time = datetime(2016, 1, 1)
+end_time = start_time + timedelta(days=total_hours)
+
+# Initialize empty dataframe
+df = pd.DataFrame(index=pd.date_range(start=start_time, end=end_time, freq='H'))
+
+# Fill missing values with NaN
+df.fillna(np.nan, inplace=True)
+
+# Function to generate random kwh value within yearly range
+def generate_kwh():
+    return np.random.uniform(yearly_min_kwh, yearly_max_kwh) * (yearly_mean_kwh / yearly_max_kwh)
+
+# Generate kwh value at each hour
+df['VALUE'] = df.index.map(lambda x: generate_kwh())
+
+print(df.to_string(index=False))

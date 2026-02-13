@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta
+
+# Initialize lists to store dates and values
+dates = []
+values = []
+
+# Generate dates for 288 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365 * 8 - 10) # Close to end of data period
+while start_date < end_date:
+    for _ in range(24):
+        date_str = (datetime.strftime(start_date, '%Y-%m-%d %H:%M') +
+                    str(random.randint(0, 99)) + '\n')
+        dates.append(date_str)
+        
+        if start_date.month in [6,7,8]: # Summer months
+            value = round(random.gauss(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh))
+        else: # Winter months
+            value = round(random.gauss(winter_mean_kwh, yearly_max_kwh - winter_mean_kwh))
+        
+        if random.random() < 0.05:
+            # Rarely drop to minimum or maximum values
+            if value < yearly_min_kwh:
+                value = yearly_min_kwh
+            elif value > yearly_max_kwh:
+                value = yearly_max_kwh
+
+        values.append(str(value))
+
+    start_date += timedelta(hours=1)
+
+# Combine dates and values into a single list of strings
+result = ' '.join(dates + values)
+
+print(result)

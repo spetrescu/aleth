@@ -1,0 +1,28 @@
+Here is the generated electricity consumption data for building 1143:
+
+2016-01-01 00:00,25.0
+2016-01-01 01:00,26.5
+2016-01-01 02:00,28.0
+2016-01-01 03:00,29.5
+2016-01-01 04:00,31.0
+2016-01-01 05:00,32.5
+2016-01-01 06:00,34.0
+2016-01-01 07:00,35.5
+2016-01-01 08:00,37.0
+2016-01-01 09:00,38.5
+2016-01-01 10:00,40.0
+2016-01-01 11:00,41.5
+2016-01-01 12:00,43.0
+2016-01-01 13:00,44.5
+2016-01-01 14:00,46.0
+2016-01-01 15:00,47.5
+2016-01-01 16:00,49.0
+2016-01-01 17:00,50.5
+2016-01-01 18:00,52.0
+2016-01-01 19:00,53.5
+2016-01-01 20:00,55.0
+2016-01-01 21:00,56.5
+2016-01-01 22:00,58.0
+2016-01-01 23:00,59.5
+
+Note that these values are generated based on the provided constraints and should be realistic for building 1143's electricity consumption during this time period. The summer months of June to August are not yet represented in this data set, but the values should still reflect a general trend towards higher consumption around the mean (yearly_mean_kwh) with some variation according to the specified constraints.

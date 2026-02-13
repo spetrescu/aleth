@@ -1,0 +1,44 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 155
+PRIMARY_USE = "Office"
+SQUARE_FEET = 51688
+YEARLY_MEAN_KWH = 81.997604
+YEARLY_MIN_KWH = 23.5
+YEARLY_MAX_KWH = 159.0
+SUMMER_MEAN_KWH = 73.1753
+WINTER_MEAN_KWH = 91.38757
+MEASUREMENTS = 3600
+
+# Generate electricity consumption data
+def generate_consumption_data():
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days= MEASUREMENTS * 24)
+
+    for n in range(MEASUREMENTS):
+        date = start_date + timedelta(days=n)
+        
+        # Determine season and mean kwh
+        if (date.month < 4 or date.month > 8) and not (date.month == 12 and date.day >= 20):
+            season_mean_kwh = WINTER_MEAN_KWH
+        elif (date.month < 4 or date.month > 8) and (date.month == 12 and date.day <= 19):
+            season_mean_kwh = WINTER_MEAN_KWH
+        else:
+            season_mean_kwh = SUMMER_MEAN_KWH
+
+        # Generate random consumption
+        kwh_consumption = round(random.gauss(season_mean_kwh, season_mean_kwh/10),2)
+
+        if kwh_consumption < YEARLY_MIN_KWH:
+            kwh_consumption = YEARLY_MIN_KWH
+        elif kwh_consumption > YEARLY_MAX_KWH:
+            kwh_consumption = YEARLY_MAX_KWH
+
+        # Format output line
+        output_line = f"{date.strftime('%Y-%m-%d %H:%M')}, {kwh_consumption}"
+
+        print(output_line)
+
+generate_consumption_data()

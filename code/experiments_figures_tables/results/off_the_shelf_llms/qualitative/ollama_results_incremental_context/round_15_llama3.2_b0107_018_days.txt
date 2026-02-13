@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+import random
+
+# Define constants for the building's electricity consumption
+building_id = 107
+primary_use = "Education"
+square_feet = 97532
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Create a list of all days in the desired time period
+start_date = date(2016,1,1)
+end_date = start_date + timedelta(days=432)
+days = [start_date + timedelta(days=x) for x in range(int((end_date-start_date).days))]
+
+# Initialize lists to store the values and corresponding dates
+values = []
+dates = []
+
+for day in days:
+    # Randomly decide if it's summer or winter based on the time of year
+    is_summer = (day.month >= 6) & (day.month <= 8)
+    
+    # Generate a random kwh value that adheres to yearly_mean_kwh and follows seasonal averages
+    if is_summer:
+        value = round(random.gauss(summer_mean_kwh, 20),3)
+    else:
+        value = round(random.gauss(winter_mean_kwh, 30),3)
+
+    # Ensure the generated value stays within yearly_min_kwh and yearly_max_kwh
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Append values and dates to lists
+    values.append(value)
+    dates.append(day.strftime('%Y-%m-%d %H:%M'))
+
+# Create a list of 432 lines with the desired format
+lines = [f"{date} {value}" for date, value in zip(dates, values)]
+
+print("\n".join(lines))

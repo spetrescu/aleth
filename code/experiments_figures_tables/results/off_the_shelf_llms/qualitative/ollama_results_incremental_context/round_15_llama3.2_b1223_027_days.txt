@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 1223
+primary_use = 'Office'
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate dates and corresponding energy consumption values
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=648*2)  # 648 days * 2 hours
+energy_consumption_values = []
+current_energy_consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+for n in range(int((end_date-start_date).days)):
+    current_date = start_date + timedelta(n)
+    if (6 <= current_date.month < 8) or (12 <= current_date.month < 3):
+        current_energy_consumption = np.random.uniform(winter_mean_kwh, summer_mean_kwh+1)
+    energy_consumption_values.append(current_energy_consumption)
+
+# Format the data into desired output
+formatted_data = []
+for n in range(648):
+    date = start_date + timedelta(n)
+    formatted_data.append(f"{date.strftime('%Y-%m-%d')} {date.time().strftime('%H:%M')},{energy_consumption_values[n]}")
+
+print('\n'.join(formatted_data))

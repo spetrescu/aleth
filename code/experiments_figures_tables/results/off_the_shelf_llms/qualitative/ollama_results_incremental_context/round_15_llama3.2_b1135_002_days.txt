@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+
+# Building metadata
+building_id = 1135
+primary_use = 'Education'
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate electricity consumption data for each hour in a week
+hours_in_week = 168
+weeks_to_generate = 48  # 48 weeks worth of data
+kwh_per_hour = yearly_mean_kwh / hours_in_week
+data = np.zeros((hours_in_week, weeks_to_generate))
+
+for i in range(weeks_to_generate):
+    for j in range(hours_in_week):
+        if (j + i) % 7 == 0 and (j + i) // 7 < 8: #Winter months are Dec-Feb
+            data[j, i] = winter_mean_kwh
+        else:
+            data[j, i] = summer_mean_kwh
+
+# Calculate total kwh for each week and adjust to match yearly mean
+for i in range(weeks_to_generate):
+    weekly_total = np.sum(data[:, i])
+    data[:, i] = (weekly_total / weeks_to_generate) * 52 # There are 52 weeks in a year

@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define the building metadata and annual summary statistics
+building_data = {
+    "building_id": 1086,
+    "primary_use": "Office",
+    "square_feet": 143973,
+    "yearly_mean_kwh": 296.72125,
+    "yearly_min_kwh": 85.275,
+    "yearly_max_kwh": 595.904,
+    "summer_mean_kwh": 393.1739,
+    "winter_mean_kwh": 218.81273
+}
+
+# Calculate the time step in minutes (60 seconds)
+time_step_minutes = 60
+
+# Generate date and time values for the first day with readings
+start_date = pd.Timestamp("2016-01-01 00:00")
+end_date = start_date + timedelta(days=168, seconds=-1)
+
+# Create a dataframe to hold the generated data
+df = pd.DataFrame(columns=["date", "kwh"])
+
+# Loop through each hour in the range
+for i in np.arange((end_date - start_date).total_seconds() / time_step_minutes):
+    # Generate the date and time
+    dt = start_date + timedelta(seconds=i)
+    
+    # Randomly generate a kwh reading that is within the allowed bounds
+    if (dt.month >= 6) & (dt.month <= 8):  # Summer months
+        kwh = np.random.uniform(building_data["summer_mean_kwh"] - 10, building_data["summer_mean_kwh"] + 10)
+    else:  # Winter months
+        kwh = np.random.uniform(building_data["winter_mean_kwh"] - 10, building_data["winter_mean_kwh"] + 10)
+
+    # Ensure the generated reading is within the minimum and maximum bounds
+    if kwh < building_data["yearly_min_kwh"]:
+        kwh = building_data["yearly_min_kwh"]
+    elif kwh > building_data["yearly_max_kwh"]:
+        kwh = building_data["yearly_max_kwh"]
+
+    # Append a new row to the dataframe with the generated date and kwh reading
+    df.loc[len(df)] = [dt.strftime("%Y-%m-%d %H:%M"), round(kwh, 3)]
+
+# Print the generated data
+for index, row in df.iterrows():
+    print(f"{row[0]} {row[1]}")

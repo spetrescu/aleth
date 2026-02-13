@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+import random
+
+# Define building metadata and annual summary statistics
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Initialize date and time variables
+start_date = datetime(2016, 1, 1)
+date_time_list = [start_date]
+n_dates = 240
+
+for _ in range(n_dates):
+    next_date = date_time_list[-1] + timedelta(hours=1)
+    if (next_date - start_date).days > 365: # check if the date is more than one year from previous 
+        date_time_list.append(next_date)
+    
+# Generate random electricity consumption data at each date and time
+data = []
+for i, dt in enumerate(date_time_list):
+    month = dt.strftime('%Y-%m')
+    if (dt - datetime(2016, 6, 1)).days >= 0 and (dt - datetime(2016, 6, 1)).days <= 182: # Summer month
+        kwh = round(random.gauss(summer_mean_kwh, 5), 4) # add some randomness with a standard deviation of 5
+    else:
+        kwh = round(random.gauss(winter_mean_kwh, 5), 4)
+    
+    if kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+    elif kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    
+    data.append(f"{dt.strftime('%Y-%m-%d %H:%M')}, {kwh}")
+
+# Print the generated electricity consumption data
+print("\n".join(data))

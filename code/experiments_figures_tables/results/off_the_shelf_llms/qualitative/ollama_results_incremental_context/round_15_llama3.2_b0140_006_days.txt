@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Initial data
+building_data = {
+    'building_id': 140,
+    'primary_use': 'Office',
+    'square_feet': 50020,
+    'yearly_mean_kwh': 31.697405,
+    'yearly_min_kwh': 8.0204,
+    'yearly_max_kwh': 61.0,
+    'summer_mean_kwh': 32.27265,
+    'winter_mean_kwh': 30.24863
+}
+
+# Generate date range and consumption values
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=144)
+
+dates = [start_date + timedelta(days=i) for i in range(int((end_date-start_date).days)+1)]
+
+consumptions = [
+    np.random.normal(building_data['yearly_mean_kwh'], building_data['yearly_min_kwh']-building_data['yearly_mean_kwh']),
+    np.random.normal(building_data['summer_mean_kwh'], building_data['summer_mean_kwh']-building_data['winter_mean_kwh']),
+    np.random.normal(building_data['winter_mean_kwh'], building_data['winter_mean_kwh']-building_data['yearly_min_kwh'])
+]
+
+consumptions = [round(x, 3) for x in consumptions]
+
+# Create and output dataset
+for date, consumption in zip(dates, consumptions):
+    print(f"{date.strftime('%Y-%m-%d %H:%M')},{int(consumption)}")

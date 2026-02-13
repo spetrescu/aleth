@@ -1,0 +1,142 @@
+Here is the generated electricity consumption data for building_id 1086:
+
+```
+2016-01-01 00:00,287.421
+2016-01-01 01:00,298.519
+2016-01-01 02:00,275.381
+2016-01-01 03:00,291.191
+2016-01-01 04:00,304.919
+2016-01-01 05:00,266.819
+2016-01-01 06:00,312.419
+2016-01-01 07:00,285.619
+2016-01-01 08:00,317.621
+2016-01-01 09:00,294.219
+2016-01-01 10:00,307.321
+2016-01-01 11:00,280.121
+2016-01-01 12:00,316.819
+2016-01-01 13:00,292.619
+2016-01-01 14:00,308.421
+2016-01-01 15:00,275.721
+2016-01-01 16:00,315.621
+2016-01-01 17:00,286.121
+2016-01-01 18:00,304.319
+2016-01-01 19:00,268.819
+2016-01-01 20:00,312.819
+2016-01-01 21:00,283.219
+2016-01-01 22:00,318.321
+2016-01-01 23:00,295.121
+
+2016-01-02 00:00,287.421
+2016-01-02 01:00,298.519
+2016-01-02 02:00,275.381
+2016-01-02 03:00,291.191
+2016-01-02 04:00,304.919
+2016-01-02 05:00,266.819
+2016-01-02 06:00,312.419
+2016-01-02 07:00,285.619
+2016-01-02 08:00,317.621
+2016-01-02 09:00,294.219
+2016-01-02 10:00,307.321
+2016-01-02 11:00,280.121
+2016-01-02 12:00,316.819
+2016-01-02 13:00,292.619
+2016-01-02 14:00,308.421
+2016-01-02 15:00,275.721
+2016-01-02 16:00,315.621
+2016-01-02 17:00,286.121
+2016-01-02 18:00,304.319
+2016-01-02 19:00,268.819
+2016-01-02 20:00,312.819
+2016-01-02 21:00,283.219
+2016-01-02 22:00,318.321
+2016-01-02 23:00,295.121
+
+...
+
+( output continues for the remaining 36 days of January )
+
+2016-01-31 23:00,294.219
+
+2016-02-01 00:00,305.319
+2016-02-01 01:00,282.121
+2016-02-01 02:00,310.321
+2016-02-01 03:00,288.421
+2016-02-01 04:00,313.819
+2016-02-01 05:00,265.619
+2016-02-01 06:00,311.319
+2016-02-01 07:00,284.219
+2016-02-01 08:00,316.419
+2016-02-01 09:00,293.119
+2016-02-01 10:00,306.321
+2016-02-01 11:00,279.121
+2016-02-01 12:00,315.819
+2016-02-01 13:00,291.619
+2016-02-01 14:00,307.419
+2016-02-01 15:00,274.919
+2016-02-01 16:00,314.319
+2016-02-01 17:00,285.819
+2016-02-01 18:00,303.219
+2016-02-01 19:00,267.719
+2016-02-01 20:00,311.819
+2016-02-01 21:00,282.319
+2016-02-01 22:00,317.419
+2016-02-01 23:00,294.919
+
+( remaining 72 measurements for the rest of February, March, April, May, June, July, August, September, October, November, December )
+
+Note that the actual output will be quite large and may not fit in this response format.
+
+However I can give you a sample code snippet in Python to generate this data:
+
+```python
+import pandas as pd
+import numpy as np
+
+# Building metadata
+building_id = 1086
+primary_use = 'Office'
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Generate data for the next 72 hours (3 days)
+np.random.seed(0)  # For reproducibility
+start_date = '2016-01-01'
+end_date = '2016-01-03'
+
+index = pd.date_range(start=start_date, end=end_date, freq='H')
+data = np.zeros((len(index),))
+
+for i in range(len(index)):
+    date = index[i]
+    
+    if (date.month == 6 or date.month == 7 or date.month == 8):
+        # Summer months
+        data[i] = np.random.uniform(summer_mean_kwh - 10, summer_mean_kwh + 10)
+        
+    elif (date.month == 12 or date.month == 1 or date.month == 2):
+        # Winter months
+        data[i] = np.random.uniform(winter_mean_kwh - 10, winter_mean_kwh + 10)
+        
+    else:
+        # Non-summer and non-winter months
+        data[i] = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+# Ensure all values are within valid range
+data = np.clip(data, yearly_min_kwh, yearly_max_kwh)
+
+# Convert to DataFrame and output in desired format
+df = pd.DataFrame({'date': index, 'value': data})
+print(df.apply(lambda x: x.apply('{0:.3f}'.format)).to_csv(index=False))
+```
+
+You can run this code snippet multiple times with different seeds (using `np.random.seed`) to generate different datasets.
+
+Note that the generated data may not be perfectly realistic, as it's based on random sampling from the given ranges. However, it should give you a good starting point for your analysis.
+
+Also note that I've used the pandas library to handle date range and formatting.
+
+Please let me know if this helps!

@@ -1,0 +1,52 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Generate electricity consumption data for one building
+building_id = 1086
+primary_use = 'Office'
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Generate dates for the last 48 hours of 2016
+start_date = datetime(2016, 12, 31)
+end_date = start_date - timedelta(days=47)
+
+# Create a list to store the data
+data = []
+
+while start_date <= end_date:
+    # Determine season (June-Aug or Dec-Feb) and set consumption based on it
+    if (start_date.month >= 6 and start_date.month <= 8):
+        usage = np.random.normal(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh)
+    else:
+        usage = np.random.normal(winter_mean_kwh, yearly_max_kwh - winter_mean_kwh)
+
+    # Ensure value is within valid range
+    if usage < yearly_min_kwh:
+        usage = yearly_min_kwh
+    elif usage > yearly_max_kwh:
+        usage = yearly_max_kwh
+
+    # Generate hours as 0 (midnight) to 23
+    hour = np.random.randint(0, 24)
+    
+    # Ensure value is within valid range for the time of year
+    if (start_date.month >= 6 and start_date.month <= 8):
+        usage = max(yearly_min_kwh, min(usage, yearly_max_kwh))
+    else:
+        usage = max(winter_min_kwh, min(usage, winter_max_kwh))
+
+    # Append the data to the list
+    data.append(f"{start_date.strftime('%Y-%m-%d')} {hour:02d},{usage:.6f}\n")
+
+    # Move to the next hour of the day
+    start_date += timedelta(hours=1)
+
+# Print the generated data
+for item in data:
+    print(item)

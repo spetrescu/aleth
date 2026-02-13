@@ -1,0 +1,54 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 155
+PRIMARY_USE = "Office"
+SQUARE_FEET = 51688
+YEARLY_MEAN_KWH = 81.997604
+YEARLY_MIN_KWH = 23.5
+YEARLY_MAX_KWH = 159.0
+SUMMER Mean_kWh = 73.1753
+WINTER_mean_kWh = 91.38757
+
+# Generate date range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=120)
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Function to generate random values within the specified ranges
+def generate_random_value():
+    if (pd.to_datetime(start_date) < pd.to_datetime("Jun-01")) or (pd.to_datetime(end_date) > pd.to_datetime("Aug-31")):
+        return WINTER_mean_kWh + np.random.normal(0, 10)
+    else:
+        return SUMMER_mean_kWh + np.random.normal(0, 10)
+
+# Generate data for each hour in the specified date range
+for dt in pd.date_range(start_date, end_date):
+    # Convert datetime to string in format YYYY-MM-DD HH:MM
+    date_str = dt.strftime("%Y-%m-%d %H:%M")
+    
+    # Generate random value within the specified ranges
+    if (pd.to_datetime(dt) < pd.to_datetime("Jun-01")) or (pd.to_datetime(dt) > pd.to_datetime("Aug-31")):
+        value = WINTER_mean_kWh + np.random.normal(0, 10)
+    else:
+        value = SUMMER_mean_kWh + np.random.normal(0, 10)
+        
+    # Ensure value is within the specified range
+    if value < YEARLY_MIN_KWH:
+        value = YEARLY_MIN_KWH + np.random.normal(0, (YEARLY_MIN_KWH - YEARLY_MIN_KWH))
+    elif value > YEARLY_MAX_KWH:
+        value = YEARLY_MAX_KWH - np.random.normal(0, (YEARLY_MAX_KWH - YEARLY_MAX_KWH))
+
+    # Append values to lists
+    dates.append(date_str)
+    values.append(value)
+
+# Combine date strings and values into a list of lines
+lines = [f"{date} {value}" for date, value in zip(dates, values)]
+
+print('\n'.join(lines))

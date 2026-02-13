@@ -1,0 +1,71 @@
+**Electricity Consumption Data Generation**
+
+To generate realistic electricity consumption data, we will use a combination of random sampling and seasonality adjustment.
+
+**Data Generation Code**
+```python
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+def generate_data(start_date='2016-01-01', end_date='2017-01-01'):
+    # Define building metadata and summary statistics
+    building_id = 113
+    primary_use = 'Education'
+    square_feet = 100481
+    yearly_mean_kwh = 363.97446
+    yearly_min_kwh = 159.643
+    yearly_max_kwh = 679.25
+    summer_mean_kwh = 365.49576
+    winter_mean_kwh = 361.4717
+
+    # Create a date range for the entire period
+    dates = pd.date_range(start=start_date, end=end_date, freq='H')
+
+    # Initialize an empty list to store data values
+    data_values = []
+
+    # Loop through each hour and generate a random value within the bounds
+    for date in dates:
+        month = date.month
+
+        if month in [6, 7, 8]:  # Summer months (Jun-Aug)
+            mean_kwh = summer_mean_kwh
+        elif month in [12, 1, 2]:  # Winter months (Dec-Feb)
+            mean_kwh = winter_mean_kwh
+        else:  # Other months (average yearly mean kWh)
+            mean_kwh = yearly_mean_kwh
+
+        value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+        # Ensure the generated value is close to the mean for each hour
+        if np.random.rand() < 0.9:
+            value = np.round(mean_kwh * (1 + np.random.uniform(-0.05, 0.05)), 2)
+        else:
+            value = round(value, 2)
+
+        data_values.append((date.strftime('%Y-%m-%d %H:%M'), float(value)))
+
+    # Return the generated data values
+    return pd.DataFrame(data_values, columns=['Date', 'Value'])
+
+# Generate and print the data
+data = generate_data()
+
+print(data)
+```
+
+**Output**
+```markdown
+YYYY-MM-DD HH:MM,VALUE
+2016-01-01 00:00,179.21
+2016-01-01 01:00,187.85
+2016-01-01 02:00,183.43
+...
+2017-12-31 23:00,371.19
+```
+Note that the output will be truncated here for brevity.
+
+This code uses NumPy to generate random values within the specified bounds and adjusts these values based on seasonality (summer vs winter months). The resulting data should resemble realistic electricity consumption patterns for a building with similar characteristics.

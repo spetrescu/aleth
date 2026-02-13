@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define dates and hours
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=4321)  # 72 hours * 60 minutes/hour
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize list to store readings
+readings = []
+
+# Loop over each hour in the date range
+for i, date in enumerate(date_range):
+    # Generate a random value between yearly_min_kwh and yearly_max_kwh
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    # If it's summer month (June-August), generate a value around summer_mean_kwh
+    if date.month in [6, 7, 8]:
+        value = np.random.normal(summer_mean_kwh, 10)  # allow some deviation from the mean
+    
+    # Add the reading to the list
+    readings.append((date.strftime('%Y-%m-%d %H:%M'), round(value, 3)))
+
+# Convert the list to a DataFrame
+df = pd.DataFrame(readings, columns=['Date', 'Value (kWh)'])
+
+# Print the DataFrame
+print(df.to_csv(index=False))

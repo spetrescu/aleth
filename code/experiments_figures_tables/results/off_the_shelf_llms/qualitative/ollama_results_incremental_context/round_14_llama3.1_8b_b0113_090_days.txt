@@ -1,0 +1,51 @@
+Here is a Python script that generates synthetic electricity meter readings for ONE building, following your requirements.
+
+
+```python
+import pandas as pd
+import numpy as np
+
+# Define parameters
+building_id = 113
+primary_use = 'Education'
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Generate data for exactly 2160 measurements (1-hour intervals)
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+dates = pd.date_range(start=start_date, end=end_date, freq='H')
+values = np.zeros(len(dates))
+
+for i in range(len(dates)):
+    date = dates[i]
+    month = date.month
+    
+    # Adjust values based on seasonality
+    if (month >= 6 and month <= 8): 
+        values[i] = summer_mean_kwh + np.random.uniform(-5, 5)
+    
+    elif (month >= 12 or month <= 2):
+        values[i] = winter_mean_kwh + np.random.uniform(-5, 5)
+        
+    else: # other months
+        values[i] = yearly_mean_kwh + np.random.uniform(-20, 20)
+
+# Ensure no value is below yearly_min_kwh or above yearly_max_kwh    
+values[values < yearly_min_kwh] = yearly_min_kwh 
+values[values > yearly_max_kwh] = yearly_max_kwh
+
+# Output synthetic electricity consumption data
+for i in range(len(dates)):
+    date_str = dates[i].strftime("%Y-%m-%d %H:%M")
+    value = round(values[i], 2)  # rounded to 2 decimal places
+    print(f'{date_str},{value}')
+
+```
+
+This script will output synthetic electricity consumption data for the specified building, following your requirements. Note that values are randomly adjusted within a certain range to reflect typical variations in energy usage, while ensuring no value is outside of the yearly min-max range.

@@ -1,0 +1,49 @@
+import random
+from datetime import datetime, timedelta
+
+# Initialize lists to store date and energy consumption values
+dates = []
+values = []
+
+# Function to generate a random value within a given range
+def random_value(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 4)
+
+# Parameters from the problem description
+building_id = 1073
+primary_use = "Office"
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Function to generate the dataset
+def generate_dataset():
+    # Loop over all 120 measurements
+    for hour in range(120):
+        date_str = (datetime(2016, 1, 1) + timedelta(hours=hour)).strftime('%Y-%m-%d %H:%M')
+        
+        if winter_mean_kwh > summer_mean_kwh:
+            value = random_value(winter_mean_kwh - 10, winter_mean_kwh + 10)
+        else:
+            value = random_value(summer_mean_kwh - 10, summer_mean_kwh + 10)
+
+        # Ensure the generated value is within yearly range
+        if value < yearly_min_kwh or value > yearly_max_kwh:
+            value = random_value(yearly_min_kwh, yearly_max_kwh)
+        
+        # Ensure most values are near yearly_mean_kwh
+        if abs(value - yearly_mean_kwh) > 10:
+            value = round(random_value(min(yearly_mean_kwh - 20, yearly_min_kwh), max(yearly_mean_kwh + 20, yearly_max_kwh)), 4)
+
+        dates.append(date_str)
+        values.append(str(value))
+
+    # Join the values together with a comma
+    return ", ".join(f"{date} {value}" for date, value in zip(dates, values))
+
+# Generate and print the dataset
+dataset = generate_dataset()
+print(dataset)

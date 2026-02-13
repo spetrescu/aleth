@@ -1,0 +1,58 @@
+Here is the Python code that generates synthetic electricity consumption data for the building:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 1086
+primary_use = "Office"
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Number of measurements
+n_measurements = 624
+
+# Generate electricity consumption data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=n_measurements - 1)
+
+def generate_data(date, day_of_year):
+    # Determine whether it's summer or winter based on the day of year
+    if (day_of_year >= 166 and day_of_year <= 214) or day_of_year == 0:
+        average_kwh = summer_mean_kwh
+    elif day_of_year in [31, 32]:
+        average_kwh = winter_mean_kwh
+    else:
+        # For the rest of the year, use a weighted average based on the season
+        if (day_of_year >= 166 and day_of_year <= 214) or day_of_year == 0:
+            weight_sum = sum(1 for x in range(day_of_year) if x in [31, 32]) + \
+                        sum(1 for x in range(day_of_year - 215, day_of_year - 167) if x < 166)
+            return yearly_mean_kwh * (weight_sum / n_measurements)
+        elif day_of_year in [31, 32]:
+            weight_sum = sum(1 for x in range(day_of_year) if x == 0 or x > 214) + \
+                        sum(1 for x in range(day_of_year - 215, day_of_year - 167) if x >= 166)
+            return yearly_mean_kwh * (weight_sum / n_measurements)
+
+    # Randomly generate a value within the allowed range
+    kwh = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 4)
+
+    # If it's summer or winter, use the average to inform the random value
+    if (day_of_year >= 166 and day_of_year <= 214) or day_of_year == 0:
+        kwh = min(max(kwh, round(average_kwh * random.uniform(0.9, 1.1), 4)), yearly_max_kwh)
+    elif day_of_year in [31, 32]:
+        kwh = min(max(kwh, round(average_kwh * random.uniform(0.9, 1.1), 4)), yearly_min_kwh)
+
+    return f"{date.strftime('%Y-%m-%d %H:%M')}, {kwh}"
+
+# Generate the data
+for day in range(n_measurements):
+    date = start_date + timedelta(days=day)
+    print(generate_data(date, date.timetodelay().tm_yday))
+```
+
+Please let me know if you would like any further adjustments to this synthetic electricity consumption dataset for building 1086.

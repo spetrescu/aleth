@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Define building metadata and annual summary statistics (2016)
+building_data = {
+    'building_id': 140,
+    'primary_use': 'Office',
+    'square_feet': 50020,
+    'yearly_mean_kwh': 31.697405,
+    'yearly_min_kwh': 8.0204,
+    'yearly_max_kwh': 61.0,
+    'summer_mean_kwh': 32.27265,
+    'winter_mean_kwh': 30.24863
+}
+
+# Generate electricity consumption data (kWh) at 1-hour intervals
+data = []
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=480)
+
+for n in range(int((end_date - start_date).days)):
+    current_date = start_date + timedelta(n)
+    
+    # Get the day of the year (1-365) and determine the season
+    day_of_year = current_date.timetedelta().days
+    
+    if (day_of_year >= 172 and day_of_year <= 247) or \
+       (day_of_year >= 348 and day_of_year <= 366):
+        # Summer months (Jun-Aug)
+        avg_kwh = building_data['summer_mean_kwh']
+    elif (day_of_year >= 63 and day_of_year <= 165) or \
+         (day_of_year >= 249 and day_of_year <= 340):
+        # Winter months (Dec-Feb)
+        avg_kwh = building_data['winter_mean_kwh']
+    else:
+        # Other months
+        avg_kwh = building_data['yearly_mean_kwh']
+
+    # Add some random variation around the average value to make it more realistic
+    kwh = avg_kwh + np.random.normal(0, 1)
+
+    if kwh < building_data['yearly_min_kwh']:
+        kwh = building_data['yearly_min_kwh']
+    elif kwh > building_data['yearly_max_kwh']:
+        kwh = building_data['yearly_max_kwh']
+
+    # Generate the line for this hour
+    data.append((str(current_date) + ' ' + str(12*int(current_datetimedelta().total_seconds())//3600) + ', ' + str(kwh)))
+
+# Print the output
+for item in data:
+    print(item)

@@ -1,0 +1,34 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define constants
+BUILDING_ID = 113
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 100481
+YEARLY_MEAN_KWH = 363.97446
+YEARLY_MIN_KWH = 159.643
+YEARLY_MAX_KWH = 679.25
+SUMMER_MEAN_KWH = 365.49576
+WINTER_MEAN_KWH = 361.4717
+
+# Generate date range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=743)  # 744 days (from Jan 1 to Dec 31)
+
+# Create a list of dates and corresponding values for electricity consumption
+dates = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d %H:%M') for i in range(744)]
+
+values = [np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH) if np.random.rand() < 0.8 
+         else (np.random.uniform(WINTER_MEAN_KWH, SUMMER_MEAN_KWH)) * 2 + WINTER_MEAN_KWH for _ in range(744)]
+
+# Ensure values are within the valid range
+values = [max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH)) for value in values]
+
+# Format as required output format
+formatted_data = ', '.join(f"{date}, {value:.6f}" for date, value in zip(dates, values))
+
+print(formatted_data)

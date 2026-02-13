@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+def generate_electricity_consumption_data(building_id):
+    # Define parameters
+    yearly_mean_kwh = 6.4528236
+    yearly_min_kwh = 0.0
+    yearly_max_kwh = 18.1
+    summer_mean_kwh = 6.342618
+    winter_mean_kwh = 6.7815933
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=600*24)  # 600 days * 24 hours/day
+
+    # Initialize lists to store the data
+    dates = []
+    values = []
+
+    # Loop over each day
+    current_date = start_date
+    while current_date <= end_date:
+        if (current_date.month in [6,7,8] and 
+            summer_mean_kwh > np.random.rand()):
+            value = summer_mean_kwh + (yearly_max_kwh - summer_mean_kwh) * np.random.uniform(-1, 1)
+        elif (current_date.month in [12,1,2] and 
+              winter_mean_kwh > np.random.rand()):
+            value = winter_mean_kwh + (yearly_max_kwh - winter_mean_kwh) * np.random.uniform(-1, 1)
+        else:
+            # For other months, average kWh is mostly the yearly mean
+            value = yearly_mean_kwh + (yearly_max_kwh - yearly_mean_kwh) * np.random.uniform(-0.5, 0.5)
+
+        if current_date.month == 6 or current_date.month == 7 or current_date.month == 8:
+            # Summer months average around summer_mean_kwh
+            value = summer_mean_kwh + (summer_max_kwh - summer_mean_kwh) * np.random.uniform(-1, 1)
+        elif current_date.month in [12,1,2]:
+            # Winter months average around winter_mean_kwh
+            value = winter_mean_kwh + (winter_max_kwh - winter_mean_kwh) * np.random.uniform(-1, 1)
+
+        if yearly_min_kwh < value < yearly_max_kwh:
+            values.append(value)
+        else:
+            raise ValueError(f"Value {value} is out of range")
+
+        # Append the date and value to the lists
+        dates.append(current_date.strftime("%Y-%m-%d"))
+        current_date += timedelta(hours=1)
+
+    return pd.DataFrame({'date': dates, 'value': values})
+
+print(generate_electricity_consumption_data(1069).to_csv(index=False))

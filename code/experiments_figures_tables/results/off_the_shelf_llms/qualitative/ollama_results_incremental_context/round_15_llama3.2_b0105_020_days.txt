@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set random seed for reproducibility
+np.random.seed(0)
+
+# Initialize data
+data = []
+
+# Initialize date and time variables
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=480)
+
+while start_date <= end_date:
+    # Generate a random value between yearly_min_kwh and yearly_max_kwh
+    kwh = np.random.uniform(yearly_min_kwh, yearly_max_kwh) if (start_date.month >= 3 and 
+                                    start_date.month <= 8) else np.random.uniform(summer_mean_kwh, summer_mean_kwh)
+    
+    # Append the value to the data list with the date and time
+    data.append(f"{start_date.strftime('%Y-%m-%d %H:%M')},{kwh:.8f}")
+    
+    # Increment the date by one day
+    start_date += timedelta(days=1)
+
+# Sort the data so that each hour is listed in chronological order
+data.sort()
+
+print("\n".join(data))

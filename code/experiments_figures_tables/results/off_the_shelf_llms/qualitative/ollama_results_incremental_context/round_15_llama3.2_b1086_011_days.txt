@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Generate time series data
+start_date = '2016-01-01 00:00'
+end_date = '2016-12-31 23:59'
+
+dt = pd.date_range(start=start_date, end=end_date, freq='1h')
+
+# Convert to datetime format
+dt = pd.to_datetime(dt)
+
+# Generate random values between yearly_min_kwh and yearly_max_kwh
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(dt))
+
+# Set summer months (Jun-Aug) and winter months (Dec-Feb)
+summer_months = dt[(dt.month >= 6) & (dt.month <= 8)]
+winter_months = dt[(dt.month >= 12) & (dt.month <= 2)]
+
+# Adjust values for summer and winter months
+values[values < summer_mean_kwh] = np.random.uniform(summer_mean_kwh, 1e10)
+values[winter_months] = np.random.uniform(winter_mean_kwh, 1e10)
+
+# Pad with NaN values to get exactly 264 measurements
+values = pd.Series(values).reindex(dt).fillna(np.nan)
+
+# Convert the Series to a DataFrame and format as required
+df = pd.DataFrame({
+    'HH:MM,VALUE': values.astype(str)
+})
+
+print(df[:264])

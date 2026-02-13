@@ -1,0 +1,58 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Generate data
+np.random.seed(0)
+data = {
+    'Date': [],
+    'Value (kWh)': []
+}
+
+# Function to generate a single row of data
+def generate_data(start_time):
+    date = start_time
+    while len(data['Date']) < 432:
+        value = round(random.gauss(data['Yearly_mean_kWh'], data['Yearly_std_dev']), 3)
+        if value < data['Yearly_min_kWh'] or value > data['Yearly_max_kWh']:
+            continue
+
+        if date.month in [6,7,8]:
+            # Summer months
+            target_value = data['Summer_mean_kWh']
+            std_dev = data['Summer_std_dev']
+        else:
+            # Winter months
+            target_value = data['Winter_mean_kWh']
+            std_dev = data['Winter_std_dev']
+
+        # Generate a value that's close to the target, with some noise
+        if np.random.rand() < 0.5:
+            value = round(target_value + random.gauss(0, std_dev), 3)
+        else:
+            value = round(target_value - random.gauss(0, std_dev), 3)
+
+        data['Date'].append(date.strftime('%Y-%m-%d'))
+        data['Value (kWh)'].append(value)
+        
+        # Move to the next day
+        date += timedelta(days=1)
+
+# Set parameters from problem statement
+data['Yearly_mean_kWh'] = 363.97446
+data['Yearly_min_kWh'] = 159.643
+data['Yearly_max_kWh'] = 679.25
+
+data['Summer_mean_kWh'] = 365.49576
+data['Summer_std_dev'] = round((data['Summer_mean_kWh'] - data['Yearly_mean_kWh']) / np.sqrt(3), 2)
+data['Winter_mean_kWh'] = 361.4717
+data['Winter_std_dev'] = round((data['Winter_mean_kWh'] - data['Yearly_mean_kWh']) / np.sqrt(3), 2)
+
+# Generate data
+start_time = datetime(2016,1,1)
+generate_data(start_time)
+
+# Output to desired format
+for i in range(len(data['Date'])):
+    print(f"{data['Date'][i]} {data['Value (kWh)'][i]}" )

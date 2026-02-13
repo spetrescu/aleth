@@ -1,0 +1,43 @@
+import random
+from datetime import timedelta, datetime
+
+building_id = 11
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Generate date range
+start_date = datetime(2016,1,1)
+end_date = start_date + timedelta(days=365*144)
+
+# Lists to store values and dates
+values = []
+dates = []
+
+# Loop over the days
+for i in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(days=i)
+    # Randomly decide whether it's summer or winter based on month
+    if 6 <= date.month <= 8:
+        mean_kwh = summer_mean_kwh
+    elif 12 <= date.month <= 2:
+        mean_kwh = winter_mean_kwh
+    else:
+        mean_kwh = yearly_mean_kwh
+    
+    value = round(random.uniform(mean_kwh - (mean_kwh * 0.1), mean_kwh + (mean_kwh * 0.1)),4)
+    
+    # Ensure the generated values stay within allowed range
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    values.append(value)
+    dates.append(str(date))
+
+# Generate output in required format
+for date, value in zip(dates, values):
+    print(f"{date} {value}")

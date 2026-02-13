@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+
+# Building metadata and annual summary statistics
+building_id = 1246
+primary_use = 'Office'
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate electricity consumption data for each hour in a year
+hours_in_year = 8760
+data = np.zeros((hours_in_year,))
+
+# Summer months (Jun-Aug)
+for i in range(30):  # 6 months * 4 weeks * 24 hours = 144 weeks, but we need only the full month
+    start_date = pd.to_datetime('2016-06-01')
+    end_date = start_date + pd.Timedelta(days=31) - pd.Timedelta(seconds=1)
+    
+    for day in range(31):
+        current_day = start_date + pd.Timedelta(days=day)
+
+        if current_day.day >= 16:  # After the summer solstice
+            avg_kwh = winter_mean_kwh
+        else:
+            avg_kwh = summer_mean_kwh
+
+        data[current_day - start_date] = np.random.normal(avg_kwh, yearly_mean_kwh / 100) + \
+                                        (np.random.uniform(0.05, 1.05) * avg_kwh)
+
+# Winter months (Dec-Feb)
+for i in range(90):  # 3 months * 4 weeks * 24 hours = 144 weeks
+    start_date = pd.to_datetime('2016-12-01')
+    end_date = start_date + pd.Timedelta(days=31) - pd.Timedelta(seconds=1)
+    
+    for day in range(31):
+        current_day = start_date + pd.Timedelta(days=day)
+
+        avg_kwh = winter_mean_kwh
+
+        data[current_day - start_date] = np.random.normal(avg_kwh, yearly_mean_kwh / 100) + \
+                                        (np.random.uniform(0.05, 1.05) * avg_kwh)
+
+
+# Limit values to the range [yearly_min_kwh, yearly_max_kwh]
+data = np.clip(data, yearly_min_kwh, yearly_max_kwh)
+
+# Convert data to a pandas Series and format as required
+result = ''
+for i in range(hours_in_year):
+    result += f"{pd.to_datetime('2016-01-01').date() + pd.Timedelta(days=i)} {data[i]:.3f}\n"
+
+print(result)

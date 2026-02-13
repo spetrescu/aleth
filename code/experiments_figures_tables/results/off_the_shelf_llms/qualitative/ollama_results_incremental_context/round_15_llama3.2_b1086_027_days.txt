@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set the seed for reproducibility
+np.random.seed(42)
+
+# Initialize lists to store the data
+dates = []
+values = []
+
+# Define start and end dates
+start_date = datetime(2016, 1, 1)
+end_date = pd.to_datetime(start_date) + timedelta(days=648*24)
+
+while end_date > start_date:
+    # Determine if the day is in summer or winter
+    if (end_date.month >= 6) & (end_date.month <= 8):
+        avg_value = 393.1739
+    else:
+        avg_value = 218.81273
+
+    # Generate a random value around the average value
+    val = np.random.normal(avg_value, (yearly_mean_kwh - yearly_min_kwh)/2)
+
+    # Ensure the generated value is within the valid range
+    val = max(yearly_min_kwh, min(val, yearly_max_kwh))
+
+    # Append to lists and increment dates
+    values.append(val)
+    dates.append(end_date.strftime('%Y-%m-%d %H:%M'))
+    end_date += timedelta(hours=1)
+
+# Combine into a dataframe and format to desired output
+df = pd.DataFrame({'Date': dates, 'Value (kWh)': values})
+print('\n'.join(f'{date},{val}' for date, val in zip(df['Date'], df['Value (kWh)']))

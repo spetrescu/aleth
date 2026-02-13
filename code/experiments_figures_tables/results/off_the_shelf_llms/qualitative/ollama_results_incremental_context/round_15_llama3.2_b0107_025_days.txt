@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize lists to hold data
+building_id = [107]
+primary_use = ['Education']
+square_feet = [97532]
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Initialize lists to hold time and consumption data
+time_data = []
+consumption_data = []
+
+# Generate data for each month
+for month in range(1,13):
+    start_date = datetime(2016, month, 1)
+    end_date = (datetime(2016, month + 1, 1) if month < 11 else datetime(2017, 1, 1))
+    
+    # Generate time intervals for each day in the month
+    current_time = start_date
+    while current_time <= end_date:
+        # Calculate consumption based on whether it's summer or winter
+        if (month == 6 or month == 7 or month == 8) and current_time.month < 9: 
+            consumption = summer_mean_kwh
+        elif current_time.month >= 12:
+            consumption = winter_mean_kwh
+        else:
+            consumption = yearly_mean_kwh
+        
+        # Add data to lists
+        time_data.append(current_time.strftime('%Y-%m-%d %H:%M'))
+        consumption_data.append(consumption)
+        
+        # Move on to the next day
+        current_time += timedelta(hours=1)
+
+# Combine data into a dataframe and add to building metadata
+df = pd.DataFrame({
+    'Year': [2016]*600,
+    'Month': [x//30 for x in range(601)] + [None] * 10,
+    'Day': [(x-((x//30)*30))%30+1 if (x//30)*30 < x else None for x in range(601)],
+    'Time': time_data,
+    'Consumption': consumption_data
+})
+
+# Ensure values are within the given bounds
+df['Consumption'] = df['Consumption'].apply(lambda x: yearly_min_kwh if x < yearly_min_kwh else min(x, yearly_max_kwh))
+
+# Select required data and convert it to the desired format
+result = "\n".join([f"{datetime(2016, month, 1)} {x}: {y}" for (month, year, day, x, y) in 
+                     zip(df[['Year', 'Month', 'Day', 'Time', 'Consumption']].sample(frac=1).drop_duplicates().values,
+                         df['Year'], df['Day'], df['Time'], df['Consumption'])])
+
+print(result)

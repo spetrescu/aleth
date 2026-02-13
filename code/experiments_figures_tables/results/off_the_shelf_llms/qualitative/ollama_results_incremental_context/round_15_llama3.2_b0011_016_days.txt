@@ -1,0 +1,31 @@
+import pandas as pd
+import numpy as np
+
+# Set a seed for reproducibility
+np.random.seed(42)
+
+# Define the start and end dates
+start_date = '2016-01-01 00:00'
+end_date = '2016-12-31 23:59'
+
+# Create an empty list to store the measurements
+measurements = []
+
+# Generate measurements for each hour in the year
+for i in range(384):
+    date = pd.to_datetime(start_date) + pd.DateOffset(hours=i)
+    if (date.month > 7 and date.month < 10): # Summer months: Jun-Aug
+        value = np.random.normal(summer_mean_kwh, yearly_max_kwh/100)
+    else: # Winter months: Dec-Feb
+        value = np.random.normal(winter_mean_kwh, yearly_max_kwh/100)
+
+    # Ensure the measurement is within the minimum and maximum allowed values
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+
+    # Add the measurement to the list
+    measurements.append(f'{date.strftime("%Y-%m-%d %H:%M")},{value:.10f}')
+
+# Join all the measurements into a single string
+output = '\n'.join(measurements)
+
+print(output)

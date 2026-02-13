@@ -1,0 +1,38 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Initialize lists to hold data
+building_id = 1135
+primary_use = 'Education'
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate time series data for each hour from January 1st, 2016 to December 31st, 2016
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=216) - timedelta(hours=1)
+
+hours = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d %H:%M') for i in range((end_date-start_date).days+1)]
+
+# Generate random values between yearly_min_kwh and yearly_max_kwh
+consumption_values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, 216)
+
+# Split the data into summer and winter months
+summer_hours = [hour for hour in hours if (6 <= int((int(hour.split('-')[1]) - int(hour.split('-')[0].split(':')[0])) % 12) < 9] # June-August (June, July, Aug)
+winter_hours = [hour for hour in hours if (11 <= int((int(hour.split('-')[1]) - int(hour.split('-')[0].split(':')[0])) % 12) < 3]   # Dec-Feb (Dec, Jan, Feb)
+
+# Adjust the consumption values to be more similar to summer_mean_kwh and winter_mean_kwh
+sum = np.sum(consumption_values)
+consumption_values[:len(summer_hours)] = np.random.uniform(summer_mean_kwh, summer_mean_kwh + 0.2 * (summer_mean_kwh - yearly_mean_kwh)) # Ensure values are within the same range as the mean for each month.
+consumption_values[len(summer_hours):] = np.random.uniform(winter_mean_kwh, winter_mean_kwh + 0.2 * (winter_mean_kwh - yearly_mean_kwh))
+
+# Create the output lines
+for hour in hours:
+    if len(consumption_values) > 1:
+        print(f'{hour}, {consumption_values.pop()}')
+    else:
+        print(f'{hour}, {consumption_values[0]}')

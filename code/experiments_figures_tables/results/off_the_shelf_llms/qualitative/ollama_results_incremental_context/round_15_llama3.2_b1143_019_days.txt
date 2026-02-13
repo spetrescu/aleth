@@ -1,0 +1,61 @@
+import random
+from datetime import datetime, timedelta
+import time
+
+def generate_dataset():
+    building_id = 1143
+    primary_use = "Office"
+    square_feet = 96612
+    yearly_mean_kwh = 79.257515
+    yearly_min_kwh = 25.0
+    yearly_max_kwh = 187.0
+    summer_mean_kwh = 85.378174
+    winter_mean_kwh = 74.83288
+
+    start_date = datetime(2016,1,1)
+    end_date = datetime(2016,12,31) + timedelta(days=5)
+
+    dates = []
+    kWh_values = []
+
+    while start_date < end_date:
+        year = start_date.year
+        month = start_date.month
+
+        if (year == 2016 and month >= 3 and month <= 8) or \
+           (year != 2016 and month in [3,4,5,6,7,8]):
+            avg_kwh = summer_mean_kwh
+        else:
+            avg_kwh = winter_mean_kwh
+
+        # Select values between yearly_min_kwh and yearly_max_kwh
+        kWh = random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+        # Scale to average value
+        scaled_kwh = (kwh - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh) * \
+                     ((summer_mean_kwh - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh)) + \
+                     (yearly_min_kwh - summer_mean_kwh) / (yearly_max_kwh - yearly_min_kwh) * avg_kwh
+
+        dates.append(start_date)
+        kWh_values.append(scaled_kwh)
+
+        start_date += timedelta(hours=1)
+
+    # Append remaining time
+    while len(kWh_values) < 456:
+        current_time = time.localtime()
+        hours_ahead = random.randint(0,23)
+        new_time = datetime(current_time.tm_year,current_time.tm_mon,current_time.tm_mon[current_time.tm_mon-1],current_time.tm_mday, hours_ahead)
+
+        if int(new_time.strftime("%Y-%m-%d")) == int(start_date.strftime("%Y-%m-%d")):
+            kWh_values.append(kWh_values[-1])
+        else:
+            kWh_values.append(random.uniform(yearly_min_kwh, yearly_max_kwh))
+        
+        start_date = new_time
+
+    # Format output
+    for i in range(len(dates)):
+        print(f"{dates[i].strftime('%Y-%m-%d %H:%M')},{kWh_values[i]:.4f}")
+
+generate_dataset()

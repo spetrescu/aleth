@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Build metadata
+building_id = 107
+primary_use = "Education"
+square_feet = 97532
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Convert yearly stats to pandas Series for easier manipulation
+stats = pd.Series({
+    'Year': [2016],
+    'Mean kWh': [yearly_mean_kwh],
+    'Min kWh': [yearly_min_kwh],
+    'Max kWh': [yearly_max_kwh],
+    'Summer Mean kWh': [summer_mean_kwh],
+    'Winter Mean kWh': [winter_mean_kwh]
+})
+
+# Create a pandas DataFrame for the building
+building = pd.DataFrame({
+    'Year': [2016] * 96,
+    'Value': np.random.normal(loc=yearly_mean_kwh, scale=stats['Mean kWh'].values[0])
+}).round(3)
+
+# Convert datetime values to HH:MM format
+building['Date'] = building.apply(lambda row: str(datetime(2016, 1, 1) + timedelta(hours=row['Value'], minutes=0)).split(' ')[0]
+                                + ',00', axis=1)
+building['Value'] = abs(building['Value']).round(3)
+
+# Ensure values are within valid range
+building.loc[building['Value'] < yearly_min_kwh, 'Value'] = yearly_min_kwh
+building.loc[building['Value'] > yearly_max_kwh, 'Value'] = yearly_max_kwh
+
+# Adjust values for summer and winter months
+for i in range(96):
+    if (i // 12) % 3 == 0: # January to February (Winter)
+        building.loc[i, 'Value'] = abs(building['Value'].values[0]) * winter_mean_kwh / stats['Mean kWh'].values[0]
+    elif ((i // 12) % 3 + 1) % 3 == 0: # May to June (Summer)
+        building.loc[i, 'Value'] = abs(building['Value'].values[0]) * summer_mean_kwh / stats['Mean kWh'].values[0]
+
+# Convert back to strings
+building['Date'] = building.apply(lambda row: f"{row['Date'].split(',00')[0]} {row['Date'].split(',00')[1]}", axis=1)
+
+# Print the output
+for i in range(96):
+    print(f"{building['Date'].values[i]},{building['Value'].values[i]}" )

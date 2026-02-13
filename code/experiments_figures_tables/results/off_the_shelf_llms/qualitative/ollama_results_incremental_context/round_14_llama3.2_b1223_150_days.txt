@@ -1,0 +1,38 @@
+import random
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate electricity consumption data for 3600 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365)  # Generate data for a full year
+data = []
+
+for i in range(int((end_date - start_date).days / 24)):
+    date = start_date + timedelta(hours=i)
+    day_type = 'w' if date.weekday() < 5 else 'd'
+    
+    if day_type == 'd':
+        hour = date.hour // 12
+        value = round(random.gauss(yearly_mean_kwh, yearly_max_kwh / 2.4), 6) # using the mean and an estimate of variability from the data provided to give a realistic output range.
+        
+    elif day_type == 'w': 
+        if (date.month >= 6 and date.month <= 8):
+            value = round(random.gauss(summer_mean_kwh, summer_max_kwh / 2.4), 6)
+        else:
+            value = round(random.gauss(winter_mean_kwh, winter_max_kwh / 2.4), 6)
+
+    if value < yearly_min_kwh or value > yearly_max_kwh: # enforce the constraint that values are never below the minimum and above the maximum
+        value = min(max(value, yearly_min_kwh), yearly_max_kwh)
+    
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+print('\n'.join(data))

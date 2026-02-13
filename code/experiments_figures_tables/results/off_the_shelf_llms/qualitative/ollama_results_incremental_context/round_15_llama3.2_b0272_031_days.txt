@@ -1,0 +1,55 @@
+Here's a Python solution using pandas and numpy libraries to generate synthetic electricity consumption data for a building:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define constants
+BUILDING_ID = 272
+PRIMARY_USE = "Education"
+SQUARE_FEET = 4583
+YEARLY_MEAN_KWH = 17.38018
+YEARLY_MIN_KWH = 0.8
+YEARLY_MAX_KWH = 74.32
+SUMMER_MEAN_KWH = 25.539513
+WINTER_MEAN_KWH = 11.742976
+NUM Measurements = 744
+
+# Generate dates
+start_date = datetime(2016, 1, 1)
+dates = [start_date + timedelta(hours=i) for i in range(NUM Measurements)]
+
+# Initialize lists to store data and values
+data = []
+values = []
+
+# Iterate over each date
+for date in dates:
+    # Randomly choose a value based on the season and year
+    if (date.month >= 6 and date.month <= 8):  # Summer months
+        value = SUMMER_MEAN_KWH + np.random.uniform(-0.1, 0.1) * SUMMER_MEAN_KWH
+    elif (date.month >= 12 and date.month <= 2):  # Winter months
+        value = WINTER_MEAN_KWH + np.random.uniform(-0.1, 0.1) * WINTER_MEAN_KWH
+    else:
+        if np.random.rand() < 0.5:  # Near yearly_mean_kwh
+            value = YEARLY_MEAN_KWH + np.random.uniform(-0.2, 0.2) * YEARLY_MEAN_KWH
+        elif np.random.rand() < 0.7:  # Higher than yearly_min_kwh
+            value = YEARLY_MIN_KWH + np.random.uniform(0, 1) * (YEARLY_MAX_KWH - YEARLY_MIN_KWH)
+        else:
+            value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+
+    if value < YEARLY_MIN_KWH or value > YEARLY_MAX_KWH:
+        raise ValueError("Value out of range")
+
+    data.append(date)
+    values.append(value)
+
+# Create a DataFrame and format the output
+df = pd.DataFrame({"Date": dates, "Electricity Consumption (kWh)": values})
+output = "\n".join(f"{date.strftime('%Y-%m-%d %H:%M')}, {value:.4f}" for date, value in zip(df["Date"], df["Electricity Consumption (kWh)"]))
+
+print(output)
+```
+
+This script generates a list of 744 dates and corresponding electricity consumption values. The `np.random.uniform()` function is used to simulate variations in the dataset while keeping it within the specified ranges.

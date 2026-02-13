@@ -1,0 +1,49 @@
+import random
+from datetime import timedelta, datetime
+
+# Define constants
+BUILDING_ID = 1206
+PRIMARY_USE = "Office"
+SQUARE_FEET = 99946
+YEARLY_MEAN_KWH = 87.59102
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 153.733
+SUMMER Mean_KWH = 88.61049
+WINTERMean_KWH = 91.04132
+
+# Initialize the current date and time
+now = datetime(2016, 1, 1)
+kwh_values = []
+
+while len(kwh_values) < 360:
+    # Get the number of hours in a day (24h) for the given months.
+    days_in_month = [31,28,31,30,31,30,31,31,30,31,30,31]
+    if now.month > 8: # if month is September or later
+        days_in_month[0] -=1 
+    hours = 24 * days_in_month[now.month-1]
+
+    # Randomly select a value that stays within the given ranges.
+    # The values for summer and winter will be randomly chosen based on their respective averages.
+    if now.month in [6,7,8]:
+        avg_value = SUMMER Mean_KWH
+    else:
+        avg_value = WINTERMean_KWH
+
+    # Generate random variations around the average value that stay within the given ranges.
+    variation = random.uniform(0.05*avg_value, 0.15*avg_value)
+    value = round(avg_value + variation)
+
+    # If the generated value is outside of the valid range, regenerate a new one
+    if value < YEARLY_MIN_KWH or value > YEARLY_MAX_KWH:
+        continue
+
+    # Append the current date and time along with the consumed kwh to the list
+    kwh_values.append((now.strftime('%Y-%m-%d %H:%M'), value))
+
+    # Move on to the next hour
+    now += timedelta(hours=1)
+
+# Join all values into one string
+result = '\n'.join([f"{kwh[0]} {kwh[1]}" for kwh in kwh_values])
+
+print(result)

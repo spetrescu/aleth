@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize lists to hold data
+dates = []
+values = []
+
+# Calculate dates for 672 measurements
+start_date = datetime(2016,1,1)
+end_date = start_date + timedelta(days=672-1)
+day = start_date
+while day <= end_date:
+    # Check if summer or winter month and adjust value accordingly
+    if (day.month >= 6) & (day.month <= 8):
+        value = np.random.uniform(75, 87.5)
+    elif (day.month >= 12) & (day.month <= 2):
+        value = np.random.uniform(80, 90)
+    else:
+        value = yearly_mean_kwh
+    # Ensure the value stays within the range of min and max kwh
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Append data to lists
+    dates.append(day.strftime('%Y-%m-%d'))
+    values.append(str(round(value,2)))
+
+    day += timedelta(hours=1)
+
+# Create a DataFrame from the lists and print it
+import pandas as pd
+df = pd.DataFrame({'date': dates, 'value': [float(x) for x in values]})
+print(df)

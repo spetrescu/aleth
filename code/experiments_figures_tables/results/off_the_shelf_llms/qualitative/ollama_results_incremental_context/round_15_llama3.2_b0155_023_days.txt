@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_meter_readings(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                             summer_mean_kwh, winter_mean_kwh):
+    meter_readings = []
+
+    # Create a date range from 01 January 2016 to the desired number of measurements
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=552)
+
+    # Calculate the total days
+    total_days = (end_date - start_date).days
+
+    # Generate readings for each day
+    for i in range(total_days):
+        date = start_date + timedelta(days=i)
+        if summer_mean_kwh <= winter_mean_kwh:
+            mean_reading = summer_mean_kwh
+        else:
+            mean_reading = winter_mean_kwh
+        
+        # Randomly adjust reading within 10% of the mean
+        value = round(mean_reading * random.uniform(0.9, 1.1), 3)
+        
+        # Ensure the value is within the valid range
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+
+        meter_readings.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {value}")
+
+    return meter_readings
+
+meter_readings = generate_meter_readings(155, 'Office', 51688, 81.997604, 23.5, 159.0,
+                                         73.1753, 91.38757)
+
+print('\n'.join(meter_readings))

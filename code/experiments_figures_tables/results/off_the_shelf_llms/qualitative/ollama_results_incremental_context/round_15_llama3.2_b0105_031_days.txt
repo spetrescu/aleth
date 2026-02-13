@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 105
+primary_use = 'Education'
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Create a date range for the measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=744-1) # subtract one day from end date to avoid out of bounds error
+
+# Generate 744 random values within yearly_mean_kwh range
+np.random.seed(42) # for reproducibility
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=(744,))
+values[0] = yearly_mean_kwh # set the first value to mean
+np.random.shuffle(values)
+
+# Create a DataFrame with date and values columns
+df = pd.DataFrame({'DATE': [(start_date + timedelta(days=i)).strftime('%Y-%m-%d %H:%M') for i in range(744)], 'VALUE': values})
+
+# Filter out values below yearly_min_kwh or above yearly_max_kwh
+df = df[(df['VALUE'] >= yearly_min_kwh) & (df['VALUE'] <= yearly_max_kwh)]
+
+# Separate summer and winter months
+summer_months = [i for i in range(744) if (start_date + timedelta(days=i)).month in [6, 7, 8]]
+winter_months = [i for i in range(744) if (start_date + timedelta(days=i)).month in [12, 1, 2]]
+
+# Adjust values based on summer and winter months
+df.loc[df.index.isin(summer_months), 'VALUE'] = np.random.uniform(summer_mean_kwh, yearly_max_kwh)
+df.loc[df.index.isin(winter_months), 'VALUE'] = np.random.uniform(yearly_min_kwh, winter_mean_kwh)
+
+# Sort the DataFrame by date
+df.sort_values(by='DATE', inplace=True)
+
+# Print the output
+for index, row in df.iterrows():
+    print(f'{row["DATE"]}, {row["VALUE"]}')

@@ -1,0 +1,44 @@
+import random
+from datetime import timedelta, datetime
+
+def generate_meter_readings(building_id, primary_use, square_feet,
+                             yearly_mean_kwh, yearly_min_kwh,
+                             yearly_max_kwh, summer_mean_kwh,
+                             winter_mean_kwh):
+    # Initialize generator
+    last_reading = yearly_min_kwh + (yearly_mean_kwh - yearly_min_kwh) * random.random()
+    for hour in range(336):
+        date = datetime(2016, 1, 1) + timedelta(hours=hour)
+        
+        if summer_mean_kwh < yearly_mean_kwh:
+            kwh = last_reading * random.uniform(0.9, 1.1)
+            year_month = ('Jun', 'Jul', 'Aug')
+            season = date.month - 1
+            if season in range(len(year_month)):
+                kwh = summer_mean_kwh * random.uniform(0.9, 1.1)
+        else:
+            kwh = last_reading * random.uniform(0.9, 1.1)
+            year_month = ('Dec', 'Jan', 'Feb')
+            season = date.month - 3
+            if season in range(len(year_month)):
+                kwh = winter_mean_kwh * random.uniform(0.9, 1.1)
+
+        # Ensure we don't go below yearly_min_kwh or above yearly_max_kwh
+        kwh = max(yearly_min_kwh, min(kwh, yearly_max_kwh))
+
+        print(f"{date.strftime('%Y-%m-%d')} {date.time():02d}:{int(kwh):03.0f}")
+
+# Parameters for building 105:
+building_id = 105
+primary_use = "Education"
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+generate_meter_readings(building_id, primary_use, square_feet,
+                         yearly_mean_kwh, yearly_min_kwh,
+                         yearly_max_kwh, summer_mean_kwh,
+                         winter_mean_kwh)

@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 1206
+PRIMARY_USE = "Office"
+SQUARE_FEET = 99946
+YEARLY_MEAN_KWH = 87.59102
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 153.733
+SUMMER_MEAN_KWH = 88.61049
+WINTER_MEAN_KWH = 91.04132
+NUM Measurements = 432
+
+# Create a date range for the measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=NUM Measurements * 24)
+
+# Initialize an empty list to store the measurements
+measurements = []
+
+# Loop over each hour in the date range
+for i in range(int((end_date - start_date).days) + 1):
+    current_date = start_date + timedelta(days=i)
+    
+    # Determine if it's summer or winter based on the month
+    is_summer = (current_date.month >= 6 and current_date.month <= 8)
+    
+    # Generate a random value for this hour based on whether it's summer or winter
+    if is_summer:
+        value = np.random.normal(SUMMER_MEAN_KWH, YEARLY_MEAN_KWH / 3) + SUMMER_MEAN_KWH
+    else:
+        value = np.random.normal(WINTER_MEAN_KWH, YEARLY_MEAN_KWH / 3) + WINTER_MEAN_KWH
+    
+    # Ensure the value is within the valid range
+    value = max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH))
+    
+    # Add the measurement to the list
+    measurements.append((current_date.strftime("%Y-%m-%d %H:%M"), round(value)))
+
+# Convert the list of measurements to a DataFrame and print it
+df = pd.DataFrame(measurements, columns=["Date", "Value"])
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Value']}")

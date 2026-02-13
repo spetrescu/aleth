@@ -1,0 +1,38 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set random seed for reproducibility
+np.random.seed(0)
+
+# Building parameters
+building_id = 107
+primary_use = "Education"
+square_feet = 97532
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Create a list to hold the measurement data
+measurement_data = []
+
+# Generate 24 measurements, each at 1-hour intervals
+for i in range(24):
+    # Calculate the date and time of the current measurement
+    date = datetime(2016, 1, 1) + timedelta(days=i)
+    time = pd.to_datetime("00:00", format="%H:%M")
+    
+    # Randomly select a value from the allowed range that is close to yearly_mean_kwh
+    kwh_consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    if i < 8 * 24:  # First 8 months (Jan-Aug) are summer months
+        kwh_consumption = np.random.normal(summer_mean_kwh, yearly_min_kwh/2)
+    else:
+        kwh_consumption = np.random.normal(winter_mean_kwh, yearly_min_kwh/2)
+
+    measurement_data.append(f"{date.strftime('%Y-%m-%d')} {time.strftime('%H:%M')}, {kwh_consumption:.5f}")
+
+# Print the generated data
+for line in measurement_data:
+    print(line)

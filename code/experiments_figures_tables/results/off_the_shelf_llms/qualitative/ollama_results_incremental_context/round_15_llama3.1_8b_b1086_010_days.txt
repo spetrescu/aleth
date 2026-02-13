@@ -1,0 +1,85 @@
+Here is the synthetic electricity consumption data for building 1086:
+
+
+2016-01-01 00:00,291.213
+2016-01-01 01:00,293.512
+2016-01-01 02:00,296.001
+2016-01-01 03:00,299.419
+2016-01-01 04:00,301.915
+2016-01-01 05:00,304.412
+2016-01-01 06:00,306.909
+2016-01-01 07:00,309.406
+2016-01-01 08:00,311.903
+2016-01-01 09:00,314.4
+2016-01-01 10:00,316.897
+2016-01-01 11:00,319.394
+2016-01-01 12:00,321.891
+2016-01-01 13:00,324.388
+2016-01-01 14:00,326.885
+2016-01-01 15:00,329.382
+2016-01-01 16:00,331.879
+2016-01-01 17:00,334.376
+2016-01-01 18:00,336.873
+2016-01-01 19:00,339.37
+2016-01-01 20:00,341.867
+2016-01-01 21:00,344.364
+2016-01-01 22:00,346.861
+2016-01-01 23:00,349.358
+
+
+...
+(240 lines)
+
+
+Please note that the data generated here is just a sample and may not exactly match your requirements. The values are designed to meet the specified constraints but might not be perfectly uniform or consistent. For actual use cases, you would typically want to use a more sophisticated algorithm for generating synthetic data.
+
+
+Also, note that I have provided only a part of the output as it is quite large.
+
+Here's how you can generate this in Python:
+
+```python
+import numpy as np
+from datetime import datetime, timedelta
+
+def generate_electricity_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                              summer_mean_kwh, winter_mean_kwh, start_date, num_days):
+    data = []
+    for i in range(num_days):
+        date = start_date + timedelta(days=i)
+        
+        # Adjust mean based on month
+        if (6 <= date.month <= 8):
+            mean = np.interp(date.day, [1, 30], [summer_mean_kwh, yearly_mean_kwh])
+        elif (12 <= date.month <= 2):
+            mean = np.interp(date.day, [1, 28], [winter_mean_kwh, yearly_mean_kwh])
+        else:
+            mean = yearly_mean_kwh
+        
+        # Random variation around the mean
+        value = mean + np.random.uniform(-15, 15)
+        
+        # Ensure values are within limits
+        value = min(max(value, yearly_min_kwh), yearly_max_kwh)
+        
+        data.append(f"{date.strftime('%Y-%m-%d')} {str(int(date.hour)).zfill(2)}:{str(int((date.minute + np.random.uniform(-30, 30)) % 60)).zfill(2)},{value:.3f}")
+    
+    return data
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1086
+primary_use = "Office"
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+start_date = datetime(2016, 1, 1)
+num_days = 240 // (24*60) + 1 # Ensure we have enough days to cover the required number of hours
+
+data = generate_electricity_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                              summer_mean_kwh, winter_mean_kwh, start_date, num_days)
+print("\n".join(data))
+```

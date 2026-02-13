@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define building metadata
+building_id = 1223
+primary_use = 'Office'
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Define dates and hours for the dataset
+dates = pd.date_range(start='2016-01-01', periods=192, freq='H')
+
+# Create a DataFrame to store the data
+data = pd.DataFrame({'Date': dates, 'Value': np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(dates))})
+
+# Filter out values below yearly_min_kwh and above yearly_max_kwh
+data = data[(data['Value'] >= yearly_min_kwh) & (data['Value'] <= yearly_max_kwh)]
+
+# Separate data into summer and winter months
+summer_dates = data[(data['Date'].dt.month.isin([6, 7, 8]))]
+winter_dates = data[(data['Date'].dt.month.isin([12, 1, 2]))]
+
+# Adjust values for summer and winter months
+summer_data = summer_dates.copy()
+summer_data.loc[summer_data['Value'] > summer_mean_kwh, 'Value'] = np.random.uniform(summer_mean_kwh, summer_max_kwh, size=len(summer_data))
+winter_data = winter_dates.copy()
+winter_data.loc[winter_data['Value'] > winter_mean_kwh, 'Value'] = np.random.uniform(winter_mean_kwh, winter_max_kwh, size=len(winter_data))
+
+# Combine the data for summer and winter months
+data = pd.concat([summer_data, winter_data])
+
+# Print the data
+for index, row in data.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d %H:%M')}, {row['Value']:.4f}")

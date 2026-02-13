@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Constants
+YEARLY_MEAN_KWH = 79.257515
+YEARLY_MIN_KWH = 25.0
+YEARLY_MAX_KWH = 187.0
+SUMMER_MEAN_KWH = 85.378174
+WINTER_MEAN_KWH = 74.83288
+N_DAYS = 1440
+
+# Initialize lists for data and timestamps
+data = []
+timestamps = []
+
+# Generate timestamps for the whole year
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=N_DAYS - 1)
+
+for i in range(N_DAYS):
+    day = (start_date + timedelta(days=i)).strftime('%Y-%m-%d')
+    hour = str(i).zfill(2) + ":00"
+    data.append(f"{day} {hour}, {np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)}")
+    timestamps.append((day, hour))
+
+# Create DataFrame from lists
+df = pd.DataFrame(data, columns=['Date HH:MM', 'Value (kWh)']).set_index('Date HH:MM')
+
+print(df.to_string(index=False))

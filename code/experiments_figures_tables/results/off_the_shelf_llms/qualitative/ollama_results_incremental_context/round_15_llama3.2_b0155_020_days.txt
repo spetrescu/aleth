@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+
+# Define constants
+BUILDING_ID = 155
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 51688
+YEARLY_MEAN_KWH = 81.997604
+YEARLY_MIN_KWH = 23.5
+YEARLY_MAX_KWH = 159.0
+SUMMER_MEAN_KWH = 73.1753
+WINTER_MEAN_KWH = 91.38757
+
+# Generate dates for the meter readings
+start_date = '2016-01-01'
+end_date = f'2016-{int(start_date.split("-")[1]) + (480 - 1)}-01'
+dates = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize lists to store values and dates
+values = []
+date_list = []
+
+# Loop through each date
+for date in dates:
+    # Determine the season based on the month
+    if (date.month == 6 or date.month == 7 or date.month == 8):
+        season_mean_kwh = SUMMER_MEAN_KWH
+    elif (date.month == 12 or date.month == 1 or date.month == 2):
+        season_mean_kwh = WINTER_MEAN_KWH
+    else:
+        season_mean_kwh = YEARLY_MEAN_KWH
+    
+    # Generate a random value within the range of the seasonal mean and yearly max, 
+    # but never below the minimum or above the maximum
+    if date.month in [6, 7, 8]:
+        kWh_reading = round(np.random.uniform(season_mean_kwh - (YEARLY_MAX_KWH * 0.2), season_mean_kwh + (YEARLY_MAX_KWH * 0.2)),3)
+    else:
+        kWh_reading = round(np.random.uniform(season_mean_kwh - (YEARLY_MAX_KWH * 0.2), season_mean_kwh + (YEARLY_MAX_KWH * 0.2)),3)
+
+    # Ensure the generated reading is within the range [yearly_min_kwh, yearly_max_kwh]
+    if kWh_reading < YEARLY_MIN_KWH:
+        kWh_reading = YEARLY_MIN_KWH
+    elif kWh_reading > YEARLY_MAX_KWH:
+        kWh_reading = YEARLY_MAX_KWH
+
+    # Append the date and reading to the lists
+    values.append(str(kWh_reading))
+    date_list.append(date.strftime("%Y-%m-%d %H:%M"))
+
+# Combine the lists into a DataFrame and convert it back to a string
+result_str = '\n'.join([f"{date} {value}" for date, value in zip(date_list, values)])
+
+print(result_str)

@@ -1,0 +1,43 @@
+Here is a Python code snippet that generates synthetic electricity consumption data at 1-hour intervals for exactly 720 measurements:
+
+```python
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+import random
+
+# Building metadata and annual summary statistics (2016)
+building_id = 11
+primary_use = 'Education'
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Create a date range with exactly 720 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=720 - 1) # to get the last day in the interval
+date_range = [start_date + timedelta(days=i) for i in range(720)]
+
+# Initialize an empty list to store electricity consumption data
+consumption_data = []
+
+for date in date_range:
+    month = date.strftime('%Y-%m')
+    
+    if (month >= '2016-06' and month <= '2016-08'): # Summer months
+        kwh = round(random.gauss(summer_mean_kwh, 50), 3) # average around summer_mean_kwh with a standard deviation of 50
+    else: # Winter months
+        kwh = round(random.gauss(winter_mean_kwh, 50), 3) # average around winter_mean_kwh with a standard deviation of 50
+
+    if kwh < yearly_min_kwh or kwh > yearly_max_kwh:
+        kwh = yearly_min_kwh + (yearly_max_kwh - yearly_min_kwh) * random.random()
+    
+    consumption_data.append(f"{date.strftime('%Y-%m-%d %H:%M')} {kwh}")
+
+print("\n".join(consumption_data))
+```
+
+This code generates synthetic electricity consumption data at 1-hour intervals for exactly 720 measurements. The values are realistic and consistent with the summary statistics, with most values near `yearly_mean_kwh`. The summer months average around `summer_mean_kwh`, while the winter months average around `winter_mean_kwh`.

@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Constants
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Generate start and end dates
+start_date = datetime(2016, 1, 1)
+end_date = datetime(2016, 12, 31)
+
+# Calculate time step in seconds
+time_step_seconds = 3600 * 24  # 1 hour
+
+# Initialize list to store kWh values
+kwh_values = []
+
+# Loop over each day
+current_date = start_date
+while current_date < end_date:
+    # Determine season (June-August or December-February)
+    if (current_date.month >= 6 and current_date.month <= 8) or \
+       (current_date.month >= 12 and current_date.month <= 2):
+        avg_kwh = summer_mean_kwh
+    else:
+        avg_kwh = yearly_mean_kwh
+
+    # Generate random value within the average, but not exceeding max or min
+    kwh_value = np.random.uniform(avg_kwh - (avg_kwh * 0.1), avg_kwh + (avg_kwh * 0.1))
+    
+    if kwh_value < yearly_min_kwh:
+        kwh_value = yearly_min_kwh
+    elif kwh_value > yearly_max_kwh:
+        kwh_value = yearly_max_kwh
+
+    # Add time step to current date
+    next_date = current_date + timedelta(seconds=time_step_seconds)
+    
+    # Append values to list
+    kwh_values.extend([kwh_value] * 24)
+
+    current_date = next_date
+
+# Convert list of kWh values to pandas DataFrame
+df = pd.DataFrame(kwh_values, columns=['kwh'])
+
+# Format and print the output
+for index, row in df.iterrows():
+    print(f"{start_date.strftime('%Y-%m-%d %H:%M')},{row['kwh']:.4f}")

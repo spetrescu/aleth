@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Define the start and end dates
+start_date = '2016-01-01 00:00'
+end_date = (pd.to_datetime('2016-12-31') + pd.Timedelta(days=1)).strftime('%Y-%m-%d %H:%M')
+
+# Generate a date range for the data
+date_range = pd.date_range(start=start_date, periods=120, freq='H')
+
+# Initialize an empty list to store the readings
+readings = []
+
+# Loop over each hour in the date range
+for i, dt in enumerate(date_range):
+    # Randomly select a value between yearly_min_kwh and yearly_max_kwh
+    # with some variation for summer and winter months
+    if (dt.month >= 6 and dt.month <= 8) or (dt.month >= 12 and dt.month <= 2):
+        value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    else:
+        value = np.random.uniform(yearly_mean_kwh, yearly_max_kwh)
+    
+    # Ensure the value is within the valid range
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+    
+    # Append the reading to the list
+    readings.append((dt.strftime('%Y-%m-%d %H:%M'), value))
+
+# Convert the list of readings into a pandas DataFrame
+df = pd.DataFrame(readings, columns=['Date', 'Value'])
+
+# Print the DataFrame
+print(df.to_string(index=False))

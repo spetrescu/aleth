@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Create a list to store the data
+data = []
+
+# Calculate daily values
+daily_values = (np.random.uniform(yearly_min_kwh, yearly_max_kwh) + 
+                np.random.normal(0, 50 * yearly_mean_kwh)) / 365
+
+# Adjust for summer and winter months
+summer_months = [6, 7, 8]
+winter_months = [12, 1, 2]
+
+for i in range(168):
+    date = datetime(2016, 1, 1) + timedelta(days=i)
+    hour = date.hour
+    
+    if (date.month in summer_months or 
+        date.month in winter_months and 
+        date.weekday() < 5): # not weeknd
+        value = np.random.uniform(summer_mean_kwh, summer_mean_kwh + 50)
+    elif date.weekday() >= 5: # weekend
+        value = yearly_mean_kwh - (np.random.normal(0, 50 * yearly_mean_kwh))
+    
+    # Make sure the value is not below or above yearly limits
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Add values in a format "YYYY-MM-DD HH:MM,VALUE"
+    data.append(f"{date.strftime('%Y-%m-%d')} {hour:02d}:{value:.2f}")
+
+print('\n'.join(data))

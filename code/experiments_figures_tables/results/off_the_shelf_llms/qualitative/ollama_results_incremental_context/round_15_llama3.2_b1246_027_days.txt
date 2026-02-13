@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Generate time stamps
+start_time = pd.Timestamp('2016-01-01 00:00:00')
+end_time = start_time + pd.Timedelta(days=730) #730 days in a year
+
+time_stamps = [start_time + pd.Timedelta(hours=i) for i in range(int((end_time-start_time).total_seconds()/3600))]
+
+# Generate values
+values = np.random.normal(yearly_mean_kwh, yearly_max_kwh/10, len(time_stamps))
+
+# Ensure minimum and maximum values are not exceeded
+values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+
+# Split the data into summer and winter months
+summer_months = time_stamps[int(start_time.month == 6) + int(start_time.month == 7) + int(start_time.month == 8)]
+winter_months = time_stamps[int(start_time.month in [12,1,2])]
+
+summer_values = np.random.normal(summer_mean_kwh, summer_max_kwh/10, len(summer_months))
+winter_values = np.random.normal(winter_mean_kwh, winter_max_kwh/10, len(winter_months))
+
+# Combine values for each month
+values[time_stamps.index(summer_months)] = summer_values
+values[time_stamps.index(winter_months)] = winter_values
+
+# Round to the nearest 0.01 kWh
+values = round(values,2)
+
+# Ensure most values are near yearly_mean_kwh
+values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+print('\n'.join(f"{t.strftime('%Y-%m-%d %H:%M')},{v}" for t,v in zip(time_stamps, values)))

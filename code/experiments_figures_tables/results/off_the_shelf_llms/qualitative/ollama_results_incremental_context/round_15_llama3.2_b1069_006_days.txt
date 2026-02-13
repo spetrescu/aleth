@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1069
+primary_use = 'Office'
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=144)
+
+consumption_data = []
+for i in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(days=i)
+    hour = date.hour
+    # Hourly consumption near yearly_mean_kwh for most values.
+    value = np.random.normal(yearly_mean_kwh, 0.5) * (1 + np.sin(np.pi*(hour-8)/24))
+    
+    # Ensure that the value is never lower than yearly_min_kwh or higher than yearly_max_kwh
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    consumption_data.append((date.strftime('%Y-%m-%d %H:%M'), value))
+
+# Print electricity consumption data (kWh) at 1-hour intervals.
+for date, value in consumption_data:
+    print(f"{date}, {value:.6f}")

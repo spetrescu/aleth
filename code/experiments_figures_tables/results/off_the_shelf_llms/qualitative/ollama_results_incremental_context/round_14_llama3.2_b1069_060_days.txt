@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+
+# Generate time series data
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+time_series = pd.date_range(start=start_date, end=end_date)
+
+# Calculate values for each hour in the time series
+values = np.random.normal(yeary_mean_kwh, (yeary_max_kwh - yearly_min_kwh) / 1440,
+                         size=len(time_series))
+
+# Ensure values are within range of the minimum and maximum kWh values
+values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+
+# Split the time series into summer and winter months
+summer_months = pd.date_range('2016-06-01', '2016-08-31',
+                              freq='D')[:1440]  # Select only 1440 days
+winter_months = pd.date_range('2016-12-01', '2016-02-28',
+                              freq='D')[:1440]   # Select only 1440 days
+
+# Generate summer and winter values separately, with a mean that's slightly lower than the overall average
+summer_values = np.random.normal(summer_mean_kwh, (summer_max_kwh - summer_mean_kwh) / 1440,
+                                 size=len(summer_months))
+
+winter_values = np.random.normal(winter_mean_kwh, (winter_max_kwh - winter_mean_kwh) / 1440,
+                                 size=len(winter_months))
+
+# Interleave the values for each month
+data = np.concatenate((summer_values, winter_values))
+
+# Calculate the corresponding time and value pairs
+pairs = list(zip(time_series, data))
+
+# Print the output as required format
+for pair in pairs:
+    print(f"{pair[0].strftime('%Y-%m-%d %H:%M')}, {pair[1]}")

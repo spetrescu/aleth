@@ -1,0 +1,45 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 1246
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 50327
+YEARLY_MEAN_KWH = 46.317394
+YEARS = 2016
+DAYS_PER_YEAR = 365
+
+# Function to generate a random number between two limits
+def rand(min_val, max_val):
+    return random.uniform(min_val, max_val)
+
+# Generate the electricity consumption data
+data = []
+start_date = datetime(YEARS, 1, 1)
+for day in range(DAYS_PER_YEAR * 2): # account for summer and winter months separately
+    month_start = start_date.month
+    if day < DAYS_PER_YEAR: # winter months (Dec-Feb)
+        month_end = 3
+    else:
+        month_start = 6
+        month_end = 8
+    current_month_mean_kwh = YEARLY_MEAN_KWH
+
+    if month_start == 12 or month_end == 2:
+        current_month_mean_kwh *= winter_mean_kwh / yearly_mean_kwh # Scale to winter mean
+    elif month_start == 6 or month_end == 8:
+        current_month_mean_kwh *= summer_mean_kwh / yearly_mean_kwh # Scale to summer mean
+
+    if day < DAYS_PER_YEAR: 
+        hours_in_day = 24
+    else:
+        days_left_in_year = (DAYS_PER_YEAR - day)
+        remaining_days = int((days_left_in_year * 4) / 5) # approximate average days left in the year for given month of the previous year
+        remaining_hours_in_day = (remaining_days * 24) // 7  #approximate average hours in the day given average number of working days per week
+        hours_in_day = round(remaining_hours_in_day / (remaining_days / DAYS_PER_YEAR))
+
+    value = round(rand(current_month_mean_kwh, current_month_mean_kwh + (YEARLY_MAX_KWH - YEARLY_MIN_KWH)), 3)
+
+    date_str = start_date.strftime('%Y-%m-%d %H:%M')
+    data.append((date_str, value))
+    start_date += timedelta(hours=hours_in_day)

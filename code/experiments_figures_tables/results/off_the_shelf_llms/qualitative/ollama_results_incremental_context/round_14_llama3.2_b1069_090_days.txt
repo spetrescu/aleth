@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set a seed for reproducibility
+np.random.seed(42)
+
+# Define the building metadata and annual summary statistics
+building_id = 1069
+primary_use = "Office"
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Generate a date range for the output
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=2160 - 1)
+
+# Initialize an empty list to store the data
+data = []
+
+# Loop over each hour in the specified range
+for n in range(int ((end_date - start_date).days)):
+    date = start_date + timedelta(n)
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    # Randomly choose between summer and winter mean kwh
+    if (date.month >= 6) & (date.month <= 8):
+        value = np.random.normal(summer_mean_kwh, 0.5)
+        
+    # Ensure the generated kWh is within the valid range
+    while(value < yearly_min_kwh or value > yearly_max_kwh):
+        value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+    
+    # Append the data to the list
+    data.append((date.strftime('%Y-%m-%d %H:%M'), round(value, 4)))
+
+# Print the data in the desired format
+for date_str, kWh in data:
+    print(f"{date_str}, {kWh}")

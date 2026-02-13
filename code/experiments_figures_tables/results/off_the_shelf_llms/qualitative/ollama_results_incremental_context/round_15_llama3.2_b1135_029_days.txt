@@ -1,0 +1,41 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 1135
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 150393
+YEARLY_MEAN_KWH = 263.43817
+YEARLY_MIN_KWH = 125.06
+YEARLY_MAX_KWH = 479.897
+SUMMER_MEAN_KWH = 263.8639
+WINTER_MEAN_KWH = 250.41924
+
+# Function to generate random number within a given range
+def rand_num(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 4)
+
+# Function to generate a line of output with the specified date and value
+def gen_output_date_value(date_str, value):
+    return f"{date_str} {value}"
+
+# Generate electricity consumption data for the given period
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=696)
+
+for n in range(int ((end_date - start_date).days)):
+    date = start_date + timedelta(n)
+    month = date.month
+    season = 'Summer' if (month >= 6 and month <= 8) else 'Winter'
+
+    if season == 'Summer':
+        mean_kwh = SUMMER_MEAN_KWH
+    elif season == 'Winter':
+        mean_kwh = WINTER_MEAN_KWH
+    else:
+        mean_kwh = YEARLY_MEAN_KWH
+
+    value = rand_num(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    output_line = gen_output_date_value(date.strftime("%Y-%m-%d %H:%M"), value)
+
+    print(output_line)

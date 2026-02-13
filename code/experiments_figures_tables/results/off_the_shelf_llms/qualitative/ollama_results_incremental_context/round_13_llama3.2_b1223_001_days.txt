@@ -1,0 +1,54 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate electricity consumption data for summer months (June to August)
+summer_data = []
+for i in range(31):
+    date = pd.to_datetime('2016-06-' + str(i+1))
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh) * len([day for day in pd.date_range('2016-06-01', '2016-08-31') if day.month in [6, 7, 8]]) / len(pd.date_range('2016-06-01', '2016-08-31'))
+    summer_data.append((date, value))
+
+# Generate electricity consumption data for winter months (December to February)
+winter_data = []
+for i in range(31):
+    date = pd.to_datetime('2016-12-' + str(i+1))
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh) * len([day for day in pd.date_range('2016-01-01', '2016-02-28') if day.month in [12, 1, 2]]) / len(pd.date_range('2016-01-01', '2016-02-28'))
+    winter_data.append((date, value))
+
+# Combine summer and winter data
+data = summer_data + winter_data
+
+# Calculate total consumption for each date
+for i in range(len(data) - 1):
+    data[i+1] = (data[i][0], data[i][1] + data[i+1][1])
+
+# Generate random hourly values for the remaining days
+remaining_days = len(pd.date_range('2016-03-01', '2016-11-30'))
+hourly_data = [(pd.to_datetime('2016-03-' + str(i+3)), np.random.uniform(yearly_min_kwh, yearly_max_kwh)) for i in range(remaining_days)]
+
+# Combine all data
+all_data = data + hourly_data
+
+# Sort the data by date and generate output
+output = []
+for day in pd.date_range('2016-01-01', '2017-02-29'):
+    if any((day == d[0] for d in all_data)):
+        value = next(day[1] for day in all_data if day[0] == day)
+        output.append(f"{day.strftime('%Y-%m-%d')} {day.time().strftime('%H:%M')}, {value:.6f}")
+    else:
+        output.append(f"{day.strftime('%Y-%m-%d')} 00:00, {yearly_mean_kwh:.6f}")
+
+# Print the output
+for line in output:
+    print(line)

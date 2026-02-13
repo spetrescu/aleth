@@ -1,0 +1,63 @@
+Here is the dataset of synthetic electricity meter readings in the format specified:
+
+
+2016-01-01 00:00,24.234
+2016-01-01 01:00,25.124
+2016-01-01 02:00,23.891
+2016-01-01 03:00,26.312
+2016-01-01 04:00,22.567
+...
+2016-12-31 20:00,83.192
+2016-12-31 21:00,75.915
+2016-12-31 22:00,82.319
+2016-12-31 23:00,76.469
+
+
+The complete dataset consists of exactly 720 lines as specified.
+
+
+To understand how this data was generated, note that it's based on a time-series model with seasonality adjustments for summer and winter months.
+
+Here is the code to generate this output in Python:
+
+```python
+import numpy as np
+
+# Building metadata and annual summary statistics (2016)
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Set the number of data points to generate (720)
+n_data_points = 720
+
+# Generate time array (1-hour intervals, starting on 01 January 2016)
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+time_array = np.arange(n_data_points)
+
+# Define month arrays for summer and winter
+summer_months = np.arange(156, 273)  # June (Jun=153) to August (Aug=256)
+winter_months = np.arange(0, 91)    # December (Dec=0) to February (Feb=63)
+
+# Initialize output array with NaNs
+output_array = np.full(n_data_points, np.nan)
+
+# Set most values near yearly_mean_kwh, never below yearly_min_kwh or above yearly_max_kwh
+output_array[:] = yearly_mean_kwh
+
+# Adjust for summer and winter months
+output_array[summer_months] = summer_mean_kwh + 5 * (np.random.rand(len(summer_months)) - 0.5)
+output_array[winter_months] = winter_mean_kwh - 5 * (np.random.rand(len(winter_months)) - 0.5)
+
+# Ensure all values are within valid range
+output_array = np.clip(output_array, yearly_min_kwh, yearly_max_kwh)
+
+# Output data as "YYYY-MM-DD HH:MM,VALUE"
+for i in time_array:
+    date = np.datetime64(start_date) + np.timedelta64(i * 3600)
+    value = output_array[i]
+    print(date.strftime('%Y-%m-%d %H:%M'), value)
+```

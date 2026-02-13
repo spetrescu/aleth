@@ -1,0 +1,23 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set initial date and time
+start_date = datetime(2016, 1, 1)
+date_range = []
+
+while len(date_range) < 312:
+    date = start_date + timedelta(hours=1)
+    if (date.month in [6, 7, 8]) or (date.month == 12):
+        consumption_value = np.random.normal(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh)
+    else:
+        consumption_value = np.random.normal(winter_mean_kwh, yearly_max_kwh - winter_mean_kwh)
+    
+    # Ensure value is within valid range
+    consumption_value = max(yearly_min_kwh, min(consumption_value, yearly_max_kwh))
+    
+    date_range.append((date.strftime("%Y-%m-%d %H:%M"), consumption_value))
+
+# Convert to DataFrame and print
+df = pd.DataFrame(date_range, columns=['Date', 'Consumption'])
+print(df.to_string(index=False))

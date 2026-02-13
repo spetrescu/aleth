@@ -1,0 +1,56 @@
+import pandas as pd
+from datetime import timedelta, datetime
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1223
+primary_use = 'Office'
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Function to generate electricity consumption data
+def generate_consumption_data(year, months):
+    # Create a date range for the specified month
+    start_date = datetime(year, months, 1)
+    end_date = (datetime(year, months + 1, 1) - timedelta(days=1)).date()
+    
+    # Initialize lists to store dates and consumption values
+    dates = []
+    values = []
+    
+    # Loop over each hour in the month
+    current_date = start_date
+    while current_date <= end_date:
+        for i in range(24):
+            # If we're outside of summer or winter months, use yearly_mean_kwh as the base value
+            if (i >= 6 and i < 9) or (i >= 12 and i < 2):
+                consumption = yearly_mean_kwh
+            else:
+                # Otherwise, use seasonal mean values
+                consumption = float((yearly_mean_kwh + summer_mean_kwh + winter_mean_kwh) / 3)
+            
+            # Ensure the value is within the valid range
+            if consumption < yearly_min_kwh or consumption > yearly_max_kwh:
+                consumption = float(yearly_min_kwh if consumption < yearly_min_kwh else yearly_max_kwh)
+            
+            # Add the date and consumption to the lists
+            dates.append((current_date - timedelta(hours=i)).strftime('%Y-%m-%d %H:%M'))
+            values.append(consumption)
+        
+        current_date += timedelta(days=1)
+
+    return pd.DataFrame({'Date': dates, 'Value': values})
+
+# Generate electricity consumption data for each month of the year
+data = []
+for i in range(48):
+    # Alternate between summer and winter months (June-August and December-February respectively)
+    if i < 12:  
+        data.append(generate_consumption_data(2016, 8).to_string(index=False))
+    else:
+        data.append(generate_consumption_data(2016, 2).to_string(index=False))
+
+print('\n'.join(data))

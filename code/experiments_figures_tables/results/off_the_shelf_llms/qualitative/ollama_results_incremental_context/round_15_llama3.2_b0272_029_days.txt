@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Constants
+YEARLY_MEAN_KWH = 17.38018
+WINTER_MEAN_KWH = 11.742976
+SUMMER_MEAN_KWH = 25.539513
+ANNUAL_START_DATE = datetime(2016, 1, 1)
+
+# Create a list to store the generated data
+data = []
+
+# Generate electricity consumption data for each hour in the specified period
+for i in range(696):
+    date = ANNUAL_START_DATE + timedelta(hours=i)
+    # Randomly decide if it's summer or winter month
+    if (date.month >= 6 and date.month <= 8) or \
+       (date.month == 12):
+        consumption = np.random.uniform(SUMMER_MEAN_KWH, SUMMER_MEAN_KWH+1) * 0.99 + np.random.normal(0, 0.01, 1)[0]
+    else:
+        consumption = np.random.uniform(WINTER_MEAN_KWH, WINTER_MEAN_KWH+1) * 0.99 + np.random.normal(0, 0.01, 1)[0]
+
+    # Ensure the consumption is within the valid range
+    consumption = max(YEARLY_MIN_KWH, min(consumption, YEARLY_MAX_KWH))
+
+    # Append the generated data to the list
+    data.append((date.strftime("%Y-%m-%d %H:%M"), consumption))
+
+# Print the generated data in the required format
+for value in data:
+    print(f"{value[0]},{value[1]}")

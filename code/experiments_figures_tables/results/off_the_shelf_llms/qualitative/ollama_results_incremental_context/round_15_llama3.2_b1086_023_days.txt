@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Initialize an empty list to store the data
+data = []
+
+# Define the start and end dates for the dataset
+start_date = '2016-01-01 00:00'
+end_date = '2016-12-31 23:59'
+
+# Create a date range with 1-hour intervals
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Define the monthly averages for summer and winter months
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Define the yearly mean kWh
+yearly_mean_kwh = 296.72125
+
+# Loop through each date in the range
+for i, date in enumerate(date_range):
+    # Determine if it's a summer or winter month
+    if (date.month == 6 or date.month == 7 or date.month == 8) and date.year % 4 != 0:
+        avg_kwh = summer_mean_kwh
+    elif (date.month == 12 or date.month == 1 or date.month == 2) and date.year % 4 == 0:
+        avg_kwh = winter_mean_kwh
+    else:
+        avg_kwh = yearly_mean_kwh
+    
+    # Generate a random value within the allowed range
+    kwh = round(np.random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+    
+    # Append the data to the list
+    data.append(f'{date.strftime("%Y-%m-%d %H:%M")},{kwh}')
+
+# Join all lines in the data list into a single string
+output = '\n'.join(data)
+
+print(output)

@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Initialize list to store electricity consumption data
+data = []
+
+# Define start and end dates
+start_date = '2016-01-01 00:00:00'
+end_date = '2016-12-31 23:59:59'
+
+# Generate datetime array of timestamps from start date to end date
+dates = pd.date_range(start=start_date, end=end_date, freq='1h')
+
+# Initialize counters for summer and winter months
+summer_count = 0
+winter_count = 0
+
+# Iterate over each hour
+for i in range(len(dates)):
+    # Determine month (June-August: summer; December-February: winter)
+    if dates[i].month in [6, 7, 8]:
+        summer_count += 1
+    elif dates[i].month in [12, 1, 2]:
+        winter_count += 1
+    
+    # Generate a random value that stays within the yearly range
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    # If it's summer month, generate a value close to summer_mean_kwh
+    if dates[i].month in [6, 7, 8]:
+        value = np.random.normal(summer_mean_kwh, 10)
+        # Ensure the generated value is not too far from the mean
+        value = max(min(value, yearly_max_kwh), yearly_min_kwh)
+
+    # If it's winter month, generate a value close to winter_mean_kwh
+    elif dates[i].month in [12, 1, 2]:
+        value = np.random.normal(winter_mean_kwh, 10)
+        # Ensure the generated value is not too far from the mean
+        value = max(min(value, yearly_max_kwh), yearly_min_kwh)
+
+    # Append line to data with timestamp and generated electricity consumption
+    data.append(f'{dates[i].strftime("%Y-%m-%d %H:%M")} {value:.4f}')
+
+# Print generated dataset
+print('\n'.join(data))

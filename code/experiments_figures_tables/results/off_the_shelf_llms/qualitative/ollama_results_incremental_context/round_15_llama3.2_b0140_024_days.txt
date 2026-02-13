@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define building metadata and annual summary statistics
+building_id = 140
+primary_use = 'Office'
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Define the start and end dates for the data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=575) # Generate 576 measurements starting from January 1st
+
+# Initialize an empty list to store the data
+data = []
+
+# Loop through each hour between start_date and end_date
+for n in range(int((end_date - start_date).days)):
+    date_obj = start_date + timedelta(n)
+    year = date_obj.year
+    month = date_obj.month
+    
+    if month < 3 or (month == 3 and date_obj.day <= 29):
+        mean_kwh = winter_mean_kwh
+    elif month >= 6:
+        mean_kwh = summer_mean_kwh
+    else:
+        # interpolate between seasons
+        day_of_year = date_obj.timetuple().tm_yday
+        seasonal_days = np.array([0, 91, 182, 273])
+        if day_of_year < seasonal_days[1]:
+            mean_kwh = winter_mean_kwh * (seasonal_days[1] - day_of_year) / (seasonal_days[1] - seasonal_days[0]) + yearly_min_kwh
+        elif day_of_year < seasonal_days[2]:
+            mean_kwh = yearly_mean_kwh * (day_of_year - seasonal_days[0]) / (seasonal_days[2] - seasonal_days[0]) + winter_mean_kwh 
+        else:
+            mean_kwh = yearly_mean_kwh * (seasonal_days[2] - day_of_year) / (seasonal_days[3] - seasonal_days[2]) + summer_mean_kwh
+    # Generate random values within the specified range
+    value = round(random.gauss(mean_kwh, 0.5*mean_kwh/100), 8)
+    
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    data.append(f'{date_obj.strftime("%Y-%m-%d %H:%M")},{value}')
+
+# Print the data
+for line in data:
+    print(line)

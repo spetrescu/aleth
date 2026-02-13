@@ -1,0 +1,31 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Generate synthetic data
+def generate_data(start_date, end_date, n):
+    # Create a list to store our generated kWh values
+    kwh_values = []
+    
+    # Loop through the number of days we want
+    for i in range(n):
+        current_time = start_date + timedelta(days=i)
+        
+        if current_time.month >= 6: #if summer month
+            avg_kwh = np.random.uniform(0.9 * 42.024456, 1.1 * 42.024456) #ensure value is within the summer range
+        else:
+            avg_kwh = np.random.uniform(0.9 * 46.382324, 1.1 * 46.382324) #ensure value is within the winter range
+        
+        kwh_values.append(avg_kwh)
+    
+    return kwh_values
+
+# Generate and print data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=456)
+
+kwh_values = generate_data(start_date, end_date, 456)
+
+for i in range(len(kwh_values)):
+    date_time = (start_date + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')
+    print(f'{date_time},{kwh_values[i]}')

@@ -1,0 +1,53 @@
+import random
+from datetime import datetime, timedelta
+
+# Define constants
+building_id = 1206
+primary_use = "Office"
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Calculate the total number of days in a year
+total_days_in_year = 365.2425
+
+# Define months and their corresponding mean kWh values
+months = {
+    'Jan': winter_mean_kwh,
+    'Feb': winter_mean_kwh,
+    'Mar': (yearly_min_kwh + yearly_max_kwh) / 2,  # Average the two extreme values to get a more realistic value for March.
+    'Apr': (summer_mean_kwh + yearly_max_kwh) / 2,  # April is usually warm but not hot. It's better if this month can vary slightly from one year to another.
+    'May': summer_mean_kwh,
+    'Jun': summer_mean_kwh,
+    'Jul': summer_mean_kwh,
+    'Aug': summer_mean_kwh,
+    'Sep': (yearly_min_kwh + yearly_max_kwh) / 2,  
+    'Oct': yearly_min_kwh,
+    'Nov': yearly_min_kwh,
+    'Dec': winter_mean_kwh
+}
+
+# Function to generate a random kWh value within the specified range
+def generate_random_value(min_kwh, max_kwh):
+    return round(random.uniform(min_kwh, max_kwh), 3)
+
+# Generate electricity consumption data for each hour in a year
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=total_days_in_year*2)  # Add two years to the end date
+
+for n in range(int((end_date - start_date).days)):
+    current_day = start_date + timedelta(n)
+    day_of_week = current_day.weekday()
+    day_month = current_day.strftime('%b')
+
+    if day_of_week < 5:  # Weekdays
+        month_value = months[day_month]
+    else:
+        month_value = (yearly_min_kwh + yearly_max_kwh) / 2
+
+    kWh_value = generate_random_value(month_value, (summer_mean_kwh + yearly_max_kwh) / 2 if day_of_week >= 4 else (yearly_min_kwh + yearly_max_kwh) / 2)
+
+    print(f"{current_day.strftime('%Y-%m-%d %H:%M')}, {kWh_value}")

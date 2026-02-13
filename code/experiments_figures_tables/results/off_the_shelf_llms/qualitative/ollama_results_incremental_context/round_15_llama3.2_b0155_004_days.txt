@@ -1,0 +1,38 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Define constants
+BUILDING_ID = 155
+PRIMARY_USE = 'Office'
+SQUARE_FOOTAGE = 51688
+YEARLY_MEAN_KWH = 81.997604
+YEARLY_MIN_KWH = 23.5
+YEARLY_MAX_KWH = 159.0
+SUMMER_MEAN_KWH = 73.1753
+WINTER_MEAN_KWH = 91.38757
+START_DATE = datetime(2016, 1, 1)
+END_DATE = START_DATE + timedelta(days=365*96)
+
+# Generate electricity consumption data
+data = []
+for i in range(int((END_DATE - START_DATE).days)):
+    date_str = (START_DATE + timedelta(days=i)).strftime('%Y-%m-%d')
+    hour = i % 24
+    if 'summer' in pd.to_datetime(date_str).month_name():
+        kwh = SUMMER_MEAN_KWH * np.random.uniform(0.9, 1.1)
+    elif 'winter' in pd.to_datetime(date_str).month_name():
+        kwh = WINTER_MEAN_KWH * np.random.uniform(0.9, 1.1)
+    else:
+        kwh = YEARLY_MEAN_KWH * np.random.uniform(0.9, 1.1)
+
+    # Ensure values stay within valid range
+    kwh = max(YEARLY_MIN_KWH, min(kwh, YEARLY_MAX_KWH))
+    
+    data.append((date_str + ' ' + str(hour).zfill(2), kwh))
+
+# Generate output string
+output = '\n'.join([f"{date} {value}" for date, value in data])
+
+print(output)

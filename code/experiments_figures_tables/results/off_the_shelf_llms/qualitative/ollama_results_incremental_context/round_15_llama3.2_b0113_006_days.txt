@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta
+
+building_id = 113
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+def generate_electricity_data():
+    data = []
+    start_date = datetime(2016, 1, 1)
+    
+    for i in range(144):
+        current_day = (start_date + timedelta(days=i)).day
+        
+        # Summer months
+        if (5 <= current_day <= 7) or (8 <= current_day <= 12):
+            data.append(f"{start_date.strftime('%Y-%m-%d')} {start_date.strftime('%H:%M')}, {random.uniform(summer_mean_kwh, summer_mean_kwh+10)}")
+        
+        # Winter months
+        elif (1 <= current_day <= 31) and not (12 <= current_day <= 14):
+            data.append(f"{start_date.strftime('%Y-%m-%d')} {start_date.strftime('%H:%M')}, {random.uniform(winter_mean_kwh, winter_mean_kwh+10)}")
+        
+        # Other days
+        else:
+            data.append(f"{start_date.strftime('%Y-%m-%d')} {start_date.strftime('%H:%M')}, {yearly_mean_kwh}")
+        
+        start_date += timedelta(hours=1)
+
+    return data
+
+data = generate_electricity_data()
+for line in data:
+    print(line)

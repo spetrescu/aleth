@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define the metadata
+building_id = 1069
+primary_use = "Office"
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Define the date range and intervals
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=648 * 24)
+
+# Create a DataFrame to store the data
+data = pd.DataFrame(columns=['date', 'value'])
+
+# Loop over each hour in the date range
+for i in range(int((end_date - start_date).days)):
+    # Calculate the current date and time
+    current_date = start_date + timedelta(days=i)
+    
+    # Randomly select a value from the mean kWh based on the season
+    if (current_date.month >= 6) and (current_date.month <= 8):
+        value = np.random.normal(summer_mean_kwh, yearly_mean_kwh/10)
+    elif (current_date.month >= 12) and (current_date.month <= 2):
+        value = np.random.normal(winter_mean_kwh, yearly_mean_kwh/10)
+    else:
+        value = np.random.normal(yearly_mean_kwh, yearly_mean_kwh/10)
+    
+    # Ensure the value is within the min and max kWh
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Append the data to the DataFrame
+    data.loc[len(data)] = [current_date.strftime('%Y-%m-%d %H:%M'), value]
+
+# Print the data
+for index, row in data.iterrows():
+    print(f"{row[0]} {row[1]}")

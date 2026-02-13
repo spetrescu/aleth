@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Generate dates and times for 144 measurements
+start_date = datetime(2016, 1, 1)
+measurements = []
+for i in range(144):
+    date = start_date + timedelta(hours=i)
+    time = str(date.hour) + ':' + str(date.minute).zfill(2)
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    measurements.append(f"{date.strftime('%Y-%m-%d')} {time}, {value:.4f}")
+
+# Shuffle the data to make it more realistic
+np.random.shuffle(measurements)
+
+print("\n".join(measurements))

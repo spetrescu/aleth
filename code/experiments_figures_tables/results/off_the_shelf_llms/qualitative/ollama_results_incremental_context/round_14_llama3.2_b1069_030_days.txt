@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1069
+primary_use = 'Office'
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Create a date range for 720 measurements, starting from January 1, 2016
+start_date = '2016-01-01'
+end_date = pd.date_range(start=start_date, periods=720)[::-1]
+
+# Generate electricity consumption data (kWh) at 1-hour intervals
+df = pd.DataFrame({
+    'date': end_date,
+    'value': np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=720)
+})
+
+# Filter out values that are below yearly_min_kwh or above yearly_max_kwh
+df = df[(df['value'] >= yearly_min_kwh) & (df['value'] <= yearly_max_kwh)]
+
+# Ensure summer months average around summer_mean_kwh and winter months around winter_mean_kwh
+summer_months = pd.date_range(start=start_date, periods=180, freq='MS')[::-1]
+winter_months = pd.date_range(start=start_date, periods=540, freq='MS')[::-1]
+
+mask = (df.index.month % 12 == 6) | (df.index.month % 12 == 8)  # June and August
+df.loc[mask, 'value'] = np.random.uniform(summer_mean_kwh, summer_max_kwh)
+
+mask = (df.index.month % 12 == 0) | (df.index.month % 12 == 1) | (df.index.month % 12 == 2)  # December, January, and February
+df.loc[mask, 'value'] = np.random.uniform(winter_mean_kwh, winter_max_kwh)
+
+# Shuffle the values to ensure randomness
+np.random.seed(0)
+df['value'] = np.random.shuffle(df['value'])
+
+print('\n'.join(f'{date} {value}' for date, value in zip(df['date'], df['value'])))

@@ -1,0 +1,58 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1135
+primary_use = 'Education'
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate date range from 01 January 2016 to 31 December 2016
+start_date = date(2016, 1, 1)
+end_date = date(2017, 1, 1)  # Since we want exactly 624 measurements
+
+date_range = [start_date + timedelta(days=i) for i in range((end_date - start_date).days + 1)]
+
+# Split dates into summer and winter months
+summer_months = [i for i, month in enumerate(date_range[6:]) if month.month >= 6]
+winter_months = [i for i, month in enumerate(date_range[:6]) if month.month <= 2]
+
+# Generate random consumption values for each hour of the year
+random_values = []
+for date in date_range:
+    if date in summer_months:
+        value = np.random.normal(summer_mean_kwh, yearly_mean_kwh * 0.1)  # 10% variation around mean
+        if value < yearly_min_kwh:
+            random_values.append(yearly_min_kwh)
+        elif value > yearly_max_kwh:
+            random_values.append(yearly_max_kwh)
+    else:  # Winter months
+        value = np.random.normal(winter_mean_kwh, yearly_mean_kwh * 0.1)  # 10% variation around mean
+        if value < yearly_min_kwh:
+            random_values.append(yearly_min_kwh)
+        elif value > yearly_max_kwh:
+            random_values.append(yearly_max_kwh)
+
+# Append values to the list in a format suitable for printing
+output_lines = []
+for i, date_str in enumerate(date_range):
+    if i < len(random_values):  # Fill in missing values with mean
+        output_lines.append(f"{date_str} {random_values[i]}")
+    else:
+        value = np.random.normal(yearly_mean_kwh, yearly_mean_kwh * 0.1)  # 10% variation around mean
+        if value < yearly_min_kwh:
+            output_lines.append(f"{date_str} {yearly_min_kwh}")
+        elif value > yearly_max_kwh:
+            output_lines.append(f"{date_str} {yearly_max_kwh}")
+        else:  # Fill in missing values with mean
+            output_lines.append(f"{date_str} {value}")
+
+print("\n".join(output_lines))

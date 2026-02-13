@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Building metadata
+building_id = 1069
+primary_use = 'Office'
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Generate dates and electricity consumption data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=216*24) # generate 216 measurements at 1 hour intervals for a year
+data = []
+
+for n in range(int((end_date-start_date).days)):
+    date = start_date + timedelta(n+1)
+    day = date.day
+    month = date.month
+
+    if (day >= 6 and day <= 8) or (month == 12 and day >= 25):
+        value = np.random.uniform(winter_mean_kwh, yearly_max_kwh)
+    else:
+        value = np.random.uniform(yearly_mean_kwh, yearly_max_kwh)
+
+    data.append((date.strftime('%Y-%m-%d %H:%M'), round(value)))
+
+# Ensure the generated data doesn't go below yearly_min_kwh or above yearly_max_kwh
+data = [(x, y) for x,y in data if year_min <= y <= year_max]
+
+# Ensure the generated data is realistic and consistent with the summary stats
+data = [x for x in data if sum(x[1] for x in data[:int(0.05*216)]) >= yearly_min_kwh and sum(x[1] for x in data[:int(0.95*216)]) <= yearly_max_kwh]
+
+# Shuffle the data to ensure it is realistic
+np.random.shuffle(data)
+
+print('\n'.join(f"{x} {y}" for x,y in data))

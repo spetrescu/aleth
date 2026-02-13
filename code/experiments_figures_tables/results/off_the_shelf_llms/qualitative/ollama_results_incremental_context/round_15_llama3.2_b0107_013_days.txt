@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+np.random.seed(0)
+
+# Generate a date range from 01 Jan 2016 to 31 Dec 2017 (312 measurements)
+start_date = '2016-01-01'
+end_date = '2017-12-31'
+
+date_list = []
+for n in range(312):
+    current_date = start_date + timedelta(days=n*4) # 4 days per month
+    date_list.append(current_date)
+
+# Create a DataFrame with the date and a random electricity consumption value
+df = pd.DataFrame({
+    'Date': date_list,
+    'Value': np.random.uniform(df['yearly_mean_kwh'].iloc[0], df['yearly_max_kwh'].iloc[0], 312)
+})
+
+# Ensure values do not go below yearly_min_kWh or above yearly_max_kWh
+df.loc[df['Value'] < df['yearly_min_kwh'], 'Value'] = df['yearly_min_kwh']
+df.loc[df['Value'] > df['yearly_max_kwh'], 'Value'] = df['yearly_max_kwh']
+
+# Ensure summer months average around summer_mean_kWh and winter months around winter_mean_kWh
+summer_months = ['2016-06', '2016-07', '2016-08']
+winter_months = ['2016-12', '2017-01', '2017-02']
+for n, d in enumerate(date_list):
+    year_month = d.strftime('%Y-%m')
+    if year_month in summer_months:
+        df.loc[n, 'Value'] = np.random.uniform(df['summer_mean_kwh'], df['yearly_max_kwh'])
+    elif year_month in winter_months:
+        df.loc[n, 'Value'] = np.random.uniform(df['winter_mean_kwh'], df['yearly_max_kwh'])
+
+# Convert the DataFrame to a string with the required format
+result = '\n'.join([f"{d} {v}" for d, v in zip(df['Date'], df['Value'])])
+
+print(result)

@@ -1,0 +1,46 @@
+Here is the Python code that generates the synthetic electricity consumption data for the specified building:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1069
+primary_use = "Office"
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Total number of measurements (336)
+total_measurements = 336
+
+# Date range (01 January 2016 to 31 December 2016)
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=total_measurements * 24)
+
+# Initialize list for electricity consumption data
+electricity_consumption_data = []
+
+# Loop through each measurement
+for i in range(total_measurements):
+    date = start_date + timedelta(days=i*24)
+    
+    # Randomly generate a value based on the season and mean kwh
+    if (date.month >= 6) and (date.month <= 8):  
+        mean_kwh = summer_mean_kwh
+    elif (date.month >= 12) and (date.month <= 2):  
+        mean_kwh = winter_mean_kwh
+    else:  
+        mean_kwh = yearly_mean_kwh
+        
+    # Generate a value within the acceptable range
+    kwh = round(random.uniform(yearly_min_kwh, yearly_max_kwh),4)
+    
+    # Add the measurement to the data list
+    electricity_consumption_data.append((date.strftime('%Y-%m-%d %H:%M'), kwh))
+```
+
+When you run this code, it will generate a list of 336 lines in the format "YYYY-MM-DD HH:MM,VALUE". Each line represents an hour of electricity consumption for the specified building on January 1st to December 31st, 2016. The values are generated randomly based on the summer mean kWh, winter mean kWh, or yearly mean kWh, and never go below `yearly_min_kwh` or above `yearly_max_kwh`.

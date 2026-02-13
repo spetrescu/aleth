@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta
+
+# Summary statistics
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+# Generate date and time strings
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=720)
+
+# List of month names
+month_names = ['January', 'February', 'March', 'April', 'May', 'June', 
+              'July', 'August', 'September', 'October', 'November', 'December']
+
+# Create a list to store the data
+data = []
+
+for n in range(720):
+    date = start_date + timedelta(seconds=n*3600)
+    month_name = month_names[date.month-1]
+    if (month_name == 'June' or month_name == 'July' or month_name == 'August') and n < 30*31:
+        kwh_value = round(random.gauss(summer_mean_kwh, 5),2)  # Random value around summer mean
+    elif (month_name == 'December' or month_name == 'January' or month_name == 'February') and n >= 29*60:  
+        kwh_value = round(winter_mean_kwh, 2)   # Random value around winter mean
+    else:
+        kwh_value = round(yearly_mean_kwh, 2)  # Most values should be near yearly mean
+    if kwh_value < yearly_min_kwh or kwh_value > yearly_max_kwh:
+        kwh_value = round(random.uniform(yearly_min_kwh, yearly_max_kwh),2)
+    data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{kwh_value}")
+
+# Print the data
+print('\n'.join(data))

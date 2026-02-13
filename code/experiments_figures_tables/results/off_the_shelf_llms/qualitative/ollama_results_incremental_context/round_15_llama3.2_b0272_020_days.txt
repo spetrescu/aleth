@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+
+np.random.seed(0) # seed for reproducibility
+
+# Define the parameters
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+buildings = [{'building_id': 272, 'primary_use': 'Education', 'square_feet': 4583,
+               'yearly_mean_kwh': 17.38018, 'yearly_min_kwh': 0.8, 'yearly_max_kwh': 74.32,
+               'summer_mean_kwh': 25.539513, 'winter_mean_kwh': 11.742976}]
+num_measurements = 480
+
+# Convert the start and end dates to datetime
+start_date = pd.to_datetime(start_date)
+end_date = pd.to_datetime(end_date)
+
+# Calculate the number of days between the start and end dates
+total_days = (end_date - start_date).days + 1
+
+# Initialize lists to store the date and value measurements
+dates = []
+values = []
+
+# Loop over each hour in the period
+for i in range(total_days):
+    # Create a datetime object for this hour
+    dt = start_date + pd.DateOffset(hours=i)
+    
+    # Randomly select which month this hour is in (1-4)
+    month = np.random.randint(1,5) 
+    
+    if month == 1 or month == 2 or month == 12:
+        avg = buildings[0]['winter_mean_kwh']
+    else:
+        avg = buildings[0]['summer_mean_kwh']
+
+    # Generate a random value around the average for this hour
+    rand_val = np.random.normal(avg, buildings[0]['yearly_max_kwh']-buildings[0]['yearly_min_kwh'])
+    val = max(buildings[0]['yearly_min_kwh'], min(rand_val + buildings[0]['yearly_mean_kwh'], buildings[0]['yearly_max_kwh']))
+
+    # Add the date and value to the lists
+    dates.append(dt)
+    values.append(val)
+
+# Create a list of lines in the desired format
+lines = ['{} {}'.format(d.strftime('%Y-%m-%d %H:%M'), v) for d, v in zip(dates, values)]
+
+print('\n'.join(lines))

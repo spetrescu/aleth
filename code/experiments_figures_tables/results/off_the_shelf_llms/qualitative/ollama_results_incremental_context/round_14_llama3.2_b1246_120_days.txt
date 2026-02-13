@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 1246
+SQUARE_FEET = 50327
+YEARLY_MEAN_KWH = 46.317394
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 82.0
+SUMMER_MEAN_KWH = 42.024456
+WINTER_MEAN_KWH = 46.382324
+
+# Create a date range for the desired time period (2016, 1st January to 31st December)
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=2880)
+
+# Initialize lists to store date, hour and consumption values
+dates = []
+hours = []
+consumptions = []
+
+# Loop over the date range with 1-hour intervals
+while start_date <= end_date:
+    # Determine if it's a summer or winter month (June-Aug and Dec-Feb)
+    if start_date.month in [6, 7, 8]:
+        monthly_mean_kwh = SUMMER_MEAN_KWH
+    elif start_date.month in [12, 1, 2]:
+        monthly_mean_kwh = WINTER_MEAN_KWH
+    else:
+        monthly_mean_kwh = YEARLY_MEAN_KWH
+    
+    # Generate a random consumption value for this hour, within the allowed range
+    kwh_consumption = np.random.uniform(YEARLY_MIN_KWH, yearly_max_kwh)
+    
+    if start_date.month in [6, 7, 8]:
+        kwh_consumption = np.random.uniform(0.9 * SUMMER_MEAN_KWH, 1.1 * SUMMER_MEAN_KWH) # account for some variation
+    elif start_date.month in [12, 1, 2]:
+        kwh_consumption = np.random.uniform(0.9 * WINTER_MEAN_KWH, 1.1 * WINTER_MEAN_KWH)
+    
+    # Append the values to the lists
+    dates.append(start_date.strftime('%Y-%m-%d'))
+    hours.append(int(start_date.time().hour))
+    consumptions.append(kwh_consumption)
+
+    start_date += timedelta(hours=1)
+
+# Create a DataFrame from the data
+df = pd.DataFrame({'Date': dates, 'Hour': hours, 'Consumption (kWh)': consumptions})
+
+# Generate output lines
+for index, row in df.iterrows():
+    print(f"{row['Date']} {row['Hour']}: {row['Consumption (kWh)']}")

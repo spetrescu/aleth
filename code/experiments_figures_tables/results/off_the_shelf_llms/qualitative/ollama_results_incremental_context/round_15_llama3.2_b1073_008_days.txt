@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_data():
+    # Constants
+    BUILDING_ID = 1073
+    PRIMARY_USE = 'Office'
+    SQUARE_FEET = 194111
+    YEARLY_MEAN_KWH = 179.21414
+    YEARLY_MIN_KWH = 0.0
+    YEARLY_MAX_KWH = 853.0
+    SUMMER_MEAN_KWH = 118.158516
+    WINTER_MEAN_KWH = 230.26053
+
+    # Dates
+    START_DATE = datetime(2016, 1, 1)
+    END_DATE = START_DATE + timedelta(days=192)
+
+    # Generate electricity data
+    for n in range(int((END_DATE - START_DATE).days)):
+        date = START_DATE + timedelta(n)
+        if date.month in [6, 7, 8]:
+            value = SUMMER_MEAN_KWH + random.gauss(0, 10) * SUMMER_MEAN_KWH
+        elif date.month in [12, 1, 2]:
+            value = WINTER_MEAN_KWH + random.gauss(0, 10) * WINTER_MEAN_KWH
+        else:
+            value = YEARLY_MEAN_KWH + random.gauss(0, 10) * YEARLY_MEAN_KWH
+        
+        # Ensure value is within range
+        if value < YEARLY_MIN_KWH or value > YEARLY_MAX_KWH:
+            value = random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+
+        print(f"{date.strftime('%Y-%m-%d')} {date.strftime('%H:%M')}, {value:.8f}")
+
+# Generate electricity data
+generate_electricity_data()

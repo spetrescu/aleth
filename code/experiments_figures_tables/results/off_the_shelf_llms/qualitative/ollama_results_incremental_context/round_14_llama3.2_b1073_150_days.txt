@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define the parameters
+building_id = 1073
+primary_use = 'Office'
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+measurements_per_year = 8760  # Assuming non-leap year for simplicity
+
+# Generate the electricity consumption data
+def generate_data():
+    data = []
+    current_date = datetime(2016, 1, 1)
+    while len(data) < measurements_per_year * 2:  # Accounting for summer/winter months separately
+        month = current_date.month
+        if month in [6, 7, 8]:  # Summer months
+            mean_kwh = summer_mean_kwh
+        elif month in [12, 1, 2]:  # Winter months
+            mean_kwh = winter_mean_kwh
+        else:  # All other months (spring/autumn)
+            mean_kwh = yearly_mean_kwh
+        value = round(np.random.normal(mean_kwh, mean_kwh / 10), 3)  # Generate a random value within the range of 1 standard deviation from the mean
+        value = min(max(value, yearly_min_kwh), yearly_max_kwh)
+        data.append((current_date.strftime('%Y-%m-%d %H:%M'), value))
+        current_date += timedelta(hours=1)
+    return data
+
+# Generate the electricity consumption data and output it as required
+data = generate_data()
+for date, kwh in data:
+    print(f"{date}, {kwh}")

@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(42)
+
+# Generate a date range from 01 January 2016 to 25 December 2017 (240 days)
+date_range = pd.date_range('2016-01-01', periods=240, freq='H')
+
+# Initialize lists to store values and dates
+values = []
+dates = []
+
+for i in range(0, len(date_range), 8):
+    # Calculate the month of this group of hours
+    month = (date_range[i] + pd.DateOffset(months=1)).month
+
+    if month < 6:
+        mean_kwh = yearly_mean_kwh  # Summer
+    elif month > 11:
+        mean_kwh = yearly_mean_kwh  # Winter
+    else:
+        mean_kwh = summer_mean_kwh if np.random.rand() < 0.5 else winter_mean_kwh
+
+    # Generate random values with the given mean and a standard deviation of 1% of the mean
+    value_range = [yearly_min_kwh, yearly_max_kwh]
+    value = int(np.random.uniform(value_range[0], value_range[1]) * (1 + 0.01 * mean_kwh))
+    # Make sure we never go below or above this amount
+    if value < value_range[0]:
+        value = value_range[0]
+    elif value > value_range[1]:
+        value = value_range[1]
+
+    values.append(value)
+    dates.append(date_range[i])
+
+# Create a DataFrame and convert the data to strings in the desired format
+df = pd.DataFrame({'DATE': dates, 'VALUE': values})
+data = df.to_csv(index=False, header=False, sep=',', quotechar='')
+
+print(data)

@@ -1,0 +1,19 @@
+import pandas as pd
+import numpy as np
+
+# Create a date range from January 1, 2016 to December 31, 2016
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+# Define the hourly intervals
+hours = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate random values between yearly_min_kwh and yearly_max_kwh
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(hours))
+
+# Create a DataFrame with the generated values and corresponding dates
+df = pd.DataFrame({'DATE': hours, 'VALUE': values})
+
+# Print the output as requested
+for index, row in df.iterrows():
+    print(f"{row['DATE'].strftime('%Y-%m-%d %H:%M')} {row['VALUE']:.6f}")

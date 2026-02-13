@@ -1,0 +1,30 @@
+import pandas as pd
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+import random
+random.seed(0)
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=480)
+
+data = []
+for n in range(int ((end_date - start_date).days)):
+    date = start_date + timedelta(n+1)
+    month = date.strftime('%Y-%m')
+
+    if (month == '06' and date.month >= 15) or \
+       (month == '07' and date.month > 7) or \
+       (month == '08' and date.month <= 8):
+        avg_kwh = round(393.1739 * random.random(),2)
+    elif (month == '12' and date.month < 3) or \
+         (month == '01' and date.month >=1) or \
+         (month == '02' and date.month <= 2):
+        avg_kwh = round(218.81273 * random.random(),2)
+
+    value = round(avg_kwh,2)
+    data.append((date.strftime('%Y-%m-%d %H:%M'),value))
+
+# Print the data
+for line in data:
+    print(f"{line[0]},{line[1]}")

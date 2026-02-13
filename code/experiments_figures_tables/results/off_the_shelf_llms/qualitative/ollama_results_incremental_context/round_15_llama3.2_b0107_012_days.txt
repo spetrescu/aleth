@@ -1,0 +1,59 @@
+import random
+import datetime as dt
+
+# Initialize building statistics
+building_id = 107
+primary_use = 'Education'
+square_feet = 97532
+yearly_mean_kwh = 234.75676
+yearly_min_kwh = 0.0405
+yearly_max_kwh = 591.0
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Function to generate a random value within a given range
+def rand_value(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 4)
+
+# Initialize dataset with yearly mean values for all hours in the year
+dataset = []
+start_year = dt.date(2016, 1, 1)
+for hour in range(24 * 365):
+    date = start_year + dt.timedelta(hours=hour)
+    kwh = rand_value(yearly_mean_kwh, yearly_max_kwh)
+    dataset.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {kwh}")
+
+# Add summer and winter adjustments
+for month in range(1, 13):
+    start_date = dt.date(2016, month, 1)
+    end_date = dt.date(2016, month + 1, 0) if month < 12 else dt.date(2017, 1, 1)
+    for hour in range(24):
+        date = start_date + dt.timedelta(hours=hour)
+        if month >= 6 and month <= 8:  # summer
+            kwh = rand_value(summer_mean_kwh, yearly_max_kwh)
+        else:  # winter
+            kwh = rand_value(winter_mean_kwh, yearly_max_kwh)
+        dataset.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {kwh}")
+
+# Add some noise to the data (5% variation from the mean)
+dataset = [f"{date_str}, {round(float(value), 4)}" for date_str, value in dataset]
+noisy_dataset = []
+for i in range(len(dataset)):
+    if random.random() < 0.05:
+        kwh = float(dataset[i].split(", ")[1])
+        noisy_dataset.append(f"{dataset[i].split(", ")[0]}, {rand_value(kwh - 0.5, kwh + 0.5)}")
+    else:
+        noisy_dataset.append(dataset[i])
+
+# Ensure values don't go below yearly_min_kwh or above yearly_max_kwh
+for i in range(len(noisy_dataset)):
+    value = float(noisy_dataset[i].split(", ")[1])
+    if value < yearly_min_kwh:
+        noisy_dataset[i] = f"{noisy_dataset[i].split(", ")[0]}, {yearly_min_kwh}"
+    elif value > yearly_max_kwh:
+        noisy_dataset[i] = f"{noisy_dataset[i].split(", ")[0]}, {yearly_max_kwh}"
+
+# Trim to 288 lines
+trimmed_dataset = noisy_dataset[:288]
+
+print("\n".join(trimmed_dataset))

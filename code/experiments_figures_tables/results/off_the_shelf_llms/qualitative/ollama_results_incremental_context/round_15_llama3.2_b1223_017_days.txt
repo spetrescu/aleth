@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(123)
+
+# Create an empty dataframe to hold our data
+df = pd.DataFrame(columns=['date', 'value'])
+
+# Function to generate a single row of data
+def generate_row(start_date):
+    value = round(np.random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+    date = start_date + timedelta(hours=np.random.randint(0, 24))
+    
+    if (datetime.strptime(date.strftime('%Y-%m'), '%Y-%m') >= datetime.strptime('2016-06-01', '%Y-%m')
+        and datetime.strptime(date.strftime('%Y-%m'), '%Y-%m') <= datetime.strptime('2016-08-31', '%Y-%m')):
+        
+        if (datetime.strptime(date.strftime('%Y-%m'), '%Y-%m') >= datetime.strptime('2016-12-01', '%Y-%m')
+            and datetime.strptime(date.strftime('%Y-%m'), '%Y-%m') <= datetime.strptime('2017-02-28', '%Y-%m')):
+            
+            value = round(np.random.uniform(winter_mean_kwh, winter_max_kwh), 3)
+        else:
+            value = round(np.random.uniform(summer_mean_kwh, summer_max_kwh), 3)
+    
+    df.loc[len(df)] = [date.strftime('%Y-%m-%d %H:%M'), value]
+
+# Generate data for the entire year
+for i in range(408):
+    start_date = pd.to_datetime('2016-01-01')
+    generate_row(start_date)
+
+print(df)

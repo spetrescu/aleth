@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Calculate the difference between the max and min kWh values
+kwh_diff = yearly_max_kwh - yearly_min_kwh
+
+# Generate an array of 168 measurements that are close to the mean value but with some variability
+values = np.full(168, yearly_mean_kwh)
+for i in range(10):
+    # Add a small random variation for about 1/10th of the values
+    idx = np.random.choice([i for i in range(168) if not (i % 16 == 0 or i % 8 == 0)], size=16, replace=False)
+    values[idx] += np.random.uniform(-5, 5)
+
+# Ensure that no value is below the minimum or above the maximum
+values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+
+# Create a date range for the measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=168)
+
+# Generate the data as lines
+data = []
+for i in range(168):
+    date = (start_date + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')
+    # Split data into summer and winter months
+    if (i+1)%30 < 3:
+        kwh = round(summer_mean_kwh + np.random.uniform(-5, 5))
+    else:
+        kwh = round(winter_mean_kwh + np.random.uniform(-5, 5))
+    
+    # Ensure that no value is below the minimum or above the maximum
+    kwh = np.clip(kwh, yearly_min_kwh, yearly_max_kwh)
+    data.append(f'{date},{kwh}')
+
+# Print the generated data
+print('\n'.join(data))

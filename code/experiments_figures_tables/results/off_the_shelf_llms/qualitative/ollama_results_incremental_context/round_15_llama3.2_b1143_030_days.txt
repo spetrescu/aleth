@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(42)
+
+# Constants
+BUILDING_ID = 1143
+PRIMARY_USE = "Office"
+SQUARE_FEET = 96612
+YEARLY_MEAN_KWH = 79.257515
+YEARLY_MIN_KWH = 25.0
+YEARLY_MAX_KWH = 187.0
+SUMMER_MEAN_KWH = 85.378174
+WINTER_MEAN_KWH = 74.83288
+
+# Create a datetime object for the first measurement
+first_measurement_date = datetime(2016, 1, 1)
+
+# Generate a sequence of timestamps for 720 measurements
+timestamps = [first_measurement_date + timedelta(hours=i) for i in range(0, 720*24)]
+
+# Convert to pandas Series
+timestamps_series = pd.Series(timestamps, name="timestamp")
+
+# Function to generate random values based on the statistics provided
+def get_random_value(mean, min_val, max_val):
+    # Randomly select a month (winter or summer) and hour of day
+    if 'winter' in str(np.random.choice(['winter', 'summer'], p=[0.4, 0.6])):
+        return np.random.normal(mean, mean/10)
+    else:
+        return np.random.normal(mean, mean/15)
+
+# Apply the function to each timestamp
+values = [get_random_value(YEARLY_MEAN_KWH,
+                            YEARLY_MIN_KWH,
+                            YEARLY_MAX_KWH) if 'winter' not in str(np.random.choice(['winter', 'summer'], p=[0.4, 0.6])) else get_random_value(WINTER_MEAN_KWH,
+                                                                                                                         YEARLY_MIN_KWH,
+                                                                                                                         YEARLY_MAX_KWH)
+         for _ in range(720)]
+
+# Create a pandas DataFrame
+df = pd.DataFrame({'timestamp': timestamps_series, 'value': values})
+
+# Print the dataframe in the required format
+for index, row in df.iterrows():
+    print(f"{row['timestamp'].strftime('%Y-%m-%d %H:%M')},{row['value']:.6f}")

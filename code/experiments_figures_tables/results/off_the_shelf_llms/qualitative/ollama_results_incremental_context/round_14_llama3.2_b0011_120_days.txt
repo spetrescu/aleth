@@ -1,0 +1,69 @@
+Here is a Python script that generates synthetic electricity consumption data at 1-hour intervals for exactly 2880 measurements:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+def generate_consumption_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                             summer_mean_kwh, winter_mean_kwh):
+    # Set dates
+    start_date = '2016-01-01 00:00'
+    end_date = '2016-12-31 23:59'
+
+    # Initialize lists to hold consumption values and corresponding dates
+    consumptions = []
+    dates = []
+
+    # Iterate over each hour in the year
+    for i in range(int((end_date - start_date).total_seconds() / 3600) + 1):
+        current_date = start_date + timedelta(seconds=i*3600)
+
+        if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8) \
+                and ((current_date.month == 6 and random.random() < 0.2) or
+                     (current_date.month == 7 and random.random() < 0.15) or
+                     (current_date.month == 8 and random.random() < 0.1)):
+            # Generate a value based on summer mean kWh if it's one of the three months in summer
+            consumption = round(random.gauss(summer_mean_kwh, yearly_max_kwh / 2), 3)
+        else:
+            # Generate a value based on winter mean kWh if it's one of the three months in winter
+            consumption = round(random.gauss(winter_mean_kwh, yearly_min_kwh / 2), 3)
+
+        consumptions.append(consumption)
+        dates.append(current_date.strftime('%Y-%m-%d %H:%M'))
+
+    # Ensure we have exactly 2880 measurements
+    while len(consumptions) < 2880:
+        if (random.random() < 0.5 and yearly_min_kwh <= consumption + random.uniform(0, (yearly_mean_kwh - yearly_min_kwh) / 2)):
+            consumptions.append(consumption + round(random.uniform(0, (yearly_mean_kwh - yearly_min_kwh) / 2), 3))
+        else:
+            consumptions.append(consumption - round(random.uniform(0, (yearly_mean_kwh - yearly_max_kwh) / 2), 3))
+
+    # Ensure we don't go above yearly max kWh
+    while consumptions[-1] > yearly_max_kwh:
+        consumption_index = len(consumptions) - 1
+        while consumptions[consumption_index] > yearly_max_kwh:
+            if (random.random() < 0.5 and yearly_min_kwh <= consumption + random.uniform(0, (yearly_mean_kwh - yearly_min_kwh) / 2)):
+                consumptions[consumption_index] -= round(random.uniform(0, (yearly_mean_kwh - yearly_min_kwh) / 2), 3)
+            else:
+                consumptions[consumption_index] += round(random.uniform(0, (yearly_max_kwh - yearly_mean_kwh) / 2), 3)
+        consumption_index -= 1
+
+    # Ensure we don't go below yearly min kWh
+    while consumptions[-1] < yearly_min_kwh:
+        if len(consumptions) > 0 and (random.random() < 0.5 or random.random() > 0.2):
+            consumptions.append(yearly_min_kwh)
+        else:
+            consumptions.append(consumption + round(random.uniform(0, (yearly_mean_kwh - yearly_max_kwh) / 2), 3))
+
+    # Generate the dataset
+    for i in range(len(consumptions)):
+        print(f"{dates[i]}\t{consumptions[i]}")
+
+# Usage:
+generate_consumption_data(yearly_mean_kwh=296.39252, yearly_min_kwh=0.0, yearly_max_kwh=1052.0,
+                         summer_mean_kwh=486.43784, winter_mean_kwh=162.72496)
+```
+
+This script first sets the start and end dates of 2016. It then iterates over each hour in the year, generating a value for electricity consumption based on whether it's one of the three months in summer or winter. The `random.gauss` function is used to simulate normal distribution of values; this makes the generated data more realistic and less predictable than if we simply chose between two possible values at random.
+
+Once all 2880 measurements have been generated, the script checks for any final adjustments needed to ensure that no measurement goes below `yearly_min_kwh`, above `yearly_max_kwh`, or outside of these bounds. If a measurement is too high or low, it reduces or increases the value by an amount chosen at random from a range around `yearly_mean_kwh` and either `yearly_max_kwh` or `yearly_min_kwh`.

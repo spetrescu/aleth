@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define time intervals and dates
+start_date = '2016-01-01 00:00'
+end_date = '2016-12-31 23:59'
+
+# Create a date range with 1-hour intervals
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate random data based on the constraints
+data = []
+for i, dt in enumerate(date_range):
+    # Randomly select between summer and winter mean kWh
+    if (dt.month >= 6) & (dt.month <= 8): 
+        value = np.random.normal(summer_mean_kwh, yearly_max_kwh/10)
+    else:  
+        value = np.random.normal(winter_mean_kwh, yearly_max_kwh/10)
+
+    # Ensure value is within the allowed range
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Add to data list with date and kWh value
+    data.append((dt.strftime('%Y-%m-%d %H:%M'), np.round(value, 10)))
+
+# Convert list of tuples into a DataFrame (for formatting)
+df = pd.DataFrame(data, columns=['Date', 'kWh'])
+
+# Format the output as required
+output_string = '\n'.join([f"{row['Date']}, {row['kWh']}"] for index, row in df.iterrows())
+
+print(output_string)

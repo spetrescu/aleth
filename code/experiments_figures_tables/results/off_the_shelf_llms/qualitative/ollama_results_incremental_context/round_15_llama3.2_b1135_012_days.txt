@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1135
+primary_use = 'Education'
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+dates_list = []
+consumption_list = []
+
+start_date = date(2016,1,1)
+end_date = start_date + timedelta(days=288-1)
+
+for n in range(288):
+    current_date = start_date + timedelta(n)
+    while current_date <= end_date:
+        hour = current_date.strftime('%H')
+        if 0<=hour<12: #AM
+            consumption = winter_mean_kwh * (5/6) + np.random.normal(0, yearly_min_kwh/3)
+        elif hour == 12: # Noon
+            consumption = summer_mean_kwh * (1/6) + np.random.normal(0, yearly_min_kwh/3)
+        else: #PM
+            consumption = summer_mean_kwh * (5/6) + np.random.normal(0, yearly_min_kwh/3)
+            
+        if consumption < 0 or consumption > yearly_max_kwh:
+            consumption = yearly_min_kwh if consumption < 0 else yearly_max_kwh
+        
+        consumption_list.append(consumption)
+        dates_list.append(current_date.strftime('%Y-%m-%d %H:%M'))
+        
+        current_date += timedelta(hours=1)
+
+print('\n'.join([f'{date} {value}' for date, value in zip(dates_list, consumption_list)]))

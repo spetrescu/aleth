@@ -1,0 +1,71 @@
+I'll use Python with a library called `numpy` for generating random numbers and ensuring consistency within bounds, and `pandas` for handling dates and timestamps.
+
+Here is the code:
+
+```python
+import pandas as pd
+from numpy import random
+import datetime
+
+# Building metadata
+yearly_mean_kwh = 6.4528236
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+
+# Start date and number of measurements (432 hours)
+start_date = datetime.date(2016, 1, 1)
+n_measurements = 432
+
+# Generate dates
+dates = [(start_date + datetime.timedelta(days=i)).strftime('%Y-%m-%d') 
+         for i in range(n_measurements)]
+
+# Calculate the hour of day (0-23) and whether it's summer or winter month
+hours_of_day = [i % 24 for i in range(n_measurements)]
+summer_months = [(start_date + datetime.timedelta(days=i)).month in [6,7,8] 
+                 for i in range(n_measurements)]
+
+# Generate random values within the bounds of yearly_mean_kwh and yearly_max_kwh
+values = []
+for hour_of_day, summer_month in zip(hours_of_day, summer_months):
+    if summer_month:
+        # Summer months should average around summer_mean_kwh
+        value = max(yearly_min_kwh, 
+                    min(yearly_max_kwh, 
+                        random.normal(loc=summer_mean_kwh, scale=0.5)))
+    else:
+        # Winter months should average around winter_mean_kwh
+        value = max(yearly_min_kwh, 
+                   min(yearly_max_kwh, 
+                       random.normal(loc=winter_mean_kwh, scale=0.5)))
+    values.append(value)
+
+# Ensure values are within the yearly bounds (some might have been slightly outside)
+for i in range(n_measurements):
+    value = values[i]
+    if value < yearly_min_kwh:
+        # If below min kwh, randomly adjust up to within bounds
+        values[i] = random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+# Create the output with lines of "YYYY-MM-DD HH:MM,VALUE"
+output_lines = []
+for i in range(n_measurements):
+    date = dates[i]
+    hour_of_day = hours_of_day[i] # 0-23
+    value = values[i]
+    time_str = f'{date} {hour_of_day:02d}:00'
+    output_line = f'{time_str},{value:.4f}'
+    output_lines.append(output_line)
+
+# Print the full dataset
+for line in output_lines:
+    print(line)
+```
+
+This code first generates a list of dates, and then another list with values for each date. It uses `random.normal` to generate random values within a normal distribution centered around the yearly mean kwh. If a value is outside the bounds of yearly_min_kwh or yearly_max_kwh, it gets adjusted up to within these bounds.
+
+Then, the code generates lines of "YYYY-MM-DD HH:MM,VALUE" and prints them out.
+
+Note that you need to have `pandas` and `numpy` installed.

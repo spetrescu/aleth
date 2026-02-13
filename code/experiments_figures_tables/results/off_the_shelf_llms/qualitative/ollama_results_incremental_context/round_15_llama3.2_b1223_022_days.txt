@@ -1,0 +1,46 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import random
+
+# Set the seed for reproducibility
+random.seed(0)
+
+# Define the parameters
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Define the date range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*528 - 1)
+
+# Initialize the list to store the data
+data = []
+
+# Loop through each hour in the date range
+for i in range(int((end_date-start_date).days)):
+    # Calculate the date and time for this hour
+    dt = start_date + timedelta(days=i)
+    
+    # Convert the date and time to a string in the format "YYYY-MM-DD HH:MM"
+    dt_str = dt.strftime("%Y-%m-%d %H:%M")
+
+    # Generate a random value for kWh that is within the allowed range
+    if (dt.month >= 6 or dt.month <= 8) and (dt.year == 2016):  # Summer months
+        kwh = round(random.uniform(summer_mean_kwh*0.9, summer_mean_kwh*1.1),2)
+    elif (dt.month >= 12 or dt.month <= 2) and (dt.year == 2016):  # Winter months
+        kwh = round(random.uniform(winter_mean_kwh*0.9, winter_mean_kwh*1.1),2)
+    else:  # Other months
+        kwh = round(random.uniform(yearly_min_kwh, yearly_max_kwh),2)
+
+    # Append the data to the list
+    data.append((dt_str, kwh))
+
+# Print the data in the required format
+for value in data:
+    print(f"{value[0]},{value[1]}")

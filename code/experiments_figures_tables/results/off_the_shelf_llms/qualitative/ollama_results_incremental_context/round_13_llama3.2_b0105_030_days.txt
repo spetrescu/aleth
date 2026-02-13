@@ -1,0 +1,55 @@
+Here's a Python code snippet that generates electricity consumption data for the given building:
+
+```python
+import random
+from datetime import datetime, timedelta, date
+
+# Function to generate a random number within a specified range
+def rand_num(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 3)
+
+# Constants for months and days in a year
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+# Annual summary statistics
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Lists to hold the generated data
+data = []
+dates = []
+
+# Loop through each hour in a year (720 hours)
+for day in range(1, 721):
+    # Determine if it's summer or winter based on the month
+    is_summer = date(2016, 6, 1).day <= day <= date(2016, 8, 31).day
+
+    # Calculate the kWh value for this hour
+    if is_summer:
+        kwh = round(summer_mean_kwh + (rand_num(-10, 10) * 0.01), 3)
+    else:
+        kwh = round(winter_mean_kwh + (rand_num(-10, 10) * 0.01), 3)
+
+    # Ensure the value is within the allowed range
+    if kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    elif kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+
+    # Format the date and kWh value as required
+    dt = datetime(2016, 1, 1) + timedelta(days=day-1)
+    formatted_date = f"{dt.strftime('%Y-%m-%d')} {dt.strftime('%H:%M')}"
+    data.append(f"{formatted_date}, {kwh}")
+
+# Print the generated data
+for item in data:
+    print(item)
+```
+
+This script will output 720 lines of electricity consumption data at 1-hour intervals, starting on January 1st, 2016. The values are generated based on a combination of random variation and adherence to annual summary statistics provided for the building.
+
+Please note that the range of random variations (±10%) is arbitrary and can be adjusted according to specific requirements.

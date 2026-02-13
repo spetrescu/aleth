@@ -1,0 +1,65 @@
+import random
+from datetime import datetime, timedelta
+
+building_id = 1135
+primary_use = "Education"
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=480)
+
+def generate_data(start_date, end_date):
+    data = []
+    for n in range(int ((end_date-start_date).days)):
+        date = start_date + timedelta(n)
+        day_type = "W" if date.weekday() <4 else "S"
+        day_avg_kwh = yearley_mean_day(day_type)
+        kwh = round(random.gauss(day_avg_kwh, 10),2)
+        
+        # Adjust based on season
+        if day_type == 'S':
+            adjusted_kwh=round(summer_adjustment(kwh))
+        else:
+            adjusted_kwh=round(winter_adjustment(kwh))
+
+        
+        data.append(f"{date.strftime('%Y-%m-%d')} {date.time()} {adjusted_kwh}")
+
+    return '\n'.join(data)
+
+def yearley_mean_day(day_type):
+    if day_type == 'W':
+        # Winter
+        month = 12
+        mean_kwh= winter_mean_kwh 
+    else:
+        # Summer
+        month = 6
+        mean_kwh= summer_mean_kwh
+
+    return round(mean_kwh * ((datetime.now().month - month)/7),2)
+
+def summer_adjustment(kwh):
+    if kwh < 0:    
+        return -round(10.01,2) # Randomly adjust below max value to stay in range
+    elif kwh > yearly_max_kwh:
+        return round((yearly_max_kwh + (kwh - yearly_max_kwh)/3),2)
+    
+    else:
+        return kwh
+
+def winter_adjustment(kwh):
+    if kwh < 0:    
+        return -round(10.01,2) # Randomly adjust below min value to stay in range
+    elif kwh > yearly_max_kwh:
+        return round((yearly_max_kwh + (kwh - yearly_max_kwh)/3),2)
+    
+    else:
+        return kwh
+
+print(generate_data(start_date,end_date))

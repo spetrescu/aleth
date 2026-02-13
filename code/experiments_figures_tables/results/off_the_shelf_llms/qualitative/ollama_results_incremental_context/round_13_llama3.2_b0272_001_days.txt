@@ -1,0 +1,37 @@
+import random
+from datetime import datetime, timedelta
+
+# Summary statistics
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+square_feet = 4583
+
+# Initialize list to store electricity consumption data
+data = []
+
+# Generate random values for each hour in a week
+for i in range(24):
+    date_str = (datetime(2016,1,i+1) - timedelta(hours=5)).strftime('%Y-%m-%d %H:%M')
+    value = round(random.uniform(yearly_min_kwh, yearly_max_kwh),2)
+    
+    # Increase the likelihood of a high consumption in winter months
+    if ((i >= 24) and (datetime(2016,1,i+1) - timedelta(hours=5)).month in [12, 1, 2]):
+        value = round(summer_mean_kwh + random.uniform(-10,10),2)
+        
+    # Limit the values to yearly statistics
+    if date_str == '2016-01-01 00:00':
+        value = yearly_min_kwh
+    elif date_str == '2016-07-31 23:59':
+        value = summer_mean_kwh
+    elif date_str == '2016-12-31 23:59':
+        value = winter_mean_kwh
+
+    # Append the data to the list
+    data.append((date_str, value))
+
+# Print the generated dataset
+for row in data:
+    print(f"{row[0]},{row[1]}")

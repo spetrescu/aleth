@@ -1,0 +1,39 @@
+import random
+from datetime import timedelta, datetime
+
+def generate_meter_readings(building_id):
+    building_metadata = {
+        'building_id': building_id,
+        'primary_use': 'Office',
+        'square_feet': 143973,
+        'yearly_mean_kwh': 296.72125,
+        'yearly_min_kwh': 85.275,
+        'yearly_max_kwh': 595.904,
+        'summer_mean_kwh': 393.1739,
+        'winter_mean_kwh': 218.81273
+    }
+
+    # Generate date and time objects
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=312)
+
+    readings = []
+    for n in range(int ((end_date-start_date).days)):
+        dt = start_date + timedelta(n)
+        value = round(random.gauss(building_metadata['yearly_mean_kwh'], (building_metadata['yearly_min_kwh'] - building_metadata['yearly_max_kwh'])/2))
+        if n < 92: # winter
+            expected_value = building_metadata['winter_mean_kwh']
+            lower_bound = building_metadata['yearly_min_kwh']
+            upper_bound = building_metadata['yearly_max_kwh']
+        else:
+            expected_value = building_metadata['summer_mean_kwh']
+            lower_bound = building_metadata['yearly_min_kwh']
+            upper_bound = building_metadata['yearly_max_kwh']
+
+        if value > upper_bound or value < lower_bound:
+            continue
+        readings.append((dt.strftime("%Y-%m-%d %H:%M"), round(value, 6)))
+
+    return readings
+
+print('\n'.join(f"{date} {power}" for date,power in generate_meter_readings(1086)))

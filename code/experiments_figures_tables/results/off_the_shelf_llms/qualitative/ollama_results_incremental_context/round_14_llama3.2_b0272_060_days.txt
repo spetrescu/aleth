@@ -1,0 +1,51 @@
+import pandas as pd
+from datetime import timedelta, datetime
+import random
+
+# Define constants
+YEARLY_MEAN_KWH = 17.38018
+YEARLY_MIN_KWH = 0.8
+YEARLY_MAX_KWH = 74.32
+SUMMER Mean_KWH = 25.539513
+WINTER_mean_KWH = 11.742976
+MEASUREMENTS = 1440
+
+# Generate dates and corresponding random values
+data = []
+start_date = datetime(2016, 1, 1)
+while len(data) < MEASUREMENTS:
+    date = start_date
+    while len(data) < MEASUREMENTS:
+        hour = date.hour + pd.to_timedelta('01:00')
+        if hour >= pd.to_datetime('20:00', tz='UTC'):
+            # summer or winter season 
+            season = 'Summer' if 6 <= date.month <= 8 else 'Winter'
+            value = random.gauss(SUMMER_mean_KWH if season == 'Summer' else WINTER_mean_KWH, yearly_mean_kwh/10)
+        else:
+            value = random.gauss(YEARLY_mean_kWh, yearly_mean_kwh/10)
+
+        # Limit values to yearly min and max
+        value = max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH))
+        
+        data.append((date.strftime('%Y-%m-%d %H:%M'), round(value, 5)))
+
+        date += pd.to_timedelta('01:00')
+
+start_date += pd.to_timedelta('01:00')
+while len(data) < MEASUREMENTS:
+    date = start_date
+    while len(data) < MEASUREMENTS:
+        hour = date.hour + pd.to_timedelta('01:00')
+        if hour >= pd.to_datetime('20:00', tz='UTC'):
+            # summer or winter season 
+            season = 'Summer' if 6 <= date.month <= 8 else 'Winter'
+            value = random.gauss(SUMMER_mean_KWH if season == 'Summer' else WINTER_mean_KWH, yearly_mean_kwh/10)
+        else:
+            value = round(random.gauss(YEARLY_mean_KWh, yearly_mean_kwh/10), 5)
+
+        # Limit values to yearly min and max
+        value = max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH))
+        
+        data.append((date.strftime('%Y-%m-%d %H:%M'), round(value, 5)))
+
+print('\n'.join(map(str, data)))

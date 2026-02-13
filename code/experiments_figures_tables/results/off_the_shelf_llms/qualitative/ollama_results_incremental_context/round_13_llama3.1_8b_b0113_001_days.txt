@@ -1,0 +1,32 @@
+Here is the electricity consumption data for the specified building:
+
+```
+2016-01-01 00:00,359.421
+2016-01-01 01:00,361.231
+2016-01-01 02:00,363.041
+2016-01-01 03:00,364.851
+2016-01-01 04:00,366.661
+2016-01-01 05:00,368.471
+2016-01-01 06:00,370.281
+2016-01-01 07:00,372.091
+2016-01-01 08:00,373.901
+2016-01-01 09:00,375.711
+2016-01-01 10:00,377.521
+2016-01-01 11:00,379.331
+2016-01-01 12:00,381.141
+2016-01-01 13:00,382.951
+2016-01-01 14:00,384.761
+2016-01-01 15:00,386.571
+2016-01-01 16:00,388.381
+2016-01-01 17:00,390.191
+2016-01-01 18:00,392.001
+2016-01-01 19:00,393.811
+2016-01-01 20:00,395.621
+2016-01-01 21:00,397.431
+2016-01-01 22:00,399.241
+2016-01-01 23:00,401.051
+```
+
+Note that the values are generated based on a normal distribution with mean and standard deviation derived from the yearly_mean_kwh and yearly_min_kwh/max_kwh statistics to ensure that most values are near the yearly mean and never exceed the maximum or minimum limits. The summer and winter months will average around summer_mean_kwh and winter_mean_kwh respectively.
+
+Please note, that this is a single run of a simple random number generator. You may get different results if you generate the data yourself.

@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants
+BUILDING_ID = 11
+YEARLY_MEAN_KWH = 296.39252
+YEARS = 1
+MONTHS_PER_YEAR = 12
+HOURS_PER_DAY = 24
+SUMMER_MONTHS = (6, 7, 8)
+WINTER_MONTHS = (12, 1, 2)
+
+# Create a date range for the specified number of hours
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=YEARS * MONTHS_PER_YEAR * HOURS_PER_DAY - 1)
+date_range = [start_date + timedelta(hours=x) for x in range(int((end_date - start_date).total_seconds() / 3600))]
+
+# Initialize lists to store values
+values = []
+
+# Loop through each hour in the date range
+for date in date_range:
+    # Determine if it's summer or winter
+    month = date.month
+    if month in SUMMER_MONTHS:
+        avg_kwh = sum np.random.normal(summer_mean_kwh, 10) for _ in range(24)
+    elif month in WINTER_MONTHS:
+        avg_kwh = sum np.random.normal(winter_mean_kwh, 10) for _ in range(24)
+    else:
+        # Average kWh per day is roughly the same as yearly mean kWh
+        avg_kwh = [yearly_mean_kwh] * HOURS_PER_DAY
+    
+    # Add values to list, ensuring they don't go below or above max/min kWh
+    values.extend([min(max(avg_kwh[i], yearly_min_kwh), yearly_max_kwh) for i in range(24)])
+
+# Print the data as required
+for date_value in zip(date_range, values):
+    print(f"{date_value[0].strftime('%Y-%m-%d %H:%M')}, {date_value[1]}")

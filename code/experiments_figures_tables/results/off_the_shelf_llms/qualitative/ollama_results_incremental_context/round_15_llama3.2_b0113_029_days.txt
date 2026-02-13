@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define building metadata
+building_id = 113
+primary_use = "Education"
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Generate date range
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=696)
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Loop through each hour in the date range
+current_date = start_date
+while current_date <= end_date:
+    # Check if it's summer or winter month
+    if (current_date.month >= 6 and current_date.month <= 8) or \
+       (current_date.month >= 12 and current_date.month <= 2):
+        value = np.random.normal(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh)
+    else:
+        value = np.random.normal(yearly_mean_kwh, yearly_max_kwh - yearly_mean_kwh)
+    
+    # Ensure value is within min/max kWh
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Append data to lists
+    dates.append(current_date.strftime("%Y-%m-%d %H:%M"))
+    values.append(round(value, 3))
+
+    # Increment date by 1 hour
+    current_date += timedelta(hours=1)
+
+# Print dataset as required
+for i in range(len(dates)):
+    print(f"{dates[i]} {values[i]}")

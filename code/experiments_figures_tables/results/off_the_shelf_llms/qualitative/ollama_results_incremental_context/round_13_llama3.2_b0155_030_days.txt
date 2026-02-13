@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Generate date range
+start_date = '2016-01-01'
+end_date = pd.Timestamp('2021-12-31')
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize empty list to store electricity consumption values
+electricity_consumption_values = []
+
+# Loop through each hour in the date range
+for i, date in enumerate(date_range):
+    # Generate a random value between yearly_min_kwh and yearly_max_kwh
+    value = np.random.uniform(23.5, 159.0)
+    
+    # If the month is summer (Jun-Aug), use summer_mean_kwh as the target value
+    if date.month >= 6:
+        target_value = 73.1753
+    else:  # winter months (Dec-Feb)
+        target_value = 91.38757
+    
+    # Adjust the generated value to be closer to the target value
+    value = np.random.normal(target_value, (value - target_value) / 10)
+    
+    # Ensure the value is within the valid range
+    value = max(23.5, min(value, 159.0))
+    
+    # Append the value to the list
+    electricity_consumption_values.append(round(value, 6))
+
+# Generate lines of text with dates and corresponding kWh values
+lines = ['{} {:.2f}'.format(date.strftime('%Y-%m-%d %H:%M'), value) for date, value in zip(date_range, electricity_consumption_values)]
+
+# Print the generated lines
+for line in lines:
+    print(line)

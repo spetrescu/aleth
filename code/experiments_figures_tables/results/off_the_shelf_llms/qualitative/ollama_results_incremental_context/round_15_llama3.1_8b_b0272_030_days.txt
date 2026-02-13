@@ -1,0 +1,47 @@
+I'll use Python to generate this synthetic data. Below is a code snippet that can be used to generate electricity consumption data at hourly intervals for exactly 720 measurements.
+
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+
+# Set the initial date and time
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=364)
+
+# Generate hourly data
+df = pd.DataFrame({
+    'Date': [start_date + timedelta(hours=i) for i in range(24*365)],
+    'Value': np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=24*365)
+})
+
+# Scale the value to match yearly mean and adjust for summer and winter
+df['scaled_value'] = df['Value']
+
+for index, row in df.iterrows():
+    if start_date <= (row['Date'].replace(day=1)) <= end_date:
+        if row['Date'].month in [6, 7, 8]:
+            df.loc[index, 'scaled_value'] = np.random.uniform(
+                summer_mean_kwh - 5, summer_mean_kwh + 10
+            )
+        elif row['Date'].month in [12, 1, 2]:
+            df.loc[index, 'scaled_value'] = np.random.uniform(
+                winter_mean_kwh - 5, winter_mean_kwh + 10
+            )
+
+# Scale the value back to kWh
+df['Value'] = (df['scaled_value'] / 100) * yearly_mean_kwh
+
+# Ensure no values are outside of min or max
+for index, row in df.iterrows():
+    if row['Value'] < yearly_min_kwh:
+        df.loc[index, 'Value'] = yearly_min_kwh
+    elif row['Value'] > yearly_max_kwh:
+        df.loc[index, 'Value'] = yearly_max_kwh
+
+# Output the data in the required format
+for index, row in df.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d %H:%M')},{int(row['Value'])}")
+```

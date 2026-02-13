@@ -1,0 +1,54 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 113
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 100481
+YEARLY_MEAN_KWH = 363.97446
+YEARLY_MIN_KWH = 159.643
+YEARLY_MAX_KWH = 679.25
+SUMMER_MEAN_KWH = 365.49576
+WINTER_MEAN_KWH = 361.4717
+
+# Total number of hours in the dataset
+total_hours = 456 * 24
+
+# Initialize list to store data
+data = []
+
+# Generate data for summer months (Jun-Aug)
+for i in range(3):  # Three months
+    start_time = datetime(2016, 6 + i, 1) - timedelta(hours=random.randint(0, 24))
+    end_time = start_time + timedelta(days=30 * 10)  # Generate 300 days worth of data
+    for hour in range(int(start_time.timestamp()), int(end_time.timestamp())):
+        current_time = datetime.fromtimestamp(hour)
+        value = round(random.uniform(YEARLY_MEAN_KWH, YEARLY_MAX_KWH), 3)  # Randomly select a value between mean and max
+        if value < YEARLY_MIN_KWH:
+            value = YEARLY_MIN_KWH  # Ensure minimum is not exceeded
+        data.append((current_time.strftime('%Y-%m-%d %H:%M'), value))
+
+# Generate data for winter months (Dec-Feb)
+for i in range(3):  # Three months
+    start_time = datetime(2016, 12 + i, 1) - timedelta(hours=random.randint(0, 24))
+    end_time = start_time + timedelta(days=30 * 10)  # Generate 300 days worth of data
+    for hour in range(int(start_time.timestamp()), int(end_time.timestamp())):
+        current_time = datetime.fromtimestamp(hour)
+        value = round(random.uniform(YEARLY_MEAN_KWH, YEARLY_MAX_KWH), 3)  # Randomly select a value between mean and max
+        if value < YEARLY_MIN_KWH:
+            value = YEARLY_MIN_KWH  # Ensure minimum is not exceeded
+        data.append((current_time.strftime('%Y-%m-%d %H:%M'), value))
+
+# Generate data for the rest of the year
+start_time = datetime(2016, 3, 1) - timedelta(hours=random.randint(0, 24))
+end_time = start_time + timedelta(days=300 * 10)  # Generate 300 days worth of data
+for hour in range(int(start_time.timestamp()), int(end_time.timestamp())):
+    current_time = datetime.fromtimestamp(hour)
+    value = round(random.uniform(YEARLY_MEAN_KWH, YEARLY_MAX_KWH), 3)  # Randomly select a value between mean and max
+    if value < YEARLY_MIN_KWH:
+        value = YEARLY_MIN_KWH  # Ensure minimum is not exceeded
+    data.append((current_time.strftime('%Y-%m-%d %H:%M'), value))
+
+# Print the generated data
+for line in data:
+    print(line[0] + ', ' + str(line[1]))

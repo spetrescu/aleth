@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+import random
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Building metadata
+building_id = 1223
+primary_use = 'Office'
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate date range (01 Jan 2016 to 31 Dec 2016)
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=365*168)  # 168 days, one year
+dates = [start_date + timedelta(days=i) for i in range(int((end_date - start_date).days))]
+
+# Initialize lists to store the data
+values = []
+for date_obj in dates:
+    day = date_obj.day
+    month = date_obj.month
+    if (month >= 6 and month <= 8): # Summer
+        value = round(random.gauss(summer_mean_kwh, year * 0.01),2)
+    elif (month >=12 and month <= 2): # Winter
+        value = round(winter_mean_kwh, 2) 
+    else:
+        value = round(yearly_mean_kwh, 2)
+
+    if(value > yearly_max_kwh or value < yearly_min_kwh):
+      continue
+
+    # Add the value to the list of values with hour
+    values.append(f"{date_obj.strftime('%Y-%m-%d')} {str(date_obj.hour).zfill(2)}, {value}")
+
+# Print the data
+for value in values:
+  print(value)

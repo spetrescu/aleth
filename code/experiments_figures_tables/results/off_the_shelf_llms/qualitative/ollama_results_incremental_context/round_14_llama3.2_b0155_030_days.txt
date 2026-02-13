@@ -1,0 +1,46 @@
+import pandas as pd
+from datetime import timedelta, datetime
+import random
+
+# Set seed for reproducibility
+random.seed(42)
+
+# Define building metadata and annual summary statistics
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate a date range for the measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=720)
+
+# Create an empty list to store the measurement data
+measurement_data = []
+
+# Loop through each hour in the date range
+for n in range(int ((end_date - start_date).days)):
+    # Generate a random value between yearly_min_kwh and yearly_max_kwh
+    value = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+    
+    # If the day is within summer months (June-August), use summer_mean_kwh as target value
+    if (start_date + timedelta(days=n)).month in [6,7,8]:
+        target_value = summer_mean_kwh
+        
+        # If the day is outside of winter months (Dec-Feb), use winter_mean_kwh as target value
+        elif (start_date + timedelta(days=n)).month in [12,1,2]:
+            target_value = winter_mean_kwh
+            
+    else:
+        target_value = yearly_mean_kwh
+    
+    # Append the measurement data to the list
+    measurement_data.append(f"{start_date + timedelta(days=n).strftime('%Y-%m-%d %H:%M')},{value}")
+
+# Join the measurement data into a single string and return it
+result = '\n'.join(measurement_data)
+print(result)

@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define parameters
+building_id = 1206
+primary_use = "Office"
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate time series data
+def generate_data(start_date, end_date):
+    date_range = pd.date_range(start=start_date, periods=3600)
+    values = np.random.normal(yearly_mean_kwh, (yearly_max_kwh - yearly_min_kwh)/2, size=3600)
+
+    # Ensure values stay within range
+    values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+
+    # Adjust for summer and winter months
+    for i, date in enumerate(date_range):
+        month = date.month
+        if 6 <= month <= 8:
+            values[i] *= (summer_mean_kwh / yearly_mean_kwh)
+        elif 12 >= month >= 2:
+            values[i] *= (winter_mean_kwh / yearly_mean_kwh)
+
+    return list(values), date_range
+
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365)
+
+values, dates = generate_data(start_date, end_date)
+
+# Format data for output
+output = []
+for value in values:
+    output.append(f"{dates[date_index].strftime('%Y-%m-%d %H:%M')}, {value:.4f}\n")
+
+print("".join(output))

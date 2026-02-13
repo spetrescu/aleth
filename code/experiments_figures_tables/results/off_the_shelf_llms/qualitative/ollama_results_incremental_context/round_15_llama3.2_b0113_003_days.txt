@@ -1,0 +1,29 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import random
+
+# Initialize lists to hold data
+dates = []
+values = []
+
+# Generate dates and values for 72 hours
+start_date = pd.to_datetime('2016-01-01')
+for i in range(72):
+    date = start_date + timedelta(hours=i)
+    # Randomly adjust value around yearly_mean_kwh, but never go below yearly_min_kwh or above yearly_max_kwh
+    if (i < 24) or ((date.month > 5) & (date.month <= 8)):  # Summer months
+        value = round(random.gauss(yearly_mean_kwh, yearly_max_kwh - yearly_mean_kwh), 3)
+        if value < yearly_min_kwh:
+            value = yearly_min_kwh
+    else:  # Winter months
+        value = round(random.gauss(yearly_mean_kwh, yearly_mean_kwh - yearly_min_kwh), 3)
+        if value > yearly_max_kwh:
+            value = yearly_max_kwh
+
+    dates.append(date.strftime('%Y-%m-%d %H:%M'))
+    values.append(value)
+
+# Combine data into a string
+data = '\n'.join(f'{date}, {value}' for date, value in zip(dates, values))
+
+print(data)

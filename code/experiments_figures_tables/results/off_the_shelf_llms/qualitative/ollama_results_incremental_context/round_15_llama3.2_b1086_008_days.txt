@@ -1,0 +1,35 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+# Initialize lists to hold data
+data = []
+
+# Define the start and end dates for the data generation
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=192)
+
+# Calculate monthly periods and day offsets
+monthly_periods = [(start_date + timedelta(days=i*30)) for i in range(12)]
+day_offsets = [timedelta(days=i) for i in range(31)]
+
+# Generate data for each month, accounting for summer and winter usage patterns
+for month in pd.date_range(start=start_date, end=end_date):
+    year_month = f"{month.year}-{month.month:02}"
+    
+    if year_month in ["2016-06", "2016-07", "2016-08"]: # Summer months
+        avg_usage = 393.1739
+    elif year_month in ["2016-12", "2016-01", "2016-02"]: # Winter months
+        avg_usage = 218.81273
+    else:
+        avg_usage = 296.72125 # Yearly average for other months
+
+    # Generate usage data at 1-hour intervals
+    for hour in range(24):
+        time = month.replace(hour=hour, minute=0, second=0) + day_offsets[(month.month-1)%12] if (month.month-1)%12 != 0 else timedelta(days=-15)
+        value = round(avg_usage * (np.random.rand() < 0.1)) # Slightly randomize usage to avoid constant values
+        data.append((time.strftime("%Y-%m-%d %H:%M"), value))
+
+# Convert lists into a pandas DataFrame, then export as CSV and print in desired format
+df = pd.DataFrame(data, columns=["Time","Usage (kWh)"])
+print("\n".join(f"{row[0]} {row[1]}" for row in df.values))

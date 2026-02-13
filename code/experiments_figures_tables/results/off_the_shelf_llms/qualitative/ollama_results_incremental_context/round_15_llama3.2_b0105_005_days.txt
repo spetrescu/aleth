@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+np.random.seed(0)
+
+# Building metadata and annual summary statistics
+building_id = 105
+primary_use = 'Education'
+square_feet = 50623
+yearly_mean_kwh = 78.12403
+yearly_min_kwh = 23.3036
+yearly_max_kwh = 173.945
+summer_mean_kwh = 78.177864
+winter_mean_kwh = 76.68618
+
+# Generate date and time arrays for 120 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=120)
+date_array = [start_date + timedelta(days=i) for i in range(120)]
+
+# Randomly generate electricity consumption values based on the summary statistics
+consumption_values = np.random.normal(yearly_mean_kwh, yearly_max_kwh - yearly_min_kwh, 120)
+
+# Apply constraints to ensure values are within valid ranges
+consumption_values = np.clip(consumption_values, yearly_min_kwh, yearly_max_kwh)
+
+# Separate summer and winter months
+summer_months = [6, 7, 8]
+winter_months = [12, 1, 2]
+
+# Generate consumption values for each month
+for i, date in enumerate(date_array):
+    day_of_year = (date - start_date).days + 1
+    if day_of_year <= 183:  # Winter months
+        consumption_values[i] = winter_mean_kwh * np.random.choice([0.9, 1.05], p=[0.95, 0.05])
+    elif day_of_year <= 266:  # Summer months
+        consumption_values[i] = summer_mean_kwh * np.random.choice([0.9, 1.05], p=[0.95, 0.05])
+
+# Generate output lines in the desired format
+output_lines = []
+for i, date in enumerate(date_array):
+    value = round(consumption_values[i], 3)
+    output_lines.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+print('\n'.join(output_lines))

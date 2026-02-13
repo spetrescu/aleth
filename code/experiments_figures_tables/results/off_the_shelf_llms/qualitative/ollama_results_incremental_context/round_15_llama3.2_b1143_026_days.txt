@@ -1,0 +1,37 @@
+import random
+from datetime import timedelta, date
+
+def generate_electricity_consumption_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh):
+    # Initialize variables
+    total_sum = 0
+    count = 0
+    measurements = []
+
+    # Create a list of dates from January 1st, 2016 to December 31st, 2016 with one measurement every hour
+    start_date = date(2016, 1, 1)
+    end_date = date(2016, 12, 31)
+
+    while start_date <= end_date:
+        value = random.uniform(yearly_min_kwh, yearly_max_kwh)
+        
+        # Adjust the generated kWh based on whether it is a summer or winter month
+        if (start_date.month in [6,7,8]) or (start_date.month in [12,1,2]):
+            value *= 0.9  # Reduce by 10% compared to average
+        
+        total_sum += value
+        count += 1
+
+        measurements.append((str(start_date) + " " + str(6) + ":00", round(value,3)))
+
+        start_date += timedelta(hours=1)
+
+    return measurements
+
+
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+
+data = generate_electricity_consumption_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh)
+for entry in data:
+    print(entry)

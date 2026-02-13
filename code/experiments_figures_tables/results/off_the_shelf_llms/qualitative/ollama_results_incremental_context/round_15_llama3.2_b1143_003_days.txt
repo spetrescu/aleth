@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define constants
+BUILDING_ID = '1143'
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 96612
+YEARLY_MEAN_KWH = 79.257515
+YEARLY_MIN_KWH = 25.0
+YEARLY_MAX_KWH = 187.0
+SUMMER_MEAN_KWH = 85.378174
+WINTER_MEAN_KWH = 74.83288
+
+# Create date range for the dataset
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=72*24)  # 72 hours * 24 hours per day
+
+data = []
+for n in range(int((end_date-start_date).days)):
+    date_obj = start_date + timedelta(n)
+    date_str = date_obj.strftime('%Y-%m-%d')
+    value = np.random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    data.append(f"{date_str} {value}")
+
+# Shuffle the data
+np.random.shuffle(data)
+
+for line in data:
+    print(line)

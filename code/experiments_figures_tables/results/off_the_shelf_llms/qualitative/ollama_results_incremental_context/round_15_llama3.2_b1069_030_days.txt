@@ -1,0 +1,52 @@
+Here is the Python script to generate synthetic building electricity meter readings:
+
+```python
+import random
+from datetime import datetime, timedelta, date
+
+def generate_electricity_data(building_info):
+    # Initialize data structures
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=365*720)  # 720 days * 365.25 days/year (accounting for leap years)
+
+    # Calculate hourly interval dates
+    dates = [start_date + timedelta(hours=i) for i in range(0, int((end_date-start_date).total_seconds()/3600)+1)]
+
+    # Initialize data list with the building's yearly mean kWh as most common value
+    data = []
+    current_year = 2016
+
+    # Loop over dates, maintaining seasonality and realistic variability
+    for d in dates:
+        if (d - date(2016, 6, 1)).days // 30 < 2:  # Summer months (June-August)
+            value = round(random.gauss(building_info['summer_mean_kwh'], building_info['yearly_std_dev']), 3)
+            data.append(f"{d.strftime('%Y-%m-%d %H:%M')},{value}")
+        elif (d - date(2016, 12, 1)).days // 30 < 2:  # Winter months (December-February)
+            value = round(random.gauss(building_info['winter_mean_kwh'], building_info['yearly_std_dev']), 3)
+            data.append(f"{d.strftime('%Y-%m-%d %H:%M')},{value}")
+        else:
+            # Most other days are near yearly mean kWh
+            value = round(random.gauss(building_info['yearly_mean_kwh'], building_info['yearly_std_dev']), 3)
+            data.append(f"{d.strftime('%Y-%m-%d %H:%M')},{value}")
+
+    return '\n'.join(data)
+
+
+# Example usage:
+building_info = {
+    'building_id': 1069,
+    'primary_use': 'Office',
+    'square_feet': 20864,
+    'yearly_mean_kwh': 6.4528236,
+    'yearly_min_kwh': 0.0,
+    'yearly_max_kwh': 18.1,
+    'summer_mean_kwh': 6.342618,
+    'winter_mean_kwh': 6.7815933
+}
+
+print(generate_electricity_data(building_info))
+```
+
+When you run this script, it generates a synthetic dataset of 720 electricity consumption data points at 1-hour intervals from January 1st, 2016 to the end of 2025 (accounting for leap years), with realistic values and consistent seasonality.
+
+Note: The `yearly_std_dev` parameter controls the standard deviation of the normal distribution used to generate random values. A higher value means more variability in the data.

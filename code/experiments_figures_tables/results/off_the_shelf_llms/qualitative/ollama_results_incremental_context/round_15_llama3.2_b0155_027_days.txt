@@ -1,0 +1,57 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Calculate the number of measurements per month (365 * 24 = 8760)
+measurements_per_month = int((648 / 12))
+
+# Generate data for each day of the year
+data = []
+for i in range(1, 13):
+    start_date = datetime(2016, i, 1)
+    end_date = datetime(2016, i, measurements_per_month) if i < 12 else datetime(2016, 12, 31)
+
+    for day in pd.date_range(start=start_date, end=end_date, freq='D'):
+        if day.hour > 8 and day.hour <= 16: # daytime
+            data.append((day.strftime('%Y-%m-%d %H:%M'), np.random.uniform(70, 100))) # summer
+        elif day.hour > 20 or day.hour <= 7: # nighttime
+            data.append((day.strftime('%Y-%m-%d %H:%M'), np.random.uniform(80, 120))) # winter
+        else: # partial night/day
+            data.append((day.strftime('%Y-%m-%d %H:%M'), np.random.uniform(70, 100)))
+
+# Shuffle the data to mimic real usage patterns
+np.random.shuffle(data)
+
+# Convert data to a pandas DataFrame and sort by date
+df = pd.DataFrame(data, columns=['Date', 'Value'])
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Group the data by month and day of week
+monthly_data = df.groupby(pd.Grouper(freq='M')).agg({'Date': 'min', 'Value': 'mean'}).reset_index()
+weekly_data = df.resample('W').agg({'Value': 'mean'})
+
+# Combine the monthly and weekly data to get the final result
+result_df = pd.DataFrame({
+    'Date': monthly_data['Date'].apply(lambda x: (x.year, x.month, 1)),
+    'Value': monthly_data['Value']
+}).append(pd.DataFrame({
+    'Date': weekly_data.index.map(lambda x: f"{x.year}-{x.isocalendar()[2]}-{x.isocalendar()[1]}-01"),
+    'Value': weekly_data['Value']
+}))
+
+# Scale the values to be within yearly_min_kwh and yearly_max_kwh
+result_df['Value'] = result_df.apply(lambda row: np.clip(row['Value'], yearley_min, yearley_max), axis=1)
+
+# Add all other data points with the same value as yearly_mean_kwh
+remaining_measurements = 648 - len(result_df)
+for i in range(remaining_measurements):
+    date = (datetime(2016, 12, 31) + timedelta(days=i)).strftime('%Y-%m-%d %H:%M')
+    result_df = pd.concat([result_df, pd.DataFrame({'Date': [date], 'Value': [yearley_mean]})])
+
+# Round the values to avoid precision issues
+result_df['Value'] = round(result_df['Value'], 3)
+
+print(result_df.to_string(index=False))

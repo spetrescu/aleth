@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Constants
+BUILDING_ID = 1086
+PRIMARY_USE = "Office"
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER_MEAN_KWH = 393.1739
+WINTER_MEAN_KWH = 218.81273
+
+# Generate date range and time intervals
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=1440)
+
+date_range = [start_date + timedelta(days=i) for i in range(int((end_date - start_date).days))]
+
+# Calculate hourly consumption
+hourly_consumption = np.random.normal(YEARLY_MEAN_KWH, YEARLY_MAX_KWH-YEARLY_MIN_KWH,
+                                     size=len(date_range))
+hourly_consumption[hourly_consumption < YEARLY_MIN_KWH] = YEARLY_MIN_KWH
+hourly_consumption[hourly_consumption > YEARLY_MAX_KWH] = YEARLY_MAX_KWH
+
+# Adjust for summer and winter months
+for i, date in enumerate(date_range):
+    month = date.month
+    if 6 <= month <= 8:
+        hourly_consumption[i] += np.random.normal(SUMMER_MEAN_KWH - YEARLY_MEAN_KWH,
+                                                    SUMMER_MEAN_KWH-YEARLY_MAX_KWH,
+                                                    size=1)
+    elif 12 <= month <= 2:
+        hourly_consumption[i] += np.random.normal(WINTER_MEAN_KWH - YEARLY_MEAN_KWH,
+                                                    WINTER_MEAN_KWH-YEARLY_MAX_KWH,
+                                                    size=1)
+
+# Generate output lines
+output = [f"{date.strftime('%Y-%m-%d')} {hourly_consumption[i].strftime('.2f')}\n" for i, date in enumerate(date_range)]
+
+print(''.join(output))

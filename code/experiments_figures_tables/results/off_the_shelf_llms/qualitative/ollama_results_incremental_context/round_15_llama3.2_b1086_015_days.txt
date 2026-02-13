@@ -1,0 +1,40 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_consumption():
+    # Constants
+    building_id = 1086
+    primary_use = 'Office'
+    square_feet = 143973
+    yearly_mean_kwh = 296.72125
+    yearly_min_kwh = 85.275
+    yearly_max_kwh = 595.904
+    summer_mean_kwh = 393.1739
+    winter_mean_kwh = 218.81273
+
+    # Generate timestamps
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=360)
+
+    data = []
+
+    for n in range(int((end_date-start_date).days)):
+        current_date = start_date + timedelta(n)
+        if (current_date.month in [6,7,8]) and ((current_date.year) % 4 == 0 and (current_date.year) % 100 != 0 or (current_date.year)%400==0):
+            value = summer_mean_kwh
+        elif (current_date.month in [12,1,2]):
+            value = winter_mean_kwh
+        else:
+            value = yearly_mean_kwh
+        if random.random() < 0.05:
+            if current_date.month in [6,7,8]:
+                value += random.uniform(-5, 10)
+            elif current_date.month in [12,1,2]:
+                value -= random.uniform(-5, 10)
+
+        data.append(f"{current_date.strftime('%Y-%m-%d')} {current_date.time()} {max(min(value, yearly_max_kwh), yearly_min_kwh):.4f}")
+
+    return '\n'.join(data)
+
+
+print(generate_electricity_consumption())

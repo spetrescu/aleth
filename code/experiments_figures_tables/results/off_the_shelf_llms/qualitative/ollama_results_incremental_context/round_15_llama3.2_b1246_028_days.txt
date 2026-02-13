@@ -1,0 +1,35 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                              summer_mean_kwh, winter_mean_kwh, num_measurements):
+    # Generate dates and corresponding consumption values
+    start_date = datetime(2016, 1, 1)
+    current_date = start_date
+    while len([date for date in [current_date] + [current_date + timedelta(hours=1) for _ in range(num_measurements-1)]]) < num_measurements:
+        # Determine if it's summer or winter based on the month
+        if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8):
+            consumption = round(random.gauss(summer_mean_kwh, 0.5), 3)
+        else:
+            consumption = round(winter_mean_kwh, 3)
+
+        # Ensure the value is within the possible range
+        consumption = min(max(consumption, yearly_min_kwh), yearly_max_kwh)
+        
+        print(f"{current_date.strftime('%Y-%m-%d %H:%M')} {consumption}")
+        
+        current_date += timedelta(hours=1)
+
+# Building metadata and annual summary statistics (2016):
+building_id = 1246
+primary_use = "Office"
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+generate_electricity_data(building_id, primary_use, square_feet, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                          summer_mean_kwh, winter_mean_kwh, num_measurements=672)

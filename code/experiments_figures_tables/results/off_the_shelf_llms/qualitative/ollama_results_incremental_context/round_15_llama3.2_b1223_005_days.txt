@@ -1,0 +1,48 @@
+import random
+from datetime import datetime, timedelta
+
+# Set a seed for reproducibility (optional)
+random.seed(123)
+
+def generate_data(building_id, square_feet, yearly_mean_kwh,
+                   yearly_min_kwh, yearly_max_kwh,
+                   summer_mean_kwh, winter_mean_kwh):
+    # Calculate the total number of hours in a year
+    num_hours_in_year = 24 * 365
+
+    # Calculate the average power consumption based on the mean kWh/year
+    avg_power = yearly_mean_kwh / num_hours_in_year
+
+    # Generate data for each hour of the day (except for winter and summer months)
+    non_winter_non_summer_hours = random.uniform(0.8 * avg_power, 1.2 * avg_power)
+
+    # Calculate the total hours in winter and summer months
+    winter_months = 4
+    summer_months = 3
+    total_winter_hours = winter_months * (24/5) + 1
+    total_summer_hours = summer_months * (24/5) + 1
+
+    data = []
+    current_time = datetime(2016, 1, 1)
+    while len(data) < 120:
+        if current_time.month in [12, 1, 2] and current_time.hour >= 9 and current_time.hour <= 17:
+            # Winter
+            hour_data = random.uniform(winter_mean_kwh / total_winter_hours, winter_mean_kwh / total_winter_hours)
+        elif current_time.month in [6, 7, 8] and current_time.hour >= 9 and current_time.hour <= 17:
+            # Summer
+            hour_data = random.uniform(summer_mean_kwh / total_summer_hours, summer_mean_kwh / total_summer_hours)
+        else:
+            # Non-winter non-summer
+            hour_data = non_winter_non_summer_hours
+        if hour_data < yearly_min_kwh or hour_data > yearly_max_kwh:
+            raise ValueError("Value out of range")
+        data.append(f"{current_time.strftime('%Y-%m-%d %H:%M')},{hour_data}")
+        current_time += timedelta(hours=1)
+    return data
+
+data = generate_data(1223, 52141, 76.72134,
+                     0.0, 174.64,
+                     81.22173, 83.83176)
+
+for line in data:
+    print(line)

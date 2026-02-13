@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+def generate_electricity_consumption_data(building_id):
+    # Define start and end dates
+    start_date = date(2016, 1, 1)
+    end_date = date(2016, 12, 31)
+
+    # Create a datetime index with 2160 values
+    dt_index = pd.date_range(start=start_date, periods=2160, freq='H')
+
+    # Initialize data frame
+    df = pd.DataFrame(index=dt_index)
+
+    # Set building parameters
+    yearly_mean_kwh = 234.75676
+    yearly_min_kwh = 0.0405
+    yearly_max_kwh = 591.0
+    summer_mean_kwh = 212.6387
+    winter_mean_kwh = 265.17035
+
+    # Generate data for each hour in the year
+    for i, dt in enumerate(dt_index):
+        if (dt - start_date).days >= 182:  # January to February
+            df.loc[dt] = winter_mean_kwh + np.random.normal(0, yearly_max_kwh / 2)
+        elif (dt - start_date).days >= 91:  # March to April
+            df.loc[dt] = summer_mean_kwh + np.random.normal(0, yearly_max_kwh / 4)
+        elif (dt - start_date).days >= 1:  # May to June
+            df.loc[dt] = summer_mean_kwh + np.random.normal(0, yearly_max_kwh / 8)
+        else:
+            df.loc[dt] = yearly_mean_kwh
+
+    # Ensure values are within limits
+    df.loc[df < yearly_min_kwh, 'VALUE'] = yearly_min_kwh
+    df.loc[df > yearly_max_kwh, 'VALUE'] = yearly_max_kwh
+
+    return df
+
+# Generate data for building 107
+df = generate_electricity_consumption_data(107)
+
+# Convert to desired format
+data = [(str(dt).split(' ')[0] + ' ' + str(dt).split(' ')[1].split(':')[0], val) 
+        for dt, val in zip(df.index, df['VALUE'])]
+
+print(data)

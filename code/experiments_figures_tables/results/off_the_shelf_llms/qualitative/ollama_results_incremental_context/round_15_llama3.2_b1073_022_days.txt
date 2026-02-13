@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Initialize lists to store data
+dates = []
+values = []
+
+# Generate dates and corresponding values
+start_date = date(2016, 1, 1)
+end_date = start_date + timedelta(days=528*24) # 528 days * 24 hours/day
+
+for n in range(int((end_date - start_date).days)):
+    d = start_date + timedelta(n)
+    year = d.year
+    month = d.month
+    day = d.day
+    
+    if (year == 2016 and month >= 6) or (year == 2017 and month <= 2):
+        avg_kwh = summer_mean_kwh
+    else:
+        avg_kwh = yearly_mean_kwh
+
+    # Add some randomness to the values
+    value = round(avg_kwh + np.random.normal(0, 10),3)
+    
+    if value < yearly_min_kwh or value > yearly_max_kwh:
+        value = yearly_min_kwh if value < yearly_min_kwh else yearly_max_kwh
+        
+    # Append data
+    dates.append(f"{year}-{month:02d}-{day:02d} {hour:02d:02d}")
+    values.append(value)
+
+# Create DataFrame and output
+df = pd.DataFrame({'DATE': dates, 'VALUE': values})
+for index, row in df.iterrows():
+    print(f"{row['DATE']}, {row['VALUE']}")

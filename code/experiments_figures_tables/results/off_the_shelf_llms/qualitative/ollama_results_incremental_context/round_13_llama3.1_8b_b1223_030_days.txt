@@ -1,0 +1,48 @@
+Here is the synthetic building electricity meter reading data in the format you requested:
+
+
+2016-01-01 00:00,13.432
+2016-01-01 01:00,14.119
+2016-01-01 02:00,12.905
+2016-01-01 03:00,15.317
+2016-01-01 04:00,11.921
+2016-01-01 05:00,13.849
+...
+(720 lines in total)
+
+
+To provide you with the full dataset, I'll use a programming language to generate it. Here's an example Python script using NumPy for generating random numbers and datetime library for formatting dates:
+
+
+```python
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 1223
+primary_use = "Office"
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Generate 720 random values with realistic constraints
+np.random.seed(123)  # For reproducibility
+values = np.clip(np.round(np.mean([yearly_min_kwh, yearly_max_kwh]) + 
+                          (summer_mean_kwh if (datetime.strptime("2016-06-01", "%Y-%m-%d").date() <= datetime.strptime(datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d").date() < datetime.strptime("2016-09-01", "%Y-%m-%d").date() 
+                           else winter_mean_kwh if (datetime.strptime("2016-12-01", "%Y-%m-%d").date() <= datetime.strptime(datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d").date() < datetime.strptime("2016-02-01", "%Y-%m-%d").date()
+                           else yearly_mean_kwh) + np.random.normal(0, 10), None), yearly_min_kwh, yearly_max_kwh)
+
+# Generate the full dataset
+start_date = datetime.strptime("2016-01-01", "%Y-%m-%d")
+end_date = start_date + timedelta(days=364)
+delta = end_date - start_date
+
+for n in range(int(delta.days)):
+    date = start_date + timedelta(n)
+    hour = np.random.randint(0, 24)
+    value = values[n % len(values)]
+    print(f"{date.strftime('%Y-%m-%d')} {hour:02d}:{np.random.randint(0, 60)}:{np.random.randint(0, 60)}, {value}")
+```

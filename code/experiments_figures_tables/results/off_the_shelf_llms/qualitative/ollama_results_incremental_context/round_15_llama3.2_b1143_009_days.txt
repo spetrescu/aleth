@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Generate date range from 01 January 2016 to 21 December 2022
+start_date = pd.to_datetime('2016-01-01')
+end_date = pd.to_datetime('2022-12-21')
+
+# Set time interval and calculate the total number of hours in that period
+hour_interval = timedelta(hours=1)
+num_measurements = (end_date - start_date).days * 24 + 1
+
+# Initialize lists to hold date and value data
+dates = []
+values = []
+
+# Generate electricity consumption data
+current_date = start_date
+while len(dates) < num_measurements:
+    # Determine the season based on the month
+    if (current_date.month >= 6 and current_date.month <= 8):
+        seasonal_mean_kwh = 85.378174
+    else:
+        seasonal_mean_kwh = 74.83288
+    
+    # Generate a random value within the allowed range for this time period
+    kwh_value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    # Scale the generated value to match the current season's mean
+    if (current_date.month >= 6 and current_date.month <= 8):
+        scaled_kwh_value = seasonal_mean_kwh + np.random.uniform(-5, 5) * (seasonal_mean_kwh / yearly_mean_kwh)
+    else:
+        scaled_kwh_value = seasonal_mean_kwh - np.random.uniform(-5, 5) * (seasonal_mean_kwh / yearly_mean_kwh)
+    
+    # Scale the generated value to match the building's average monthly kwh
+    if current_date.month == 6 or current_date.month == 7 or current_date.month == 8:
+        scaled_kwh_value *= seasonal_mean_kwh / yearly_mean_kwh
+    
+    # Add data to lists
+    dates.append(current_date.strftime('%Y-%m-%d %H:%M'))
+    values.append(scaled_kwh_value)
+
+# Ensure the last value is within the year's average range
+if len(dates) < 216:
+    while len(dates) < 216:
+        seasonal_mean_kwh = 85.378174 if (current_date.month >= 6 and current_date.month <= 8) else 74.83288
+        kwh_value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+        scaled_kwh_value = seasonal_mean_kwh + np.random.uniform(-5, 5) * (seasonal_mean_kwh / yearly_mean_kwh)
+        if current_date.month == 6 or current_date.month == 7 or current_date.month == 8:
+            scaled_kwh_value *= seasonal_mean_kwh / yearly_mean_kwh
+        dates.append(current_date.strftime('%Y-%m-%d %H:%M'))
+        values.append(scaled_kwh_value)
+
+# Print data in the required format
+for value in zip(dates, values):
+    print(f"{value[0]},{value[1]}")

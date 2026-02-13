@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Build up a date range of interest that matches your requirements (720 measurements)
+start = '2016-01-01 00:00'
+end = '2016-12-31 23:59'
+
+date_range = pd.date_range(start=start, end=end, periods=720)
+
+# Generate the data
+data = np.random.normal(loc=yearly_mean_kwh, scale=(yearly_max_kwh - yearly_min_kwh)/10,
+                         size=720)
+data[data < yearly_min_kwh] = yearly_min_kwh
+data[data > yearly_max_kwh] = yearly_max_kwh
+
+# Generate values for summer and winter months separately
+summer_months = ['2016-06', '2016-07', '2016-08']
+winter_months = ['2016-12', '2016-01', '2016-02']
+
+summer_data = np.random.normal(loc=summer_mean_kwh, scale=(summer_max_kwh - summer_min_kwh)/10,
+                                size=len(summer_months)*len(date_range[summer_months]))
+
+winter_data = np.random.normal(loc=winter_mean_kwh, scale=(winter_max_kwh - winter_min_kwh)/10,
+                               size=len(winter_months)*len(date_range[winter_months]))
+
+# Interleave data to generate the full dataset
+combined_data = np.concatenate((data, summer_data[:720-len(data)], winter_data[:720-len(data)]))
+
+# Generate the output lines
+output_lines = []
+for i in range(720):
+    date = str(date_range[i].strftime('%Y-%m-%d')) + " " + str(date_range[i].time().strftime('%H:%M'))
+    value = round(combined_data[i],2)
+    output_lines.append(f"{date},{value}")
+
+# Print the full dataset
+for line in output_lines:
+    print(line)

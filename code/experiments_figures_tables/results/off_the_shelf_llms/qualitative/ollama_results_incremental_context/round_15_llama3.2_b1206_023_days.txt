@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+
+# Building metadata and annual summary statistics
+building_id = 1206
+primary_use = 'Office'
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate date range for 552 measurements (01 January 2016 to 30 December 2016)
+date_range = pd.date_range('2016-01-01', periods=552)
+
+# Create a DataFrame with the date range and a default value of yearly_mean_kwh
+df = pd.DataFrame(date_range, columns=['Date'])
+df['Value'] = [yearly_mean_kwh] * len(df)
+
+# Adjust values for summer and winter months to average around summer_mean_kwh and winter_mean_kwh
+summer_dates = df[(df['Date'].dt.month >= 6) & (df['Date'].dt.month <= 8)].index
+winter_dates = df[(df['Date'].dt.month >= 12) & (df['Date'].dt.month <= 2)].index
+
+# Adjust values for summer and winter months
+for i in range(len(df)):
+    if df['Date'][i] in summer_dates:
+        df.loc[i, 'Value'] = np.random.uniform(summer_mean_kwh-1,summer_mean_kwh+1)
+    elif df['Date'][i] in winter_dates:
+        df.loc[i, 'Value'] = np.random.uniform(winter_mean_kwh-1,winter_mean_kwh+1)
+
+# Ensure values do not go below yearly_min_kwh or above yearly_max_kwh
+df.loc[df['Value'] < yearly_min_kwh, 'Value'] = yearly_min_kwh
+df.loc[df['Value'] > yearly_max_kwh, 'Value'] = yearly_max_kwh
+
+# Convert the DataFrame to a list of strings in the desired format
+data = [f'{date.strftime("%Y-%m-%d %H:%M")},{value}' for date, value in zip(df['Date'], df['Value'])]
+
+print('\n'.join(data))

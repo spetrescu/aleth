@@ -1,0 +1,56 @@
+Here's a Python script to generate synthetic electricity consumption data:
+
+```python
+import numpy as np
+import pandas as pd
+from datetime import timedelta, datetime
+import random
+
+def generate_electricity_data(building_id):
+    # Calculate hourly means
+    yearly_mean_kwh = 87.59102
+    summer_mean_kwh = 88.61049
+    winter_mean_kwh = 91.04132
+
+    # Create time range
+    start_time = datetime(2016, 1, 1)
+    end_time = start_time + timedelta(hours=168)
+
+    # Initialize lists to hold data
+    dates = []
+    values = []
+
+    current_month = (start_time.year, start_time.month)
+
+    for dt in pd.date_range(start=start_time, periods=168):
+        if (dt.year, dt.month) == current_month:
+            # Summer months (Jun-Aug)
+            if 6 <= dt.month <= 8:
+                hourly_mean = summer_mean_kwh
+            else:
+                hourly_mean = yearly_mean_kwh
+
+            value = round(hourly_mean + random.gauss(0, 5), 3)
+        else:
+            # Winter months (Dec-Feb)
+            if 12 <= dt.month <= 2:
+                hourly_mean = winter_mean_kwh
+            else:
+                hourly_mean = yearly_mean_kwh
+
+            value = round(hourly_mean + random.gauss(0, 5), 3)
+
+        dates.append(dt.strftime("%Y-%m-%d"))
+        values.append(value)
+
+    # Create DataFrame and print results
+    df = pd.DataFrame({'Date': dates, 'Value (kWh)': values})
+    for index, row in df.iterrows():
+        print(f"{row['Date']} {row['Value (kWh)']}")
+
+generate_electricity_data(1206)
+```
+
+This script generates synthetic electricity consumption data at 1-hour intervals. The `current_month` variable tracks which month of the year it currently is to determine if the date falls within a summer or winter month.
+
+You can run this code and it will generate output for one building with `building_id = 1206`.

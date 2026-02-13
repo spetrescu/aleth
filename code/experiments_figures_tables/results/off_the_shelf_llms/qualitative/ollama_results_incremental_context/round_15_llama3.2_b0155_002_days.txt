@@ -1,0 +1,66 @@
+import random
+import datetime
+
+# Define constants
+YEAR = 2016
+BUILDING_ID = 155
+PRIMARY_USE = "Office"
+SQUARE_FEET = 51688
+YEARS = [2016]
+WEEKLY_MEAN_KWH = {
+    'Jun': summer_mean_kwh,
+    'Jul': random.uniform(summer_mean_kwh-1, summer_mean_kwh+1),
+    'Aug': summer_mean_kwh,
+}
+
+# Define the date range and time intervals
+START_DATE = datetime.date(YEAR, 1, 1)
+END_DATE = datetime.date(YEAR, 12, 31)
+
+# Initialize lists to store data
+data = []
+time_intervals = [str(datetime.datetime(2016, i, 1).strftime('%Y-%m-%d %H:%M')) for i in range(48)]
+
+for week, time_interval in zip(WEEKLY_MEAN_KWH.keys(), time_intervals):
+    # Select the dates of the current week
+    start_date_week = (datetime.date(YEAR, week, 1) + datetime.timedelta(days=6)).strftime('%Y-%m-%d')
+    end_date_week = (datetime.date(YEAR, week, 7) - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
+    # Generate random values for the current week
+    total_kwh_week = sum([random.uniform(years[0]*YEARS[0]/8760, years[0]*YEARS[0]/8760+YEARS[0]*YEARS[0]/100) for _ in range(7)])
+    avg_kwh_week = total_kwh_week / 7
+
+    # Distribute the week's kwh across time intervals evenly
+    for i, date in enumerate([start_date_week, datetime.date(YEAR, week, 2), datetime.date(YEAR, week, 3),
+                             datetime.date(YEAR, week, 4), datetime.date(YEAR, week, 5), datetime.date(YEAR, week, 6)]):
+        data.append(f"{date},{avg_kwh_week}")
+
+    # Generate random values for the current month
+    total_kwh_month = sum([random.uniform(years[0]*YEARS[0]/12*4, years[0]*YEARS[0]/12*4+YEARS[0]*YEARS[0]/100) for _ in range(30)])
+    avg_kwh_month = total_kwh_month / 30
+
+    # Distribute the month's kwh across time intervals evenly
+    for i, date in enumerate([datetime.date(YEAR, week, 1), datetime.date(YEAR, week, 2),
+                             datetime.date(YEAR, week, 3), datetime.date(YEAR, week, 4),
+                             datetime.date(YEAR, week, 5), datetime.date(YEAR, week, 6),
+                             datetime.date(YEAR, week, 7), datetime.date(YEAR, week, 8),
+                             datetime.date(YEAR, week, 9), datetime.date(YEAR, week, 10),
+                             datetime.date(YEAR, week, 11), datetime.date(YEAR, week, 12)]):
+        data.append(f"{date},{avg_kwh_month}")
+
+    # Generate random values for the current day
+    total_kwh_day = sum([random.uniform(years[0]*YEARS[0]/365, years[0]*YEARS[0]/365+YEARS[0]*YEARS[0]/10000) for _ in range(7)])
+    avg_kwh_day = total_kwh_day / 7
+
+    # Distribute the day's kwh across time intervals evenly
+    for i, date in enumerate([datetime.date(YEAR, week, 1), datetime.date(YEAR, week, 2),
+                             datetime.date(YEAR, week, 3), datetime.date(YEAR, week, 4),
+                             datetime.date(YEAR, week, 5), datetime.date(YEAR, week, 6)]):
+        data.append(f"{date},{avg_kwh_day}")
+
+# Shuffle the list to ensure randomness
+random.shuffle(data)
+
+# Print the results
+for item in data:
+    print(item)

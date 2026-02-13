@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Constants
+building_id = 140
+primary_use = 'Office'
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Generate time series data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=3600)
+
+time_series_data = []
+for i in range(int((end_date - start_date).days)):
+    current_day = (start_date + timedelta(days=i)).date()
+    if current_day.month in [6, 7, 8]:  # Summer months
+        kwh_value = np.random.uniform(winter_mean_kwh * 0.9, summer_mean_kwh)
+    elif current_day.month in [12, 1, 2]:  # Winter months
+        kwh_value = np.random.uniform(winter_mean_kwh * 0.9, summer_mean_kwh)
+    else:  # Other months (spring and autumn)
+        kwh_value = np.random.uniform(yearly_mean_kwh * 0.8, yearly_mean_kwh * 1.2)
+
+    if kwh_value < yearly_min_kwh:
+        kwh_value = yearly_min_kwh
+    elif kwh_value > yearly_max_kwh:
+        kwh_value = yearly_max_kwh
+
+    # Round to two decimal places for kWh values
+    kwh_value = round(kwh_value, 2)
+
+    time_series_data.append((start_date + timedelta(days=i)).strftime('%Y-%m-%d %H:%M') + ', ' + str(kwh_value))
+
+# Print the result
+print('\n'.join(time_series_data))

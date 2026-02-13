@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Generate time series data
+start_date = '2016-01-01 00:00'
+end_date = '2016-12-31 23:59'
+
+def generate_consumption_data(start, end):
+    df = pd.DataFrame(index=pd.date_range(start=start, end=end, freq='H'))
+    
+    # Generate values based on yearly mean and min/max kWh
+    yearly_mean_kwh = 263.43817
+    yearly_min_kwh = 125.06
+    yearly_max_kwh = 479.897
+    
+    summer_mean_kwh = 263.8639
+    winter_mean_kwh = 250.41924
+
+    df['VALUE'] = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(df))
+    
+    # Adjust values for summer and winter months
+    summer_months = df[(df.index.month >= 6) & (df.index.month <= 8)]
+    winter_months = df[(df.index.month >= 12) & (df.index.month <= 2)]
+
+    summer_mean_kwh_adjusted = (summer_mean_kwh - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh)
+    winter_mean_kwh_adjusted = (winter_mean_kwh - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh)
+
+    df.loc[summer_months.index, 'VALUE'] *= summer_mean_kwh_adjusted
+    df.loc[winter_months.index, 'VALUE'] *= winter_mean_kwh_adjusted
+
+    return df
+
+# Generate data
+df = generate_consumption_data(start_date, end_date)
+
+# Print data
+for index, row in df.iterrows():
+    print(f"{index.date()} {row.name}: {row['VALUE']}")

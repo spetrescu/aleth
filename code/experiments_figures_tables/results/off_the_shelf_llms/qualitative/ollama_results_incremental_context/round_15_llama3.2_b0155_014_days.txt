@@ -1,0 +1,63 @@
+Here is a Python script that generates the electricity consumption data:
+
+```python
+import datetime
+import random
+
+# Define constants
+YEAR = 2016
+BUILDING_ID = 155
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 51688
+YEARLY_MEAN_KWH = 81.997604
+YEARLY_MIN_KWH = 23.5
+YEARLY_MAX_KWH = 159.0
+SUMMER_MEAN_KWH = 73.1753
+WINTER_MEAN_KWH = 91.38757
+HOURS_IN_YEAR = 8760
+
+# Define months and their corresponding season types (summer or winter)
+MONTHS = {
+    'Jan': {'season': 'winter', 'mean_kwh': WINTER_MEAN_KWH},
+    'Feb': {'season': 'winter', 'mean_kwh': WINTER_MEAN_KWH},
+    'Mar': {'season': 'spring', 'mean_kwh': (WINTER_MEAN_KWH + SUMMER_MEAN_KWH) / 2},
+    'Apr': {'season': 'spring', 'mean_kwh': (WINTER_MEAN_KWH + SUMMER_MEAN_KWH) / 2},
+    'May': {'season': 'spring', 'mean_kwh': SUMMER_MEAN_KWH},
+    'Jun': {'season': 'summer', 'mean_kwh': SUMMER_MEAN_KWH},
+    'Jul': {'season': 'summer', 'mean_kwh': SUMMER_MEAN_KWH},
+    'Aug': {'season': 'summer', 'mean_kwh': SUMMER_MEAN_KWH},
+    'Sep': {'season': 'autumn', 'mean_kwh': (SUMMER_MEAN_KWH + WINTER_MEAN_KWH) / 2},
+    'Oct': {'season': 'autumn', 'mean_kwh': (SUMMER_MEAN_KWH + WINTER_MEAN_KWH) / 2},
+    'Nov': {'season': 'autumn', 'mean_kwh': WINTER_MEAN_KWH},
+    'Dec': {'season': 'winter', 'mean_kwh': WINTER_MEAN_KWH}
+}
+
+# Generate data
+for hour in range(HOURS_IN_YEAR):
+    date = datetime.date(YEAR, 1, 1) + datetime.timedelta(hours=hour)
+    month = date.strftime('%b')
+    
+    if (month == 'Jun' or month == 'Jul' or month == 'Aug') and 'summer' in MONTHS[month]['season']:
+        kwh = random.gauss(MONTHS[month]['mean_kwh'], 10) * 0.9
+        if kwh < YEARLY_MIN_KWH:
+            kwh = YEARLY_MIN_KWH
+        elif kwh > YEARLY_MAX_KWH:
+            kwh = YEARLY_MAX_KWH
+    elif (month == 'Dec' or month == 'Jan' or month == 'Feb') and 'winter' in MONTHS[month]['season']:
+        kwh = random.gauss(MONTHS[month]['mean_kwh'], 10) * 0.9
+        if kwh < YEARLY_MIN_KWH:
+            kwh = YEARLY_MIN_KWH
+        elif kwh > YEARLY_MAX_KWH:
+            kwh = YEARLY_MAX_KWH
+    else:
+        kwh = random.gauss(YEARLY_MEAN_KWH, 10) * 0.9
+    
+    if month in MONTHS and 'spring' in MONTHS[month]['season']:
+        kwh = (kwh + SUMMER_MEAN_KWH + WINTER_MEAN_KWH) / 3
+    elif month in MONTHS and 'autumn' in MONTHS[month]['season']:
+        kwh = (kwh + SUMMER_MEAN_KWH + WINTER_MEAN_KWH) / 3
+
+    print(f"{date.strftime('%Y-%m-%d')} {str(hour).zfill(2)},{kwh:.8f}")
+```
+
+This script will generate exactly 336 lines of data, with values consistent with the provided summary statistics.

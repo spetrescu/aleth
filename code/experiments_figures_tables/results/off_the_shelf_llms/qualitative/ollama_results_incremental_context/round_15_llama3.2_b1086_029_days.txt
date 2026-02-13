@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define parameters
+building_id = 1086
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Generate dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=696*24)
+
+# Initialize list to store readings
+readings = []
+
+# Loop through each day
+for n in range(int((end_date - start_date).days)):
+    # Calculate the mean kwh for this hour
+    if (start_date + timedelta(days=n)).month >= 6:
+        mean_kwh = summer_mean_kwh * np.random.uniform(0.9,1.1)
+    elif (start_date + timedelta(days=n)).month >= 3:
+        mean_kwh = winter_mean_kwh * np.random.uniform(0.9,1.1)
+    else:
+        mean_kwh = yearly_mean_kwh * np.random.uniform(0.9,1.1)
+
+    # Add readings for this hour
+    for _ in range(24):
+        reading = int(mean_kwh + (yearly_min_kwh - mean_kwh) * np.random.uniform(-1, 1))
+        if reading > yearly_max_kwh:
+            reading = yearly_max_kwh
+        elif reading < yearly_min_kwh:
+            reading = yearly_min_kwh
+        readings.append((start_date + timedelta(days=n), f"{reading:.4f}")
+
+# Print out the dataset
+for line in readings:
+    print(f"{line[0].strftime('%Y-%m-%d %H:%M')},{line[1]}")

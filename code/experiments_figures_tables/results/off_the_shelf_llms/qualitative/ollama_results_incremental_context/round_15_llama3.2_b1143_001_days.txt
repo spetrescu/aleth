@@ -1,0 +1,63 @@
+Here's how you can generate synthetic building electricity meter readings in Python:
+
+```python
+import datetime
+import random
+
+def generate_electricity_data(building_id, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                              summer_mean_kwh, winter_mean_kwh):
+    """
+    Generates synthetic electricity data at 1-hour intervals.
+
+    Args:
+        building_id (int): Unique identifier for the building.
+        yearly_mean_kwh (float): Average electricity consumption in kWh/year.
+        yearly_min_kwh (float): Minimum electricity consumption in kWh/year.
+        yearly_max_kwh (float): Maximum electricity consumption in kWh/year.
+        summer_mean_kwh (float): Average electricity consumption during summer months in kWh.
+        winter_mean_kwh (float): Average electricity consumption during winter months in kWh.
+
+    Returns:
+        list: List of strings representing the synthetic electricity data.
+    """
+
+    data = []
+
+    # Generate 24 measurements
+    for i in range(24):
+        date = datetime.datetime(2016, 1 + i * 3, 1)
+        
+        if (date.month >= 6) and (date.month <= 8):  # Summer months
+            consumption = round(summer_mean_kwh + random.uniform(-5, 5), 3)
+        else:  # Winter months
+            consumption = round(winter_mean_kwh + random.uniform(-5, 5), 3)
+
+        # Ensure value is within valid range
+        consumption = min(max(consumption, yearly_min_kwh), yearly_max_kwh)
+
+        data.append(f"{date.strftime('%Y-%m-%d %H:%M')}, {consumption}")
+
+    return data
+
+# Usage
+building_id = 1143
+yearly_mean_kwh = 79.257515
+yearly_min_kwh = 25.0
+yearly_max_kwh = 187.0
+summer_mean_kwh = 85.378174
+winter_mean_kwh = 74.83288
+
+data = generate_electricity_data(building_id, yearly_mean_kwh, yearly_min_kwh,
+                                 yearly_max_kwh, summer_mean_kwh, winter_mean_kwh)
+
+for line in data:
+    print(line)
+```
+
+In this script, we first define a function `generate_electricity_data` that generates the synthetic electricity data. It takes in all the required parameters and returns a list of strings representing the synthetic electricity data.
+
+Inside the function, we generate 24 measurements by iterating over the months from January to December. For each month, we check if it's summer or winter. If it's summer, we generate a consumption value that is approximately equal to `summer_mean_kwh` plus some random variation between -5 and 5 kWh.
+
+We then ensure that the generated consumption value is within the valid range of `yearly_min_kwh` to `yearly_max_kwh`.
+
+Finally, we print out each line of data in the required format.

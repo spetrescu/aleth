@@ -1,0 +1,34 @@
+import random
+from datetime import datetime, timedelta
+
+# Set up the start date and end date
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+# Calculate the total number of hours in a year
+hours_in_year = 8760
+
+# Generate the electricity consumption data for each hour
+for i in range(hours_in_year):
+    # Convert the current date to a datetime object
+    current_date = start_date + str(i)
+    # Convert the current date string to a datetime object
+    dt = datetime.strptime(current_date, '%Y-%m-%d')
+
+    # Randomly select whether it's summer or winter based on the month
+    if (dt.month >= 6 and dt.month <= 8) or \
+       (dt.month == 12):
+        consumption = round(random.uniform(325, 415), 3)
+    elif (dt.month >= 10 and dt.month <= 11):
+        consumption = round(random.uniform(315, 405), 3)
+    else:
+        consumption = round(random.uniform(365, 375), 3)
+
+    # Ensure the value is within the allowed range
+    if consumption < yearly_min_kwh:
+        consumption = yearly_min_kwh
+    elif consumption > yearly_max_kwh:
+        consumption = yearly_max_kwh
+
+    # Print the current hour's consumption
+    print(f'{dt.strftime("%Y-%m-%d %H:%M")},{consumption:.4f}')

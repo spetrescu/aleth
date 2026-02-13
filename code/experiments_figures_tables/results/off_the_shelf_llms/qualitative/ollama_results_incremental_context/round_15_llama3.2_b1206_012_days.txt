@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata
+building_id = 1206
+primary_use = "Office"
+square_feet = 99946
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate date range for 288 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=288 - 1)  # Subtract one day since dates are inclusive
+dates = [start_date + timedelta(days=i) for i in range(int((end_date-start_date).days)+1)]
+
+# Initialize lists to hold data
+values = []
+seasons = ['Jun', 'Jul', 'Aug'] + ['Dec', 'Jan', 'Feb']
+
+for date in dates:
+    month = date.strftime('%b')
+    if month in seasons:
+        kwh = summer_mean_kwh
+    elif month == 'Feb':
+        kwh = winter_mean_kwh
+    else:
+        kwh = yearly_mean_kwh
+    
+    # Introduce some variation to make the data more realistic
+    kwh += np.random.uniform(-0.5, 0.5)
+    
+    # Ensure values are within valid range
+    if kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    elif kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+        
+    values.append(round(kwh, 6))
+
+# Create dataset as a list of strings
+dataset = [f"{date.strftime('%Y-%m-%d %H:%M')},{value}" for date, value in zip(dates, values)]
+
+print('\n'.join(dataset))

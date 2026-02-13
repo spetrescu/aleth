@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Initialize lists to hold the data
+start_date = '2016-01-01 00:00'
+end_date = start_date
+dates = [start_date]
+values = []
+
+while len(dates) < 696:
+    # Calculate next date
+    end_date = max(pd.to_datetime(end_date, format='%Y-%m-%d %H:%M'), 
+                   pd.to_datetime(start_date, format='%Y-%m-%d %H:%M') + timedelta(hours=1))
+    
+    if end_date > '2016-12-31 23:59':
+        end_date = '2016-12-31 23:59'
+    
+    # Calculate date range
+    current_start = pd.to_datetime(start_date, format='%Y-%m-%d %H:%M')
+    current_end = pd.to_datetime(end_date, format='%Y-%m-%d %H:%M')
+
+    for n in np.arange(current_start, current_end, timedelta(hours=1)):
+        # Randomly select a value based on the usage patterns
+        if n.month in [6, 7, 8]:  # Summer months
+            val = np.random.uniform(37.0, 47.0)  # around summer_mean_kwh
+        elif n.month in [12, 1, 2]:  # Winter months
+            val = np.random.uniform(44.0, 54.0)  # around winter_mean_kwh
+        else:
+            val = np.random.uniform(40.0, 50.0)  # near yearly_mean_kwh
+        
+        if val < yearly_min_kwh or val > yearly_max_kwh: 
+            continue
+
+        values.append(val)
+
+    start_date = end_date
+
+# Generate the final output
+output = []
+for i in range(len(dates)):
+    output.append(f"{dates[i].strftime('%Y-%m-%d %H:%M')} {values[i]}")
+
+print(output[:696])

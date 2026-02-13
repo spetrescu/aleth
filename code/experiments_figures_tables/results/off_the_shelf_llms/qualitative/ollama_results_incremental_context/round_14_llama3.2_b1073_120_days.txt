@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Define building metadata and summary statistics
+building_id = 1073
+primary_use = "Office"
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Generate date range for 2880 measurements
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + timedelta(days=2880*24)
+date_range = pd.date_range(start=start_date, end=end_date)
+
+# Initialize lists to store measurement data and time stamps
+measurement_data = []
+time_stamps = []
+
+# Loop through each day in the date range
+for i, dt in enumerate(date_range):
+    # Determine if it's a summer or winter month
+    if (dt.month >= 6) & (dt.month <= 8):  # June to August
+        avg_kwh = summer_mean_kwh
+    elif (dt.month >= 12) | (dt.month <= 2):  # December to February
+        avg_kwh = winter_mean_kwh
+    else:  # March to May and September to November
+        avg_kwh = yearly_mean_kwh
+    
+    # Generate random fluctuations around the average value
+    kwh = avg_kwh + np.random.normal(0, 10)
+    
+    # Ensure values are within valid range
+    if kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    elif kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+    
+    # Append time stamp and measurement data to lists
+    time_stamps.append(dt.strftime('%Y-%m-%d %H:%M'))
+    measurement_data.append(kwh)
+
+# Print the electricity consumption data
+for i in range(len(measurement_data)):
+    print(f"{time_stamps[i]},{measurement_data[i]}")

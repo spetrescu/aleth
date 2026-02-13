@@ -1,0 +1,17 @@
+import random
+from datetime import timedelta, datetime
+
+# Initialize lists to store values and dates
+values = []
+dates = []
+
+# Generate dates for 360 hours starting from 01 January 2016
+start_date = datetime(2016, 1, 1)
+for _ in range(360):
+    current_date = start_date + timedelta(hours=random.randint(0, 23), minutes=random.randint(0, 59))
+    values.append(round(random.uniform(yearly_mean_kwh * 0.8, yearly_mean_kwh * 1.2), 3))  # Random value within 20% of mean
+    dates.append(current_date.strftime('%Y-%m-%d %H:%M'))
+
+# Print the generated data in the required format
+for date, value in zip(dates, values):
+    print(f"{date}, {value}")

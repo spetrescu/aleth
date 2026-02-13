@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Define parameters
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Define time intervals
+hours_in_year = 8760
+hourly_intervals = 360
+
+# Create a date range for the first 360 hours of the year
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=hourly_intervals)
+
+# Initialize an empty list to store the data
+data = []
+
+for hour in range(hourly_intervals):
+    current_date = start_date + timedelta(hours=hour)
+    
+    # Randomly select a value between yearly_min_kwh and yearly_max_kwh with 90% probability,
+    # or summer_mean_kwh (with 80% probability) if the date is within Jun-Aug, 
+    # or winter_mean_kwh (with 20% probability) if the date is within Dec-Feb.
+    if current_date.month in [6, 7, 8] and current_date.year == 2016:
+        value = np.random.normal(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh)
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    elif (current_date.month in [12, 1, 2] and current_date.year == 2016):
+        value = np.random.normal(winter_mean_kwh, yearly_max_kwh - winter_mean_kwh)
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    else:
+        value = np.random.normal(yearly_mean_kwh, yearly_max_kwh - yearly_mean_kwh)
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    # Append the data to the list
+    data.append((current_date.strftime("%Y-%m-%d %H:%M"), round(value, 3)))
+
+# Print the data in the required format
+for date, value in data:
+    print(f"{date}, {value}")

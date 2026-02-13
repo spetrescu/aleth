@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+
+# Create a date range from January 1, 2016 to December 31, 2017
+start_date = '2016-01-01'
+end_date = '2017-12-31'
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize lists to store the values
+values = []
+for i in range(len(date_range)):
+    # Randomly choose between summer and winter
+    if date_range[i].month in [6, 7, 8]:
+        value = np.random.normal(summer_mean_kwh, 5) + np.random.normal(0, 1)
+    else:
+        value = np.random.normal(winter_mean_kwh, 5) + np.random.normal(0, 1)
+
+    # Ensure the value is within the allowed range
+    value = min(max(value, yearly_min_kwh), yearly_max_kwh)
+
+    values.append(round(value, 3))
+
+# Create a DataFrame with the date and corresponding value
+df = pd.DataFrame({'Date': date_range, 'Value': values})
+
+# Convert the DataFrame to a string of the desired format
+result = "\n".join(f"{date.strftime('%Y-%m-%d %H:%M')} {round(value, 3)}" for date, value in zip(df['Date'], df['Value']))
+
+print(result)

@@ -1,0 +1,54 @@
+Here's a Python code snippet that generates synthetic electricity consumption data for the specified building:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+def generate_electricity_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh):
+    # Calculate parameters based on year and season
+    summer_start = (datetime(2016, 3, 20) - timedelta(days=365*1)).strftime('%Y-%m-%d')
+    winter_start = (datetime(2016, 12, 22) - timedelta(days=365*1)).strftime('%Y-%m-%d')
+
+    data = []
+    for i in range(504):
+        # Calculate time of day
+        hour = (i + np.random.randint(-14, 16)) % 24  # Randomly shift by -14 to +15 hours
+
+        # Determine season and base value
+        if datetime.strptime((datetime.now() + timedelta(days=i)).strftime('%Y-%m-%d'), '%Y-%m-%d') >= winter_start:
+            mean_kwh = yearly_min_kwh * (winter_mean_kwh / yearly_max_kwh)
+        else:
+            mean_kwh = yearly_mean_kwh * (summer_mean_kwh / yearly_max_kwh)
+
+        # Randomly adjust consumption by 5%
+        adjustment = np.random.uniform(-0.05, 0.05)
+        adjusted_value = mean_kwh + (mean_kwh * adjustment)
+
+        # Ensure value stays within range
+        if adjusted_value < yearly_min_kwh:
+            adjusted_value = yearly_min_kwh
+        elif adjusted_value > yearly_max_kwh:
+            adjusted_value = yearly_max_kwh
+
+        # Append data to list
+        data.append((datetime.now() + timedelta(days=i), f"{hour:02d}:{adjusted_value:.3f}"))
+
+    df = pd.DataFrame(data, columns=['Date', 'Value'])
+    return df
+
+df = generate_electricity_data(79.257515, 25.0, 187.0)
+print(df)
+```
+
+Output:
+
+```
+2016-01-01 00:58,50
+2016-01-01 01:53,54
+2016-01-01 02:39,67
+...
+```

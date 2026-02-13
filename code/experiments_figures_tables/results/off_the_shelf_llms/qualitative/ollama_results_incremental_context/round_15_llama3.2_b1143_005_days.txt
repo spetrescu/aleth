@@ -1,0 +1,51 @@
+import random
+from datetime import datetime, timedelta
+
+def generate_electricity_consumption_data(building_id):
+    # Calculate hourly consumption averages for each month of the year
+    summer_mean_kwh = 85.378174 / 3  # Average over 3 months (Jun-Aug)
+    winter_mean_kwh = 74.83288 / 3   # Average over 3 months (Dec-Feb)
+
+    hourly_consumption_summer = [summer_mean_kwh] * 36
+    hourly_consumption_winter = [winter_mean_kwh] * 18
+
+    # Randomly add some variation to the consumption data
+    for hour in range(len(hourly_consumption_summer)):
+        if random.random() < 0.05:
+            hourly_consumption_summer[hour] += random.uniform(-1, 1)
+        if random.random() < 0.05:
+            hourly_consumption_winter[hour] += random.uniform(-1, 1)
+
+    # Scale the consumption averages to match the yearly mean kWh
+    scaled_hourly_consumption = []
+    for hour in range(24):
+        if (hour + datetime.now().month - 7) % 12 == 0:  # Summer months
+            scaled_hourly_consumption.append(hourly_consumption_summer.pop())
+        else:
+            scaled_hourly_consumption.append(hourly_consumption_winter.pop())
+
+    for _ in range(16):  # Fill the rest of the data with this hourly value
+        scaled_hourly_consumption.append(scaled_hourly_consumption[0])
+
+    return scaled_hourly_consumption
+
+# Generate the electricity consumption data
+building_id = 1143
+consumption_data = generate_electricity_consumption_data(building_id)
+
+# Create a list to store the final output lines
+output_lines = []
+
+# Calculate the actual hourly values and round them to two decimal places
+for hour in range(120):
+    day_of_year = (hour + 1) % 365.25
+    month = int(day_of_year * 30)
+    day = int((day_of_year - month * 30) * 30)
+    if (month + 6) % 12 == 0:  # Summer months
+        value = round(consumption_data[day] * (85.378174 / 36), 2)
+    else:
+        value = round(consumption_data[day] * (74.83288 / 18), 2)
+
+    output_lines.append(f"{datetime(2016, month, day).strftime('%Y-%m-%d %H:%M')}, {value}")
+
+print('\n'.join(output_lines))

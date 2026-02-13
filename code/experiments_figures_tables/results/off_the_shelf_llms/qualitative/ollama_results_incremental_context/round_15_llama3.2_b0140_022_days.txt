@@ -1,0 +1,69 @@
+Here's a Python script using pandas and numpy to generate random electricity consumption data that meets the given constraints:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Constants
+BUILDING_ID = 140
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 50020
+YEARLY_MEAN_KWH = 31.697405
+YEARLY_MIN_KWH = 8.0204
+YEARLY_MAX_KWH = 61.0
+SUMMER_MEAN_KWH = 32.27265
+WINTER_MEAN_KWH = 30.24863
+MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+HOURS_IN_DAY = 24
+
+# Function to generate random electricity consumption data
+def generate_electricity_data(start_date, end_date):
+    # Calculate total hours in the period
+    total_hours = (end_date - start_date).total_seconds() / 3600
+    
+    # Calculate the number of summer and winter months
+    num_summer_months = sum(1 for month in MONTHS if month in ['Jun', 'Jul', 'Aug'])
+    num_winter_months = sum(1 for month in MONTHS if month in ['Dec', 'Jan', 'Feb'])
+    
+    # Generate random values
+    data = []
+    start_date_copy = start_date
+    
+    for _ in range(int(total_hours)):
+        hour = (start_date_copy - datetime.strptime(start_date, '%Y-%m-%d')) + timedelta(hours=1)
+        
+        # Randomly select a month and adjust the consumption accordingly
+        if random.random() < 0.5:
+            consumption = round(YEARLY_MEAN_KWH * random.uniform(0.9, 1.1), 4)  
+            month_str = ''
+        else:
+            consumption = round(WINTER_MEAN_KWH * random.uniform(0.9, 1.1), 4)
+            if hour.month in ['12', '01', '02']:
+                month_str = 'Winter'
+            else:
+                month_str = 'Summer'
+        
+        # Ensure value is within the valid range
+        consumption = max(YEARLY_MIN_KWH, min(consumption, YEARLY_MAX_KWH))
+        
+        # Format date and value as required
+        formatted_date = hour.strftime('%Y-%m-%d %H:%M')
+        formatted_value = f"{formatted_date}, {consumption:.4f}"
+        
+        data.append(formatted_value)
+        
+        start_date_copy += timedelta(hours=1)
+
+    return data
+
+# Generate the electricity consumption data
+start_date = '2016-01-01'
+end_date = '2017-12-31'
+
+data = generate_electricity_data(start_date, end_date)
+print('\n'.join(data))
+```
+
+The `generate_electricity_data` function generates random electricity consumption values at 1-hour intervals for the specified period. The values are randomly selected from a range that is uniformly distributed around the mean value, with a minimum and maximum of 8.02 kWh and 61.0 kWh respectively.

@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set the seed for reproducibility
+np.random.seed(42)
+
+# Define the building metadata and annual summary statistics
+building_id = 1073
+primary_use = 'Office'
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Calculate the time interval and duration of the measurements
+interval_duration = 1 / 720  # 1 hour measurement interval
+duration = int(720 * interval_duration)  # Duration in seconds
+
+# Initialize an empty list to store the electricity consumption data
+data = []
+
+# Loop through each second in the specified duration
+for t in np.arange(0, duration, interval_duration):
+    # Convert the time to a datetime object
+    dt = datetime(2016, 1, 1) + timedelta(seconds=t)
+
+    # Generate random values around the yearly_mean_kwh value within the allowed range
+    if (dt.month >= 6 and dt.month <= 8) or (dt.month >= 12 and dt.month <= 2):
+        kwh = np.random.normal(summer_mean_kwh, 10)
+    else:
+        kwh = np.random.normal(yearly_mean_kwh, 20)
+
+    # Ensure the generated value is within the allowed range
+    kwh = max(yearly_min_kwh, min(kwh, yearly_max_kwh))
+
+    # Append the data to the list
+    data.append(f"{dt.strftime('%Y-%m-%d %H:%M')} {kwh:.6f}")
+
+# Print the electricity consumption data
+print('\n'.join(data))

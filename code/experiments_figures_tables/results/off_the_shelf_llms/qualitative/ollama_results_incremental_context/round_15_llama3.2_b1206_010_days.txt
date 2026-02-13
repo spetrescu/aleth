@@ -1,0 +1,36 @@
+import random
+from datetime import datetime, timedelta, date
+
+def generate_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh, 
+                 summer_mean_kwh, winter_mean_kwh, start_date):
+    data = []
+    
+    current_month = 1
+    while len(data) < 240:
+        start_time = start_date
+        if current_month in [6,7,8]:
+            mean_kwh = summer_mean_kwh
+        else:
+            mean_kwh = yearly_mean_kwh
+
+        for hour in range(24):
+            value = round(random.uniform(mean_kwh - (mean_kwh*0.05), mean_kwh + (mean_kwh*0.05)),2)
+            data.append(f"{start_time.strftime('%Y-%m-%d')} {start_time.strftime('%H:%M')},{value}")
+            
+            start_time += timedelta(hours=1)
+        
+        if current_month in [6,7,8]:
+            summer_mean_kwh = round(random.uniform(summer_mean_kwh - (summer_mean_kwh*0.05), summer_mean_kwh + (summer_mean_kwh*0.05)),2)
+        else:
+            yearly_mean_kwh = round(random.uniform(yearly_mean_kwh - (yearly_mean_kwh*0.05), yearly_mean_kwh + (yearly_mean_kwh*0.05)),2)
+
+        current_month = (current_month % 12) + 1
+
+    return data
+
+start_date = date(2016, 1, 1)
+data = generate_data(yearly_mean_kwh=87.59102, yearly_min_kwh=0.0, yearly_max_kwh=153.733,
+                     summer_mean_kwh=88.61049, winter_mean_kwh=91.04132, start_date=start_date)
+
+for line in data:
+    print(line)

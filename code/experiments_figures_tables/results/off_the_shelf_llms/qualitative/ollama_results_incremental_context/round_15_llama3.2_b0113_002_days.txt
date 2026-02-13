@@ -1,0 +1,53 @@
+Here's a Python code snippet to generate synthetic electricity consumption data for the given building:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 113
+primary_use = "Education"
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 48 measurements.
+def generate_electricity_data():
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=46)  # Generate 47 days' worth of data
+
+    data = []
+    current_date = start_date
+    daily_mean_kwh = random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+    while current_date < end_date:
+        if (current_date.month in [6, 7, 8]) and random.random() < 0.5:  # Summer months
+            hourly_value = summer_mean_kwh * random.random()
+        else:
+            hourly_value = daily_mean_kwh * random.random()
+
+        # Ensure the value stays within the limits
+        if hourly_value > yearly_max_kwh:
+            hourly_value = yearly_max_kwh + (hourly_value - yearly_max_kwh) * (
+                1 - random.uniform(0, 0.2)
+            )
+        elif hourly_value < yearly_min_kwh:
+            hourly_value = yearly_min_kwh + (hourly_value - yearly_min_kwh) * (
+                1 - random.uniform(0, 0.2)
+            )
+
+        data.append(f"{current_date.strftime('%Y-%m-%d')}, {int(hourly_value)}")
+
+        current_date += timedelta(hours=1)
+
+    return "\n".join(data)
+
+
+print(generate_electricity_data())
+```
+
+This script generates a synthetic dataset of electricity consumption at 1-hour intervals, with values near the building's mean annual consumption. The data is realistic and stays within the specified limits for yearly minimum and maximum kWh. The summer months have an average around the specified `summer_mean_kwh`, while the winter months are closer to `winter_mean_kwh`.

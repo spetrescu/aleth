@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define dates and hours
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+hours = range(0, 288)
+
+# Create a date range with the specified interval (1 hour)
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Generate summer and winter months
+summer_months = ['2016-06', '2016-07', '2016-08']
+winter_months = ['2016-12', '2016-01', '2016-02']
+
+# Initialize arrays to store consumption values and corresponding month information
+consumption_values = np.zeros(len(hours), dtype=float)
+month_type = np.empty(len(hours), dtype=str)
+
+# Fill in the values for each hour
+for i, date in enumerate(date_range):
+    if date.strftime('%m') in summer_months:
+        # Generate a random value around summer_mean_kwh
+        consumption_values[i] = np.random.uniform(summer_mean_kwh - 10, summer_mean_kwh + 10)
+        month_type[i] = 'Summer'
+    elif date.strftime('%m') in winter_months:
+        # Generate a random value around winter_mean_kwh
+        consumption_values[i] = np.random.uniform(winter_mean_kwh - 10, winter_mean_kwh + 10)
+        month_type[i] = 'Winter'
+    else:
+        # Fill in the rest with yearly_mean_kwh
+        consumption_values[i] = yearly_mean_kwh
+
+# Ensure that values never go below yearly_min_kwh or above yearly_max_kwh
+consumption_values = np.clip(consumption_values, yearly_min_kwh, yearly_max_kwh)
+
+# Create a list of lines in the required format
+lines = [f'{date.strftime("%Y-%m-%d %H:%M")}, {value:.2f}' for date, value in zip(date_range, consumption_values)]
+
+print('\n'.join(lines))

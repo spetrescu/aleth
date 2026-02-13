@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Define time range and interval
+start_date = '2016-01-01'
+end_date = '2016-08-31'
+interval_hours = 1
+
+# Calculate total hours in the interval
+total_hours = (pd.to_datetime(end_date) - pd.to_datetime(start_date)).days * 24 + 2
+
+# Create a date range with the given time interval
+date_range = pd.date_range(start=start_date, end=end_date, freq=f'{interval_hours}h')
+
+# Calculate the mean and standard deviation of the yearly consumption
+yearly_mean_kwh = 234.75676
+std_dev = (591 - 0.0405) / 2
+
+# Create a DataFrame with random values that follow a normal distribution around the mean consumption
+df = pd.DataFrame({
+    'date': date_range,
+    'kWh': np.random.normal(yearly_mean_kwh, std_dev, total_hours)
+})
+
+# Ensure values are within valid range
+df['kWh'] = np.clip(df['kWh'], 0.0405, 591)
+
+# Split the DataFrame into summer and winter months
+summer_months = df[(df['date'].dt.month >= 6) & (df['date'].dt.month <= 8)]
+winter_months = df[(df['date'].dt.month >= 12) & (df['date'].dt.month <= 2)]
+
+# Adjust the mean consumption for summer and winter months
+summer_mean_kwh = 212.6387
+winter_mean_kwh = 265.17035
+
+# Interpolate between the summer and winter means to create a more realistic pattern
+df.loc[(df['date'].dt.month >= 6) & (df['date'].dt.month <= 8), 'kWh'] = summer_mean_kwh + np.random.normal(0, std_dev/2, len(df.loc[(df['date'].dt.month >= 6) & (df['date'].dt.month <= 8)]))
+df.loc[(df['date'].dt.month >= 12) & (df['date'].dt.month <= 2), 'kWh'] = winter_mean_kwh + np.random.normal(0, std_dev/2, len(df.loc[(df['date'].dt.month >= 12) & (df['date'].dt.month <= 2)]))
+
+# Round the values to 4 decimal places for readability
+df['kWh'] = df['kWh'].round(4)
+
+# Print the output
+for index, row in df.iterrows():
+    print(f'{row["date"]}, {row["kWh"]}')

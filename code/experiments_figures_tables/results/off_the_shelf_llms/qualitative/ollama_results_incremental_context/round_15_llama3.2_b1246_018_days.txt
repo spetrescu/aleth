@@ -1,0 +1,43 @@
+import pandas as pd
+from datetime import timedelta, datetime
+import random
+
+# Define constants
+BUILDING_ID = 1246
+PRIMARY_USE = 'Office'
+SQUARE_FEET = 50327
+YEARLY_MEAN_KWH = 46.317394
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 82.0
+SUMMER_MEAN_KWH = 42.024456
+WINTER_MEAN_KWH = 46.382324
+
+# Generate time series data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=432*365)
+
+dates = []
+values = []
+
+current_mean_kwh = YEARLY_MEAN_KWH
+
+for n in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(n)
+    if date.month in [6, 7, 8]: # Summer months
+        current_mean_kwh = SUMMER_MEAN_KWH
+    elif date.month in [12, 1, 2]: # Winter months
+        current_mean_kwh = WINTER_MEAN_KWH
+    
+    value = round(random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH), 3)
+    if random.random() < 0.9: # 90% chance of the value being the mean
+        value = int(current_mean_kwh * 100) / 100
+
+    dates.append(date.strftime('%Y-%m-%d %H:%M'))
+    values.append(value)
+
+# Create DataFrame
+df = pd.DataFrame({'Date': dates, 'Value': values})
+
+# Print DataFrame
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Value']}")

@@ -1,0 +1,52 @@
+Here is a Python script to generate the synthetic electricity consumption data:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+import random
+
+# Constants
+BUILDING_ID = 1135
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 150393
+YEARLY_MEAN_KWH = 263.43817
+YEARLY_MIN_KWH = 125.06
+YEARLY_MAX_KWH = 479.897
+SUMMER_MEAN_KWH = 263.8639
+WINTER_MEAN_KWH = 250.41924
+
+# Function to generate synthetic data
+def generate_data(start_date, end_date):
+    data = []
+    current_date = start_date
+    for _ in range(2880):  # 2880 measurements
+        date_str = current_date.strftime('%Y-%m-%d')
+        hour_str = current_date.strftime('%H:00')  # Only consider hours starting from midnight
+
+        if current_date.month in [6, 7, 8]:  # Summer months
+            value = round(random.gauss(SUMMER_MEAN_KWH, 10), 3)  # Randomly deviate by 10% around summer_mean_kwh
+        else:  # Winter months
+            value = round(random.gauss(WINTER_MEAN_KWH, 10), 3)  # Randomly deviate by 10% around winter_mean_kwh
+
+        if yearnly_min_kwh < value or yearnly_max_kwh > value:
+            continue
+
+        data.append((date_str + ' ' + hour_str, value))
+
+        current_date += timedelta(hours=1)
+    return pd.DataFrame(data, columns=['Date', 'Consumption (kWh)'])
+
+# Generate and print synthetic data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365 * 2)  # Two years
+
+df = generate_data(start_date, end_date)
+
+for index, row in df.iterrows():
+    print(f'{row["Date"]}, {row["Consumption (kWh)"]}')
+```
+
+Please note that the values are randomly generated and may not exactly match the summary statistics. Also, this script only generates data for 2016; if you want to generate data for other years or months as well, you'll need to modify it accordingly.
+
+Finally, please be aware that generating synthetic electricity consumption data should be done responsibly, taking into account real-world energy usage patterns and avoiding misleading information.

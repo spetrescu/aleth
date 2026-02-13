@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define constants
+building_id = 1135
+primary_use = 'Education'
+square_feet = 150393
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Initialize output data
+data = []
+
+# Function to generate random consumption value within specified range
+def generate_random_consumption():
+    return np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+# Generate electricity consumption data for each hour of the day
+for _ in range(264):
+    date = datetime.strptime('2016-01-01', '%Y-%m-%d')
+    while len(data) < 86400:
+        # Check if within summer or winter months and set mean accordingly
+        if (date.month >= 6 and date.month <= 8) or (date.month >= 12 and date.month <= 2):
+            consumption = np.random.normal(summer_mean_kwh, yearly_min_kwh/5)
+        else:
+            consumption = np.random.normal(yearly_mean_kwh, yearly_min_kwh / 5)
+
+        # Ensure the generated value falls within the allowed range
+        while consumption < yearly_min_kwh or consumption > yearly_max_kwh:
+            consumption = generate_random_consumption()
+
+        data.append(f'{date.strftime("%Y-%m-%d")}, {consumption:.4f}')
+
+        date += timedelta(hours=1)
+
+    # Move to next year if all hours have been filled
+    if (data[-1].split(',')[0]).startswith('2017'):
+        date = datetime.strptime('2016-01-01', '%Y-%m-%d')
+
+# Print output data
+print('\n'.join(data))

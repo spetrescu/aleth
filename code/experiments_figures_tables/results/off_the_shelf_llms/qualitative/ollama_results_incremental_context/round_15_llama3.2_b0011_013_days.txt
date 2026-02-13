@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Constants for the year and time intervals
+year = 2016
+interval_hours = 1
+
+# Generate time array with desired length (312 measurements)
+start_date = datetime(year, 1, 1)
+end_date = start_date + timedelta(hours=interval_hours*312-1)
+time_array = pd.date_range(start=start_date, end=end_date, freq=f'{interval_hours}H')
+
+# Create a DataFrame to hold the data
+df = pd.DataFrame(columns=['Date', 'Value'])
+
+# Function to generate random values within range
+def gen_random_value(min_val, max_val):
+    return min_val + (max_val - min_val) * np.random.rand()
+
+# Generate data for each hour
+for time in time_array:
+    # Convert date object to string
+    dt = time.strftime('%Y-%m-%d %H:%M')
+    
+    # Randomly select between summer and winter means
+    if (time.month >= 6) & (time.month <= 8):
+        mean_val = 486.43784
+    elif (time.month >= 12) & (time.month <= 2):
+        mean_val = 162.72496
+    else:
+        # Use the yearly mean when not in summer or winter months
+        mean_val = 296.39252
+    
+    # Generate a random value with the selected mean as reference point
+    val = gen_random_value(mean_val - (mean_val * 0.1), 
+                           mean_val + (mean_val * 0.1))
+    
+    df.loc[len(df)] = [dt, val]
+
+# Print the data
+for row in df.itertuples():
+    print(f"{row[0]} {row[1]:.3f}")

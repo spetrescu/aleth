@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Define the start and end dates for our data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=48*24) # We are going to have one hour measurements at exactly 48 times
+
+# Generate time intervals of 1 hour starting from our start date
+intervals = [start_date + i * timedelta(hours=1) for i in range(48)]
+
+# Initialize an empty list to store the generated values
+values = []
+
+# Loop over each interval, generate a random value between yearly_min_kwh and yearly_max_kwh,
+# and add it to our list of values. If it's summer month (Jun-Aug), use summer_mean_kwh as the target.
+for date in intervals:
+    # Determine if it's a summer or winter month
+    months = date.month
+    if 6 <= months <= 8:
+        target = summer_mean_kwh
+    elif 12 <= months <= 2:
+        target = winter_mean_kwh
+    else:
+        target = yearly_mean_kwh
+
+    # Generate a random value between the min and max for this month
+    value = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    
+    # If it's summer or winter, try to get closer to the summer/winter mean
+    if (6 <= months <= 8) or (12 <= months <= 2):
+        factor = ((target - value) / (target - yearly_mean_kwh))
+        value = yearly_mean_kwh + (factor * (summer_mean_kwh - yearly_mean_kwh))
+    
+    values.append(value)
+
+# Generate the desired output lines of "YYYY-MM-DD HH:MM,VALUE"
+output_lines = [f"{date.strftime('%Y-%m-%d %H:%M')},{value}" for date, value in zip(intervals, values)]
+
+# Print the generated data
+for line in output_lines:
+    print(line)

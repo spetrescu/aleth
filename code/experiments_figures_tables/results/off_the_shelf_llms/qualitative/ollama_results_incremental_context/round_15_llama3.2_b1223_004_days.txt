@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+
+# Set a seed for reproducibility
+np.random.seed(1234)
+
+# Generate dates and hours
+start_date = '2016-01-01 00:00'
+end_date = '2016-12-31 23:59'
+
+hours = pd.date_range(start=start_date, end=end_date, freq='1h')
+dates = [f'{dt.strftime("%Y-%m-%d")} {dt.time()}' for dt in hours]
+
+# Generate random values
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(hours))
+
+# Adjust values according to seasonality
+seasonal_factor = np.ones(len(hours))
+seasonal_factor[hours.month.isin([6, 7, 8])] = summer_mean_kwh / yearly_mean_kwh
+seasonal_factor[hours.month.isin([12, 1, 2])] = winter_mean_kwh / yearly_mean_kwh
+
+values *= seasonal_factor
+
+# Add noise to make values more realistic
+values += np.random.normal(0, (yearly_max_kwh - yearly_min_kwh) * 0.05, size=len(values))
+
+# Ensure values are within the range
+values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+
+# Create output lines
+output = [f'{date} {value}' for date, value in zip(dates, values)]
+
+print('\n'.join(output))

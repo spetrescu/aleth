@@ -1,0 +1,51 @@
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+# Initialize variables
+building_id = 1069
+primary_use = 'Office'
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Generate date range for 24 hours
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=23)
+
+# Initialize empty list to store data
+data = []
+
+# Loop over each day and generate random kWh values
+for i in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(days=i)
+    
+    # Randomly select summer or winter month (if applicable)
+    if (date.month >= 6) & (date.month <= 8):
+        avg_kwh = summer_mean_kwh
+    elif (date.month >= 12) & (date.month <= 2):
+        avg_kwh = winter_mean_kwh
+    else:
+        # Non-summer and non-winter months average yearly mean kWh
+        avg_kwh = yearly_mean_kwh
+    
+    # Generate random variation around the average value
+    kwh = round(avg_kwh + np.random.uniform(-0.5, 0.5), 3)
+    
+    # Ensure values stay within min/max limits
+    if (kwh > yearly_max_kwh):
+        kwh = yearly_max_kwh
+    elif (kwh < yearly_min_kwh):
+        kwh = yearly_min_kwh
+    
+    # Format as "YYYY-MM-DD HH:MM,VALUE"
+    line = date.strftime('%Y-%m-%d %H:%M') + ', ' + str(kwh)
+    
+    data.append(line)
+
+# Print the data
+for item in data:
+    print(item)

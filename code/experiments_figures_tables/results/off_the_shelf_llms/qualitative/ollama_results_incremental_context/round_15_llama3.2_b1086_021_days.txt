@@ -1,0 +1,38 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Set up parameters
+building_id = 1086
+primary_use = 'Office'
+square_feet = 143973
+yearly_mean_kwh = 296.72125
+yearly_min_kwh = 85.275
+yearly_max_kwh = 595.904
+summer_mean_kwh = 393.1739
+winter_mean_kwh = 218.81273
+
+# Generate dates
+start_date = pd.to_datetime('2016-01-01')
+dates = [start_date + timedelta(days=i) for i in range(504)]
+
+# Generate electricity consumption data
+consumption_data = []
+for date in dates:
+    # Determine the season (summer or winter)
+    if (date.month >= 6 and date.month <= 8):
+        mean_kwh = summer_mean_kwh
+    elif (date.month >= 12 and date.month <= 2):
+        mean_kwh = winter_mean_kwh
+    else:
+        mean_kwh = yearly_mean_kwh
+
+    # Generate a random value within the allowed range
+    kwh = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 3)
+
+    consumption_data.append((date.strftime('%Y-%m-%d %H:%M'), kwh))
+
+# Print the output
+for date, kwh in consumption_data:
+    print(f"{date}, {kwh}")

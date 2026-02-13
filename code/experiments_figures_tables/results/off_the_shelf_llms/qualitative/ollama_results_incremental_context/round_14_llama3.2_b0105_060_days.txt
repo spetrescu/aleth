@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Constants
+BUILDING_ID = 105
+PRIMARY_USE = 'Education'
+SQUARE_FEET = 50623
+YEARLY_MEAN_KWH = 78.12403
+YEARLY_MIN_KWH = 23.3036
+YEARLY_MAX_KWH = 173.945
+SUMMER_MEAN_KWH = 78.177864
+WINTER_MEAN_KWH = 76.68618
+
+# Create a date range for the year 2016 with 1440 measurements
+start_date = datetime(2016, 1, 1)
+date_range = [start_date + timedelta(hours=i) for i in range(1440)]
+
+# Generate random kWh values based on seasonal averages and minimum/maximum values
+kwh_values = []
+for date in date_range:
+    month = date.strftime('%m')
+    if (month in ['06', '07', '08']):  # Summer months
+        kwh_value = np.random.normal(SUMMER_MEAN_KWH, 
+                                      ((YEARLY_MAX_KWH - SUMMER_MEAN_KWH) / 2), 
+                                      1)[0]
+        kwh_values.append(min(max(kwh_value, YEARLY_MIN_KWH), YEARLY_MAX_KWH))
+    elif (month in ['12', '01', '02']):  # Winter months
+        kwh_value = np.random.normal(WINTER_MEAN_KWH, 
+                                      ((YEARLY_MAX_KWH - WINTER_MEAN_KWH) / 2), 
+                                      1)[0]
+        kwh_values.append(min(max(kwh_value, YEARLY_MIN_KWH), YEARLY_MAX_KWH))
+    else:  # Other months
+        kwh_value = np.random.normal(YEARLY_MEAN_KWH, 
+                                      ((YEARLY_MAX_KWH - YEARLY_MEAN_KWH) / 2), 
+                                      1)[0]
+        kwh_values.append(min(max(kwh_value, YEARLY_MIN_KWH), YEARLY_MAX_KWH))
+
+# Generate the output
+output = []
+for i in range(len(date_range)):
+    year_month_day = date_range[i].strftime('%Y-%m-%d')
+    hour_minute = date_range[i].strftime('%H:%M')
+    value = kwh_values[i]
+    output.append(f'{year_month_day} {hour_minute},{value}')
+
+# Print the output
+print('\n'.join(output))

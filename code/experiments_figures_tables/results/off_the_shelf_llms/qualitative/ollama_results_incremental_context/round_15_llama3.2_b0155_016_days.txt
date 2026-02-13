@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+
+# Set the random seed for reproducibility
+np.random.seed(42)
+
+# Define the parameters
+building_id = 155
+primary_use = 'Office'
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate the data
+data = {
+    'date': pd.date_range('2016-01-01', periods=384, freq='H'),
+    'kWh': np.random.uniform(yearly_min_kwh, yearly_max_kwh, 384)
+}
+
+# Adjust the data to reflect summer and winter averages
+summer_months = ['2016-06-01', '2016-07-01', '2016-08-01']
+winter_months = ['2016-12-31', '2016-01-01', '2016-02-01']
+
+for i, month in enumerate(summer_months):
+    data['kWh'][i*96:(i+1)*96] += np.random.normal(0, 5) # Adjust the mean to be around summer_mean_kwh and the standard deviation to allow for some variation
+data['date'].loc[data['date'].isin(winter_months)] = winter_mean_kwh
+
+# Ensure data does not exceed yearly_max_kWh or fall below yearly_min_kwh
+data['kWh'] = np.clip(data['kWh'], yearly_min_kwh, yearly_max_kwh)
+
+# Convert the data to the desired format
+result = ', '.join(f"{date.strftime('%Y-%m-%d %H:%M')}, {kWh}" for date, kWh in zip(data['date'], data['kWh']))
+
+print(result)

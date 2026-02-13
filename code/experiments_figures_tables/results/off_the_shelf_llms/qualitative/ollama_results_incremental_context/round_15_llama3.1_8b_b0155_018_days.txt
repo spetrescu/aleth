@@ -1,0 +1,65 @@
+**Electricity Consumption Data Generation**
+
+Below is a Python solution using the `random` module to generate realistic electricity consumption data at 1-hour intervals for the specified building, adhering to the given constraints and statistics.
+
+
+```python
+import datetime
+import random
+
+# Building metadata
+building_id = 155
+primary_use = "Office"
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Number of data points to generate
+n_data_points = 432
+
+# Calculate day and month ranges for summer and winter months
+summer_months = [6, 7, 8]
+winter_months = [12, 1, 2]
+
+# Function to calculate season-specific mean values based on month
+def get_seasonal_mean(month):
+    if month in summer_months:
+        return summer_mean_kwh
+    elif month in winter_months:
+        return winter_mean_kwh
+    else:
+        return yearly_mean_kwh
+
+# Generate data points at 1-hour intervals
+data = []
+start_date = datetime.date(2016, 1, 1)
+end_date = start_date + datetime.timedelta(days=n_data_points - 1)
+
+for n in range(n_data_points):
+    date = start_date + datetime.timedelta(n)
+    
+    # Get season-specific mean value based on month
+    seasonal_mean_kwh = get_seasonal_mean(date.month)
+    
+    # Generate a random value within the yearly min and max kwh, but closer to the seasonal mean or yearly mean
+    if seasonal_mean_kwh != yearly_mean_kwh:
+        # Use a weighted distribution where values near the seasonal mean are more likely
+        lower_bound = max(yearly_min_kwh, seasonal_mean_kwh - 5)
+        upper_bound = min(yearly_max_kwh, seasonal_mean_kwh + 5)
+    else:
+        # If we're using the yearly mean, use a slightly wider range to account for variability throughout the year
+        lower_bound = yearly_min_kwh
+        upper_bound = yearly_max_kwh
+        
+    value = round(random.uniform(lower_bound, upper_bound), 2)
+    
+    data.append(f"{date.strftime('%Y-%m-%d')} {hour:02d}:{minute:02d},{value:.2f}")
+
+# Ensure the output has exactly 432 lines
+print("\n".join(data))
+```
+
+The solution defines a function `get_seasonal_mean(month)` to calculate season-specific mean values based on the month, ensuring that summer and winter months average around their respective specified means. The main loop generates data points at 1-hour intervals, using random values within the yearly min and max kwh ranges but closer to the seasonal or yearly mean as applicable.

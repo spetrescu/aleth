@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Generate date and time data
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+dates = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Initialize lists to hold values and dates
+values = []
+dates_list = []
+
+# Loop over each hour
+for date in dates:
+    # Randomly select a value from the yearly range
+    if date.month >= 6 or date.month <= 8:  # Summer months
+        value = np.random.normal(summer_mean_kwh, yearly_min_kwh / 10)
+    else:  # Winter months
+        value = np.random.normal(winter_mean_kwh, yearly_min_kwh / 10)
+    
+    # Ensure the value is within the allowed range
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    
+    values.append(value)
+    dates_list.append(date.strftime('%Y-%m-%d %H:%M'))
+
+# Create a DataFrame and convert it to CSV format
+df = pd.DataFrame({'Date': dates_list, 'Value': values})
+csv_data = df.to_csv(index=False, header=None)
+
+print(csv_data)

@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+
+# Define metadata and annual summary statistics
+building_id = 155
+primary_use = 'Office'
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate date range with 720 measurements
+start_date = '2016-01-01'
+end_date = '2016-08-31'
+interval_length = pd.to_timedelta('1h')
+date_range = pd.date_range(start=start_date, end=end_date, freq=interval_length)
+
+# Initialize list to store measurements
+measurements = []
+
+# Loop through each date in the range
+for i, date in enumerate(date_range):
+    # Determine if it's a summer or winter month
+    if (date.month == 6 or date.month == 7 or date.month == 8) and \
+       (date.year == 2016):  # Only consider 2016 for summer months
+        measurement = summer_mean_kwh + np.random.normal(0, yearly_mean_kwh / 100)
+    elif (date.month in [12, 1, 2]) and (date.year == 2016):
+        measurement = winter_mean_kwh + np.random.normal(0, yearly_mean_kwh / 100)
+    else:
+        measurement = yearly_mean_kwh + np.random.normal(0, yearly_mean_kwh / 100)
+
+    # Ensure the value is within the valid range
+    measurement = max(yearly_min_kwh, min(measurement, yearly_max_kwh))
+    
+    # Add the measurement to the list
+    measurements.append(f"{date.strftime('%Y-%m-%d %H:%M')},{measurement:.4f}")
+
+# Print the measurements
+print('\n'.join(measurements))

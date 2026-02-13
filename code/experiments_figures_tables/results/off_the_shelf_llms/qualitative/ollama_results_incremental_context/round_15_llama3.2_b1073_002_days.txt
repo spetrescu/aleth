@@ -1,0 +1,52 @@
+Here is a Python script that generates the synthetic electricity consumption data for the building:
+
+```python
+import random
+from datetime import datetime, timedelta, timedelta_delta
+import calendar
+
+def generate_electricity_consumption_data(building_id, yearly_mean_kwh, 
+                                        yearly_min_kwh, yearly_max_kwh, 
+                                        summer_mean_kwh, winter_mean_kwh):
+    data = []
+    
+    # Define the start and end dates
+    start_date = datetime(2016, 1, 1)
+    end_date = start_date + timedelta(days=48*24) - timedelta(days=1)
+    
+    for i in range(int((end_date-start_date).days)):
+        date = start_date + timedelta(days=i)
+        
+        # Check if the month is summer or winter
+        if (date.month == 6 or date.month == 7 or date.month == 8) and (
+            calendar.issummer(date.year) 
+        ):
+            value = round(summer_mean_kwh + random.uniform(-5, 5))
+        elif (date.month == 12 or date.month == 1 or date.month == 2) and (
+                calendar.iswinter(date.year)
+        ):
+            value = round(winter_mean_kwh + random.uniform(-5, 5))
+        else:
+            value = yearly_mean_kwh + random.uniform(-10, 10)
+        
+        # Ensure the value is within the valid range
+        if value < yearly_min_kwh or value > yearly_max_kwh:
+            value = min(max(yearly_min_kwh, yearly_max_kwh), value)
+            
+        data.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+        
+    return '\n'.join(data)
+
+building_id = 1073
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+print(generate_electricity_consumption_data(building_id, yearly_mean_kwh,
+                                            yearly_min_kwh, yearly_max_kwh,
+                                            summer_mean_kwh, winter_mean_kwh))
+```
+
+This script generates synthetic electricity consumption data for the specified building at 1-hour intervals from January 1st, 2016 to January 48th, 2016. The values are consistent with the summary statistics provided and never go below `yearly_min_kwh` or above `yearly_max_kwh`.

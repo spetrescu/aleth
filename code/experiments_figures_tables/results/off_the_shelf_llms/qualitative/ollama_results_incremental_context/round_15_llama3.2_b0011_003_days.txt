@@ -1,0 +1,22 @@
+import random
+from datetime import datetime, timedelta
+
+building_id = 11
+primary_use = "Education"
+square_feet = 49073
+yearly_mean_kwh = 296.39252
+yearly_min_kwh = 0.0
+yearly_max_kwh = 1052.0
+summer_mean_kwh = 486.43784
+winter_mean_kwh = 162.72496
+
+# Create a list of dates for the first and last measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=365*72-1)
+
+# Generate random values between yearly_min_kwh and yearly_max_kwh
+values = [round(random.uniform(yearly_min_kwh, yearly_max_kwh), 3) for _ in range(72)]
+
+for n in range(len(values)):
+    date = start_date + timedelta(n)
+    print(f"{date.strftime('%Y-%m-%d %H:%M')}, {values[n]}")

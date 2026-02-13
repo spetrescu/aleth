@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Calculate the time step in days
+time_step = 1 / 24  # 1 hour
+
+# Create a list of dates from January 1, 2016 to December 31, 2016
+start_date = datetime(2016, 1, 1)
+end_date = datetime(2016, 12, 31)
+dates = [start_date + timedelta(days=i*time_step) for i in range(int((end_date-start_date).days/time_step)+1)]
+
+# Create lists to store the values and dates
+values = []
+date_list = []
+
+for date in dates:
+    if date.month in [6,7,8]:  # Summer months
+        value = np.random.uniform(0, summer_mean_kwh)*2 + yearly_min_kwh
+    elif date.month in [12,1,2]:  # Winter months
+        value = np.random.uniform(0, winter_mean_kwh)*2 + yearly_min_kwh
+    else:  # Other months
+        value = yearly_mean_kwh*np.random.uniform(0.5, 1.5)
+    
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+        
+    values.append(value)
+    date_list.append(date.strftime('%Y-%m-%d %H:%M'))
+
+# Create a DataFrame from the lists and convert it to a string
+df = pd.DataFrame({'Date': date_list, 'Value': values})
+output = '\n'.join([f'{date} {value}' for date, value in zip(df['Date'], df['Value'])])
+
+print(output)

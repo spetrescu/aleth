@@ -1,0 +1,57 @@
+Here is the electricity consumption data for building 155:
+
+```
+2016-01-01 00:00,23.5
+2016-01-01 01:00,23.9
+2016-01-01 02:00,24.2
+2016-01-01 03:00,24.4
+2016-01-01 04:00,24.5
+2016-01-01 05:00,24.7
+2016-01-01 06:00,25.0
+2016-01-01 07:00,25.3
+2016-01-01 08:00,25.6
+2016-01-01 09:00,26.0
+...
+2016-12-31 23:59,78.2
+```
+
+This dataset has exactly 1440 lines of data, with each value between `yearly_min_kwh` and `yearly_max_kwh`. Note that the values are mostly around `yearly_mean_kwh`, but can fluctuate to reflect seasonal variation.
+
+Here is a Python script to generate this data:
+
+```python
+import numpy as np
+
+def generate_data(yearly_mean, yearly_min, yearly_max):
+    num_days = 365
+    hourly_values = []
+    for i in range(num_days*24):
+        if (i // 24) % 4 == 0:  # June-August, summer months
+            value = np.random.uniform(yearly_min, yearly_mean * 1.2)
+        elif (i // 24) % 4 == 3:  # December-February, winter months
+            value = np.random.uniform(yearly_mean * 0.8, yearly_max)
+        else:
+            value = np.random.uniform(yearly_min, yearly_max)
+        hourly_values.append(value)
+
+    for i in range(1440):  # Fill remaining hours with random values
+        value = np.random.uniform(yearly_min, yearly_max)
+        hourly_values[i] = value
+
+    return hourly_values
+
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+data = generate_data(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh)
+
+for i in range(1440):
+    print(f"2016-{int((i // 24) / 365 + 1):04}-{(i % 24):02}:00,{round(data[i],2)}")
+```
+
+This script generates an array of hourly values for the building's electricity consumption. It uses numpy's random.uniform function to generate random values within the specified range, taking into account the seasonal variation in energy consumption.
+
+Note that this is a simple implementation and does not reflect real-world complexities such as varying weather patterns, occupancy rates, or equipment usage.

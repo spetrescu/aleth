@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Constants
+BUILDING_ID = 1086
+PRIMARY_USE = "Office"
+SQUARE_FEET = 143973
+YEARLY_MEAN_KWH = 296.72125
+YEARLY_MIN_KWH = 85.275
+YEARLY_MAX_KWH = 595.904
+SUMMER_MEAN_KWH = 393.1739
+WINTER_MEAN_KWH = 218.81273
+HOUR_INTERVALS = 672
+
+# Generate dates and time values
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(hours=HOUR_INTERVALS*1)
+
+values = []
+for i in range(HOUR_INTERVALS):
+    hour_value = YEARLY_MEAN_KWH * np.random.normal(size=1)
+    if i < len pd.date_range("2016-01-01", "2016-12-31", freq="h"):
+        date = start_date + timedelta(hours=i)
+        value = int(min(max(hour_value, YEARLY_MIN_KWH), YEARLY_MAX_KWH))
+        values.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+# Add summer and winter months
+for month in ["06", "07", "08"]:
+    start_date = start_date + timedelta(days=32)
+    end_date = start_date + timedelta(days=31)
+    for i in range(HOUR_INTERVALS):
+        hour_value = SUMMER_MEAN_KWH * np.random.normal(size=1)
+        date = start_date + timedelta(hours=i)
+        value = int(min(max(hour_value, YEARLY_MIN_KWH), YEARLY_MAX_KWH))
+        values.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+start_date = start_date + timedelta(days=31)
+
+for month in ["12", "01", "02"]:
+    end_date = end_date - timedelta(days=1)
+    for i in range(HOUR_INTERVALS):
+        hour_value = WINTER_MEAN_KWH * np.random.normal(size=1)
+        date = start_date + timedelta(hours=i)
+        value = int(min(max(hour_value, YEARLY_MIN_KWH), YEARLY_MAX_KWH))
+        values.append(f"{date.strftime('%Y-%m-%d %H:%M')},{value}")
+
+# Output the values
+print("\n".join(values))

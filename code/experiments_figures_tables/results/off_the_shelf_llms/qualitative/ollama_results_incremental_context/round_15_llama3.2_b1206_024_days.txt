@@ -1,0 +1,66 @@
+import random
+from datetime import timedelta, datetime
+
+def generate Electricity Meter Readings():
+    building_id = 1206
+    primary_use = "Office"
+    square_feet = 99946
+    yearly_mean_kwh = 87.59102
+    yearly_min_kwh = 0.0
+    yearly_max_kwh = 153.733
+    summer_mean_kwh = 88.61049
+    winter_mean_kwh = 91.04132
+
+    # Set start date and end date
+    start_date = datetime(2016,1,1)
+    end_date = start_date + timedelta(days=576)
+
+    current_date = start_date
+    measurements_per_day = 10
+    min_value = yearly_min_kwh
+    max_value = yearly_max_kwh
+
+    for i in range(int ((end_date-start_date).days)):
+        # Find out the month and year of this day.
+        if (current_date.month==12) or (current_date.month==1):
+            winter_month = 1
+        else:
+            winter_month = current_date.month
+
+        if (winter_month<3):
+            daily_mean_kwh = winter_mean_kwh
+        elif(winter_month>11):
+            daily_mean_kwh = summer_mean_kwh
+        else:
+            daily_mean_kwh = round(random.uniform(summer_mean_kwh, winter_mean_kwh),4)
+        
+        # Generate random values for each hour of the day.
+        daily_values = [round(min_value + max_value * random.random(), 4) for _ in range(measurements_per_day)]
+        current_values = []
+        remaining_hours = measurements_per_day
+        for j in range(24):
+            if (j < 8 or j >= 20):
+                daily_values[j] = round(daily_mean_kwh, 4)
+            elif(j > 7 and j <= 19):
+                current_values.append(round(min_value + max_value * random.random(), 4))
+            else:
+                if(remaining_hours>0):
+                    remaining_hours -=1
+                    continue
+
+            hourly_value = daily_values[j]
+            current_values.append(hourly_value)
+
+        # Create the date string and value string.
+        for k in range(len(current_values)):
+            value = str(round(current_values[k], 4))
+            print(f"{current_date.strftime('%Y-%m-%d %H:%M')},{value}", end=' ')
+            if (k < len(current_values)-1):
+                print(',',end='')
+        # If it's the last line, put a new line there.
+        else:
+            print()
+        current_date += timedelta(hours=24)
+
+# Start generating electricity meter readings
+generate Electricity Meter Readings()

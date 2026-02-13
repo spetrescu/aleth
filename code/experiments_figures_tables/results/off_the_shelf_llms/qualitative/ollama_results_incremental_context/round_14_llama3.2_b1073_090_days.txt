@@ -1,0 +1,41 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Define constants
+YEARLY_MEAN_KWH = 179.21414
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 853.0
+SUMMER_MEAN_KWH = 118.158516
+WINTER_MEAN_KWH = 230.26053
+
+# Generate datetime array for 2160 measurements
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + timedelta(days=783)
+dt_array = [start_date + timedelta(days=i) for i in range(783, 999)]
+
+# Initialize lists to store data and values
+data = []
+values = []
+
+for dt in dt_array:
+    # Choose between summer and winter means based on month
+    if (dt.month < 6 or dt.month > 8):  # June, July, August
+        value = SUMMER_MEAN_KWH
+    else:  # December, January, February
+        value = WINTER_MEAN_KWH
+
+    # Add some randomness to ensure values are not all the same
+    import random
+    if random.random() < 0.2:
+        value += (random.uniform(-5, 5) * 0.1)
+
+    # Ensure value is within limits
+    value = max(YEARLY_MIN_KWH, min(value, YEARLY_MAX_KWH))
+
+    # Add to data and values lists
+    data.append(dt)
+    values.append(value)
+
+# Create dataframe from data and values
+df = pd.DataFrame(data=values, columns=['VALUE'])
+print(df.to_csv(index=False))

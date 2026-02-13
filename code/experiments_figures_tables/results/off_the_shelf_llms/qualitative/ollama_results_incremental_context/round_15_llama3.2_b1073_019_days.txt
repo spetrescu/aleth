@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1073
+primary_use = 'Office'
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=456*2)  # Calculate end date for exactly 456 measurements
+
+# Create a time series of dates
+dates = [start_date + timedelta(hours=i) for i in range(int((end_date-start_date).total_seconds()//3600))]
+
+# Generate random values within the specified ranges
+np.random.seed(0)
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, len(dates))
+
+# Scale values to match the summary statistics
+values = (values - yearly_min_kwh) / (yearly_max_kwh - yearly_min_kwh) * (summer_mean_kwh - yearly_min_kwh) + yearly_min_kwh
+
+# Create a DataFrame with the generated data
+df = pd.DataFrame({'Date': dates, 'Value': values})
+
+# Convert datetime objects to strings in the desired format
+df['Date'] = df['Date'].apply(lambda x: str(x.date()) + ' ' + str(x.hour).zfill(2))
+
+# Print the output
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Value']}")

@@ -1,0 +1,47 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants for summer and winter usage patterns
+SUMMER_MEAN_KWH = 85.378174
+WINTER_MEAN_KWH = 74.83288
+
+# Constants for yearly mean consumption
+YEARLY_MEAN_KWH = 79.257515
+
+# Number of measurements to generate
+NUM Measurements = 552
+
+# Generate random values around the mean, but never go below min or above max
+def generate_consumption(usage_mean_kwh):
+    # Randomize within some range (to avoid the exact mean)
+    lower_bound = usage_mean_kwh - 0.2 * usage_mean_kwh
+    upper_bound = usage_mean_kwh + 0.2 * usage_mean_kwh
+
+    return [random.uniform(lower_bound, upper_bound) for _ in range(NUM Measurements)]
+
+# Generate measurements for each hour of the year (accounting for seasons)
+measures = []
+for month, mean_kwh in [
+    ('Jan', WINTER_MEAN_KWH),
+    ('Feb', WINTER_MEAN_KWH),
+    ('Mar', random.uniform(70.0, 80.5)),
+    ('Apr', random.uniform(60.0, 75.0)),
+    ('May', SUMMER_MEAN_KWH),
+    ('Jun', SUMMER_MEAN_KWH),
+    ('Jul', SUMMER_MEAN_KWH),
+    ('Aug', SUMMER_MEAN_KWH),
+    ('Sep', random.uniform(55.0, 65.5)),
+    ('Oct', random.uniform(50.0, 60.5)),
+    ('Nov', WINTER_MEAN_KWH),
+    ('Dec', WINTER_MEAN_KWH),
+]:
+    start_date = datetime(2016, month, 1)
+    end_date = (datetime(2016, month + 2, 1) - timedelta(days=1)).date()
+    while start_date <= end_date:
+        measures.append(f"{start_date.strftime('%Y-%m-%d')} {start_date.time()}: {mean_kwh:.3f}")
+        start_date += timedelta(hours=1)
+
+# Shuffle to give the data a more natural distribution
+random.shuffle(measures)
+
+print('\n'.join(measures))

@@ -1,0 +1,63 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+def generate_meter_readings(building_metadata):
+    # Create a date range from 2016-01-01 to 2017-01-01
+    start_date = pd.to_datetime('2016-01-01')
+    end_date = pd.to_datetime('2017-01-01')
+
+    # Create a list to store the meter readings
+    meter_readings = []
+
+    for i in range((end_date - start_date).days + 1):
+        # Generate a random value near the yearly mean kwh with some variation
+        reading = np.random.normal(building_metadata['yearly_mean_kwh'], building_metadata['yearly_min_kwh'] / 10)
+        
+        # Ensure reading is within valid range
+        reading = max(building_metadata['yearly_min_kwh'], min(reading, building_metadata['yearly_max_kwh']))
+
+        # Convert reading to kWh (round to two decimal places)
+        reading = round(reading, 2)
+
+        # Determine hour of day and season
+        current_date = start_date + timedelta(days=i)
+        if current_date.month in [6, 7, 8]:
+            season = 'summer'
+            mean_kwh = building_metadata['summer_mean_kwh']
+        else:
+            season = 'winter'
+            mean_kwh = building_metadata['winter_mean_kwh']
+
+        # Calculate hour of day (in 24-hour format)
+        hour = current_date.hour
+
+        # Format reading as "YYYY-MM-DD HH:MM,VALUE"
+        formatted_reading = f"{current_date.strftime('%Y-%m-%d')} {hour:02d}:{0:02d},{reading}"
+
+        # Append reading to list
+        meter_readings.append(formatted_reading)
+
+    return '\n'.join(meter_readings)
+
+
+# Define building metadata
+building_metadata = {
+    'building_id': 140,
+    'primary_use': 'Office',
+    'square_feet': 50020,
+    'yearly_mean_kwh': 31.697405,
+    'yearly_min_kwh': 8.0204,
+    'yearly_max_kwh': 61.0,
+    'summer_mean_kwh': 32.27265,
+    'winter_mean_kwh': 30.24863
+}
+
+# Generate meter readings
+meter_readings = generate_meter_readings(building_metadata)
+
+print(meter_readings)

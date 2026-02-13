@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Generate random data for each hour of a year
+def generate_data(year):
+    start_date = pd.to_datetime(f'{year}-01-01 00:00')
+    end_date = pd.to_datetime(f'{year}-12-31 23:59')
+
+    hours = range(int ((end_date - start_date).total_seconds() / 3600))
+    data = np.random.uniform(yearly_min_kwh, yearly_mean_kwh, size=len(hours))
+
+    # Adjust summer and winter months
+    for month in range(6):
+        if month == 0 or month == 5:
+            # Summer months (June to August)
+            start_date = pd.to_datetime(f'{year}-06-01 00:00')
+            end_date = pd.to_datetime(f'{year}-08-31 23:59')
+        elif month == 1 or month == 2:
+            # Winter months (December to February)
+            start_date = pd.to_datetime(f'{year}-12-01 00:00')
+            end_date = pd.to_datetime(f'{year}-02-28 23:59')
+
+        hours_summer = range(int ((end_date - start_date).total_seconds() / 3600))
+        data_summer = np.random.uniform(summer_mean_kwh, yearly_mean_kwh, size=len(hours_summer))
+
+    # Interleave summer and winter months
+    data = np.concatenate((data[::6], data_summer[(len(data) - len(data_summer)) // 2:]))
+
+    return start_date + pd.to_timedelta(np.random.uniform(0, 24, size=len(hours)), unit='h'), data
+
+# Generate data for the specified number of hours
+start_date, data = generate_data(2016)
+
+# Format output
+output = ''
+for i in range(len(data)):
+    date_str = (start_date + pd.to_timedelta(i)).strftime('%Y-%m-%d %H:%M')
+    value = round(data[i], 3)
+    output += f'{date_str},{value}\n'
+
+print(output)

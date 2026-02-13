@@ -1,0 +1,49 @@
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 1069
+PRIMARY_USE = "Office"
+SQUARE_FEET = 20864
+YEARLY_MEAN_KWH = 6.4528236
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 18.1
+SUMMER_MEAN_KWH = 6.342618
+WINTER_MEAN_KWH = 6.7815933
+
+# Function to generate random float within given bounds
+def randf(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 4)
+
+# Function to calculate the mean kWh based on season and day of year
+def calc_mean_kwh(year, month, day_of_year):
+    if (month == 6 or month == 7 or month == 8) and (day_of_year >= 203 and day_of_year <= 266):  # Summer months
+        return SUMMER_MEAN_KWH
+    elif (month == 12 or month == 1 or month == 2) and (day_of_year >= 1 and day_of_year <= 92):  # Winter months
+        return WINTER_MEAN_KWH
+    else:  # Spring/Fall, any other month
+        return YEARLY_MEAN_KWH
+
+# Function to generate electricity consumption data
+def gen_electricity_data():
+    start_date = datetime(2016, 1, 1)
+    while len(gen_electricity_data_output) < 624:
+        date = start_date + timedelta(hours=random.randint(0, 23), minutes=random.randint(0, 59))
+        day_of_year = (date.year - 2016) * 365 + date.timetuple().tm_yday
+        mean_kwh = calc_mean_kwh(date.year, date.month, day_of_year)
+        value = randf(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+
+        # Limit kWh within summer/fall/winter ranges based on season-specific averages
+        if (date.month == 6 or date.month == 7 or date.month == 8) and \
+           (value < SUMMER_MEAN_KWH * 0.9 or value > SUMMER_MEAN_KWH * 1.1):
+            value = min(max(value, SUMMER_MEAN_KWH * 0.9), SUMMER_MEAN_KWH * 1.1)
+        if (date.month == 12 or date.month == 1 or date.month == 2) and \
+           (value < WINTER_MEAN_KWH * 0.9 or value > WINTER_MEAN_KWH * 1.1):
+            value = min(max(value, WINTER_MEAN_KWH * 0.9), WINTER_MEAN_KWH * 1.1)
+
+        # Append kWh measurement to output
+        gen_electricity_data_output.append(f"{date.strftime('%Y-%m-%d %H:%M')} {value}")
+
+# Generate and print electricity consumption data
+gen_electricity_data()
+print('\n'.join(gen_electricity_data_output))

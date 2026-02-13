@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Initialize lists to hold data
+dates = []
+values = []
+
+# Generate dates and values based on constraints
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=288*24 - 1)  # 288 measurements
+
+for i in range(int((end_date-start_date).days)):
+    date = start_date + timedelta(days=i)
+    if (date.month == 6 or date.month == 7 or date.month == 8):  # Summer months
+        value = np.random.normal(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh) + summer_mean_kwh
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    elif (date.month == 12 or date.month == 1 or date.month == 2):  # Winter months
+        value = np.random.normal(winter_mean_kwh, yearly_max_kwh - winter_mean_kwh) + winter_mean_kwh
+        value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+    else:  # Spring/Fall months
+        if np.random.rand() < 0.5:
+            value = np.random.normal(summer_mean_kwh, yearly_max_kwh - summer_mean_kwh) + summer_mean_kwh
+            value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+        else:
+            value = np.random.normal(winter_mean_kwh, yearly_max_kwh - winter_mean_kwh) + winter_mean_kwh
+            value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+
+    values.append(value)
+    dates.append(date.strftime('%Y-%m-%d %H:%M'))
+
+print('\n'.join(f'{date} {value}' for date, value in zip(dates, values)))

@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Generate dates and times
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=480*1)  # generate 480 days worth of data
+
+dates = []
+values = []
+
+for i in range(int((end_date-start_date).days)):
+    dt = start_date + timedelta(days=i)
+    month = dt.strftime('%Y-%m')
+    hour = dt.strftime('%H')
+    
+    if (month == '2016-06' or month == '2016-07' or month == '2016-08') and \
+       (hour >= '09:00' and hour < '18:00'):
+        # Summer months
+        mean_kwh = 486.43784
+    elif (month == '2016-12' or month == '2017-01' or month == '2017-02') and \
+         (hour >= '08:00' and hour < '20:00'):
+        # Winter months
+        mean_kwh = 162.72496
+    
+    # Generate random value around the yearly_mean_kwh
+    kwh = np.random.normal(mean_kwh, mean_kwh/10)
+    
+    # Ensure value is within bounds
+    if (kwh < yearly_min_kwh):
+        kwh = yearly_min_kwh
+    elif (kwh > yearly_max_kwh):
+        kwh = yearly_max_kwh
+        
+    dates.append(dt.strftime('%Y-%m-%d %H:%M'))
+    values.append(kwh)
+
+# Print the data
+for i in range(len(dates)):
+    print(f"{dates[i]}, {values[i]}")

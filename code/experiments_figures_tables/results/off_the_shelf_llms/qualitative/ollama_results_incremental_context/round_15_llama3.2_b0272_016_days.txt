@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define constants
+buildings = {'272': {'primary_use': 'Education', 'square_feet': 4583,
+                      'yearly_mean_kwh': 17.38018,
+                      'yearly_min_kwh': 0.8,
+                      'yearly_max_kwh': 74.32,
+                      'summer_mean_kwh': 25.539513,
+                      'winter_mean_kwh': 11.742976}}
+
+# Initialize output
+output = []
+
+# Set start date and duration in days
+start_date = datetime(2016,1,1)
+duration_days = 384
+
+# Generate data for each day
+for i in range(duration_days):
+    current_date = start_date + timedelta(days=i)
+    day_type = 'winter' if (current_date.month >= 12 or 
+                            (current_date.month == 1 and current_date.day >= 22)) else 'summer'
+    avg_kwh_per_hour = buildings['272'][day_type].mean()
+    for hour in range(24):
+        output.append(f"{current_date.strftime('%Y-%m-%d')} {current_date.strftime('%H:%M')},{np.random.uniform(avg_kwh_per_hour-avg_kwh_per_hour/2, avg_kwh_per_hour+avg_kwh_per_hour/2):.6f}")
+    
+    # Change day type for next day
+    if day_type == 'winter' and current_date.month == 12:
+        day_type = 'summer'
+    elif day_type == 'summer' and current_date.month <= 8:
+        day_type = 'winter'
+
+# Print the output
+print('\n'.join(output))

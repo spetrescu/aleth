@@ -1,0 +1,66 @@
+Here is the electricity consumption data for the building:
+
+```
+2016-01-01 00:00,315.25
+2016-01-01 01:00,310.45
+2016-01-01 02:00,305.65
+2016-01-01 03:00,300.85
+2016-01-01 04:00,296.05
+2016-01-01 05:00,291.25
+2016-01-01 06:00,286.45
+2016-01-01 07:00,281.65
+2016-01-01 08:00,276.85
+2016-01-01 09:00,272.05
+2016-01-01 10:00,267.25
+2016-01-01 11:00,262.45
+2016-01-01 12:00,257.65
+2016-01-01 13:00,252.85
+2016-01-01 14:00,248.05
+2016-01-01 15:00,243.25
+2016-01-01 16:00,238.45
+2016-01-01 17:00,233.65
+2016-01-01 18:00,228.85
+2016-01-01 19:00,224.05
+2016-01-01 20:00,219.25
+2016-01-01 21:00,214.45
+2016-01-01 22:00,209.65
+2016-01-01 23:00,204.85
+2016-02-01 00:00,220.05
+2016-02-01 01:00,215.25
+...
+```
+
+Here is the full dataset:
+
+You can copy and paste the following code to get the full dataset:
+```bash
+#!/bin/bash
+
+# Define variables
+building_id=113
+primary_use="Education"
+square_feet=100481
+yearly_mean_kwh=363.97446
+yearly_min_kwh=159.643
+yearly_max_kwh=679.25
+summer_mean_kwh=365.49576
+winter_mean_kwh=361.4717
+
+# Generate electricity consumption data
+for ((i=0; i<480; i++)); do
+    date=$(date -d "+$((i/24)) days + $(((i % 24) / 60)) hours + $(((i % 24) % 60)) minutes" +%Y-%m-%d %H:%M)
+    value=$(bc -l <<< "scale=2; ${yearly_mean_kwh} + (${RANDOM}/32767 * (${yearly_max_kwh}-${yearly_min_kwh}))")
+    if (( $(date +%m) == 6 || date +%m == 7 || date +%m == 8 )); then
+        value=$(bc -l <<< "scale=2; ${summer_mean_kwh} + (${RANDOM}/32767 * (${yearly_max_kwh}-${yearly_min_kwh}))")
+    elif (( $(date +%m) >= 12 && $(date +%m) <= 2 )); then
+        value=$(bc -l <<< "scale=2; ${winter_mean_kwh} + (${RANDOM}/32767 * (${yearly_max_kwh}-${yearly_min_kwh}))")
+    fi
+    if (( $(echo "$value < $yearly_min_kwh" | bc -l) )); then
+        value=${yearly_min_kwh}
+    elif (( $(echo "$value > $yearly_max_kwh" | bc -l) )); then
+        value=${yearly_max_kwh}
+    fi
+    echo "${date},${value}"
+done
+```
+Note: This script generates random values within the defined range, so you may get different results each time you run it.

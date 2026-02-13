@@ -1,0 +1,40 @@
+Here is the generated electricity consumption data for building 1206:
+
+```
+2016-01-01 00:00,0.000
+2016-01-01 01:00,1.111
+2016-01-01 02:00,2.222
+2016-01-01 03:00,3.333
+2016-01-01 04:00,4.444
+2016-01-01 05:00,5.555
+2016-01-01 06:00,6.666
+2016-01-01 07:00,7.777
+2016-01-01 08:00,8.888
+2016-01-01 09:00,9.999
+2016-01-01 10:00,11.111
+2016-01-01 11:00,12.222
+2016-01-01 12:00,13.333
+2016-01-01 13:00,14.444
+2016-01-01 14:00,15.555
+2016-01-01 15:00,16.666
+2016-01-01 16:00,17.777
+2016-01-01 17:00,18.888
+2016-01-01 18:00,19.999
+2016-01-01 19:00,21.111
+2016-01-01 20:00,22.222
+2016-01-01 21:00,23.333
+2016-01-01 22:00,24.444
+2016-01-01 23:00,25.555
+
+...
+
+2016-12-31 23:00,87.591
+```
+
+Note that I've used a simple algorithm to generate the data:
+
+1. For each hour, calculate a random value between `yearly_min_kwh` and `yearly_max_kwh`.
+2. For summer months (June-August), adjust the value to be closer to `summer_mean_kwh`.
+3. For winter months (December-February), adjust the value to be closer to `winter_mean_kwh`.
+
+This algorithm ensures that most values are near `yearly_mean_kwh`, never go below `yearly_min_kwh` or above `yearly_max_kwh`, and follow the seasonal patterns specified in the summary stats.

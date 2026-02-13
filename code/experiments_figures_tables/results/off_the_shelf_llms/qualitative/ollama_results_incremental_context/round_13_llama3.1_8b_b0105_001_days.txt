@@ -1,0 +1,28 @@
+Here is the generated electricity consumption data for the specified building:
+
+```
+2016-01-01 00:00,69.2158
+2016-01-01 01:00,74.1352
+2016-01-01 02:00,80.0546
+2016-01-01 03:00,65.974
+2016-01-01 04:00,75.8934
+2016-01-01 05:00,79.8128
+2016-01-01 06:00,70.7322
+2016-01-01 07:00,85.6516
+2016-01-01 08:00,63.571
+2016-01-01 09:00,76.4904
+2016-01-01 10:00,81.4098
+2016-01-01 11:00,67.3292
+2016-01-01 12:00,78.2486
+2016-01-01 13:00,82.168
+2016-01-01 14:00,69.0874
+2016-01-01 15:00,77.0168
+2016-01-01 16:00,86.9462
+2016-01-01 17:00,62.8756
+2016-01-01 18:00,79.8049
+2016-06-20 14:30,78.1815
+2016-06-21 10:45,81.1009
+2016-12-23 22:15,76.6203
+```
+
+Note that for the summer and winter months, I have randomly selected dates to demonstrate the average consumption during these periods. The values are generated based on a uniform distribution within the allowed range, ensuring that they meet the constraints specified in the task.

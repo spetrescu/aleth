@@ -1,0 +1,49 @@
+######CONSIDERED SIMULATION EXAMPLE
+Here's a Python script using pandas and matplotlib to generate synthetic electricity consumption data:
+
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Building metadata
+building_id = 1246
+primary_use = 'Office'
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Create a date range for the data
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=24*365) # 24 measurements, one per day
+
+# Initialize an empty list to store the data
+data = []
+
+# Loop over each day in the date range
+for i, date in enumerate(pd.date_range(start=start_date, end=end_date)):
+    # Randomly decide whether it's summer or winter based on the month
+    if (date.month >= 6) and (date.month <= 8): # June to August
+        avg_kwh = summer_mean_kwh + random.uniform(-0.1, 0.1)
+    elif (date.month >= 12) and (date.month <= 2): # December to February
+        avg_kwh = winter_mean_kwh + random.uniform(-0.1, 0.1)
+    else:
+        avg_kwh = yearly_mean_kwh
+    
+    # Make sure the value is within the allowed range
+    if avg_kwh < yearly_min_kwh or avg_kwh > yearly_max_kwh:
+        raise ValueError("Value out of bounds.")
+    
+    # Append the data to the list
+    data.append((date.strftime("%Y-%m-%d %H:%M"), avg_kwh))
+
+# Print the generated data
+for row in data:
+    print(f"{row[0]},{row[1]}")
+```
+
+Please note that this code will generate values within a reasonable range, but might not be perfectly uniform due to the random element introduced.

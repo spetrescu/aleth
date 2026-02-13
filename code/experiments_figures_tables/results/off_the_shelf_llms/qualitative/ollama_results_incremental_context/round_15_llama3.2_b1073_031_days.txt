@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Define parameters
+building_id = 1073
+primary_use = "Office"
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+
+# Generate time range for 744 measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=743)
+
+# Create an empty list to store the data
+data = []
+
+# Loop over each measurement
+for i in range(int((end_date - start_date).days)):
+    current_time = start_date + timedelta(days=start_date.day + i)
+    hour = current_time.hour
+
+    # Determine if it's summer or winter
+    if (current_time.month >= 6 and 
+        current_time.month <= 8):
+        kwh_value = np.random.normal(summer_mean_kwh, yearly_max_kwh/100)
+    else:
+        kwh_value = np.random.normal(winter_mean_kwh, yearly_max_kwh/100)
+
+    # Ensure values are within bounds
+    if kwh_value > yearly_max_kwh:
+        kwh_value = yearly_max_kwh
+    elif kwh_value < yearly_min_kwh:
+        kwh_value = yearly_min_kwh
+
+    data.append(f"{current_time.strftime('%Y-%m-%d %H:%M')},{kwh_value:.6f}")
+
+# Print the generated data
+print("\n".join(data))

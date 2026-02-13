@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+# Define parameters
+years = [2016]
+months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+
+# Generate data
+data = []
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=672)
+
+for day in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(days=day)
+    month = date.strftime('%b')
+    
+    if month in months:
+        # Summer months
+        kwh = np.random.normal(summer_mean_kwh, yearly_max_kwh / 10) + summer_mean_kwh / 2
+    else:
+        # Winter months
+        kwh = np.random.normal(winter_mean_kwh, yearly_max_kwh / 10) + winter_mean_kwh / 2
+    
+    # Ensure value is within range
+    if kwh < yearly_min_kwh or kwh > yearly_max_kwh:
+        kwh = np.clip(kwh, yearly_min_kwh, yearly_max_kwh)
+    
+    data.append((date.strftime('%Y-%m-%d %H:%M'), kwh))
+
+# Print data
+for item in data:
+    print(f"{item[0]} {item[1]:.6f}")

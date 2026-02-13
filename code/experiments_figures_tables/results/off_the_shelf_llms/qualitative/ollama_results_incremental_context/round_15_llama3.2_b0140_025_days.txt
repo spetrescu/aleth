@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Generate random electricity consumption data for one building
+np.random.seed(42)  # For reproducibility
+
+building_id = 140
+primary_use = 'Office'
+square_feet = 50020
+yearly_mean_kwh = 31.697405
+yearly_min_kwh = 8.0204
+yearly_max_kwh = 61.0
+summer_mean_kwh = 32.27265
+winter_mean_kwh = 30.24863
+
+# Create a date range for 600 measurements starting on 01 January 2016
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=597)  # Ensure we have exactly 600 days
+date_range = [start_date + timedelta(days=i) for i in range(598)]
+
+# Initialize a list to store the generated data
+data = []
+
+# Loop over each day in the date range
+for date in date_range:
+    day = date.strftime('%Y-%m-%d')
+    hour = date.strftime('%H')
+
+    # Determine if it's summer or winter based on month
+    if 6 <= date.month <= 8:  # June, July, August are summer months
+        mean_kwh = summer_mean_kwh
+    else:
+        mean_kwh = winter_mean_kwh
+
+    # Generate a random value within the mean and standard deviation of the yearly mean kWh
+    std_dev = (yearly_max_kwh - yearly_min_kwh) / 3.0  # Standard deviation is one-third of the range
+    value = mean_kwh + np.random.normal(0, std_dev)
+
+    # Ensure the generated value is within the valid range
+    value = max(yearly_min_kwh, min(value, yearly_max_kwh))
+
+    # Append the data to the list as a string
+    data.append(f"{day} {hour},{value:.4f}")
+
+# Print the generated dataset
+for line in data:
+    print(line)

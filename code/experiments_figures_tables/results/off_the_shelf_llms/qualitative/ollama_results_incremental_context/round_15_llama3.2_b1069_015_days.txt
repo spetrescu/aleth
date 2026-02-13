@@ -1,0 +1,49 @@
+import random
+from datetime import timedelta, datetime
+
+# Constants from the building metadata and annual summary statistics
+BUILDING_ID = 1069
+PRIMARY_USE = "Office"
+SQUARE_FEET = 20864
+YEARLY_MEAN_KWH = 6.4528236
+YEARLY_MIN_KWH = 0.0
+YEARLY_MAX_KWH = 18.1
+SUMMER_MEAN_KWH = 6.342618
+WINTER_MEAN_KWH = 6.7815933
+
+# Generate electricity consumption data for a single building over a year
+def generate_consumption_data(year, month, day):
+    total_energy = random.uniform(YEARLY_MIN_KWH, YEARLY_MAX_KWH)
+    hour = 0
+    while hour < 24 * 360:
+        if (month == 6 or month == 7 or month == 8) and \
+           (day >= 1 and day <= 30):
+            # Generate random energy consumption for summer months
+            usage = random.uniform(0.5, SUMMER_MEAN_KWH)
+        else:
+            # Generate random energy consumption for winter months
+            usage = random.uniform(0.5, WINTER_MEAN_KWH)
+
+        # Set the total energy based on the hourly usage
+        if hour > 0:
+            total_energy -= (total_energy / 24) * (hour % 24)
+
+        yield f"{year}-{month:02d}-{day:02d} {hour:02d}:{60 * random.randint(0, 59):05.2f}, {usage:.6f}"
+
+# Generate electricity consumption data for 360 hours
+def generate_consumption_data_360():
+    for day in range(1, 366):
+        month = (day - 1) // 30 + 1
+        year = ((month - 1) * 12) + 2016
+
+        if month < 3 or month > 11:
+            yield from generate_consumption_data(year, month, day)
+        else:
+            month += 1
+            if month > 12:
+                yield from generate_consumption_data(year, 1, 1)
+
+# Generate electricity consumption data and print it
+data = list(generate_consumption_data_360())
+for line in data:
+    print(line)

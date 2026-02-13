@@ -1,0 +1,51 @@
+Here is a Python script that generates synthetic electricity consumption data at 1-hour intervals for the specified building:
+
+```python
+import random
+from datetime import timedelta, datetime
+import numpy as np
+
+# Constants
+N Measurements = 696
+BuildingData = {
+    'yearly_mean_kwh': 87.59102,
+    'yearly_min_kwh': 0.0,
+    'yearly_max_kwh': 153.733,
+    'summer_mean_kwh': 88.61049,
+    'winter_mean_kwh': 91.04132
+}
+
+# Convert summer and winter mean values to annual mean for each time period
+BuildingData['annual_summer'] = (BuildingData['summer_mean_kwh'] * 3) / 8
+BuildingData['annual_winter'] = (BuildingData['winter_mean_kwh'] * 5) / 8
+
+# Initialize the start date and time
+start_dt = datetime(2016, 1, 1)
+
+# Generate the electricity consumption data
+while N > 0:
+    # Randomly choose a value within the acceptable range for each hour
+    hourly_value = BuildingData['yearly_mean_kwh'] + random.uniform(-10, 10) * BuildingData['yearly_max_kwh']
+    
+    # Ensure values are not below the minimum or above the maximum allowed
+    if hourly_value < BuildingData['yearly_min_kwh']:
+        hourly_value = BuildingData['yearly_min_kwh']
+    elif hourly_value > BuildingData['yearly_max_kwh']:
+        hourly_value = BuildingData['yearly_max_kwh']
+
+    # Randomly switch between summer and winter mean values
+    if start_dt.month in (6, 7, 8) or start_dt.month == 12:
+        hourly_value = BuildingData['summer_mean_kwh'] + random.uniform(-10, 10) * BuildingData['summer_max']
+    elif start_dt.month in (12, 1, 2):
+        hourly_value = BuildingData['winter_mean_kwh'] + random.uniform(-10, 10) * BuildingData['winter_max']
+
+    # Append the generated value to the output
+    N -= 1
+    print(f"{start_dt.strftime('%Y-%m-%d %H:%M')},{hourly_value:.6f}")
+    
+    # Move to the next hour
+    start_dt += timedelta(hours=1)
+
+```
+
+You can run this script to generate your electricity consumption data at 1-hour intervals, starting on January 1, 2016 for exactly 696 measurements.

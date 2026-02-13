@@ -1,0 +1,32 @@
+import random
+from datetime import timedelta, datetime
+
+def generate Electricity Meter Readings (building_id, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh, summer_mean_kwh, winter_mean_kwh):
+    start_date = '2016-01-01'
+    end_date = '2017-02-03'
+
+    # Initialize empty lists
+    dates = []
+    values = []
+
+    current_date = datetime.strptime(start_date, '%Y-%m-%d')
+
+    while len(dates) < 672:
+        if (current_date.month in [6,7,8]) and summer_mean_kwh != 0:
+            consumption = round(random.uniform(summer_mean_kwh*0.5,summer_mean_kwh),2)
+        elif (current_date.month in [12,1,2]) and winter_mean_kwh != 0:
+            consumption = round(winter_mean_kwh*0.5,winter_mean_kwh)
+        else: 
+            consumption = yearly_mean_kwh
+        # Ensure the value is within the valid range
+        consumption = max(yearly_min_kwh,min(consumption,yearly_max_kwh))
+        
+        dates.append(current_date.strftime('%Y-%m-%d'))
+        values.append(str(round(consumption,2)))
+
+        current_date += timedelta(hours=1)
+
+    for i in range(672):
+        print(f"{dates[i]} {values[i]}")
+
+generate Electricity Meter Readings (140,31.697405,8.0204,61.0,32.27265,30.24863)

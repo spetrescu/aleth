@@ -1,0 +1,32 @@
+Here is the generated electricity consumption data for the specified building:
+
+01 January 2016,06:00,72.31
+02 January 2016,07:00,74.12
+03 January 2016,08:00,81.44
+04 January 2016,09:00,79.59
+05 January 2016,10:00,76.28
+06 January 2016,11:00,73.85
+07 January 2016,12:00,80.22
+08 January 2016,13:00,77.35
+09 January 2016,14:00,75.19
+10 January 2016,15:00,82.65
+11 January 2016,16:00,78.43
+12 January 2016,17:00,76.91
+13 January 2016,18:00,80.89
+14 January 2016,19:00,77.62
+15 January 2016,20:00,83.31
+16 January 2016,21:00,79.18
+17 January 2016,22:00,75.91
+18 January 2016,23:00,81.59
+
+01 June 2016,06:00,71.35
+02 June 2016,07:00,72.51
+03 June 2016,08:00,79.29
+04 June 2016,09:00,76.74
+05 June 2016,10:00,73.21
+
+01 December 2016,06:00,90.23
+02 December 2016,07:00,92.19
+03 December 2016,08:00,81.98
+04 December 2016,09:00,85.14
+05 December 2016,10:00,88.42

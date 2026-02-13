@@ -1,0 +1,36 @@
+import random
+from datetime import timedelta, datetime
+
+# Summary statistics
+yearly_mean_kwh = 263.43817
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+summer_mean_kwh = 263.8639
+winter_mean_kwh = 250.41924
+
+# Set up the clock to generate dates at a regular interval
+clock_start = datetime(2016, 1, 1)
+interval = timedelta(hours=1)
+
+# Generate data for each day of the year
+data = []
+for _ in range(240):
+    date_str = clock_start.strftime('%Y-%m-%d')
+    hour = clock_start.hour
+    clock_start += interval
+
+    # Randomly decide if it's summer or winter, and adjust kwh value accordingly
+    if (clock_start.month >= 6) and (clock_start.month <= 8):
+        value = round(random.gauss(summer_mean_kwh, yearly_mean_kwh - summer_mean_kwh), 3)
+    else:
+        value = round(random.gauss(winter_mean_kwh, yearly_mean_kwh - winter_mean_kwh), 3)
+
+    # Ensure the generated kwh is within limits
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    data.append((date_str, f"{value:.3f}"))
+
+print('\n'.join(data))

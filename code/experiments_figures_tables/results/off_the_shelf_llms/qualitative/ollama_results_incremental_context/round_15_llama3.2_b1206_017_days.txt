@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Constants from the problem statement
+yearly_mean_kwh = 87.59102
+yearly_min_kwh = 0.0
+yearly_max_kwh = 153.733
+summer_mean_kwh = 88.61049
+winter_mean_kwh = 91.04132
+
+# Generate dates and consumption values
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=408*24)
+
+data = []
+for i in range(int((end_date - start_date).days)):
+    date = start_date + timedelta(days=i)
+    hour = int(date.time().hour) if date.time() else 0
+    value = np.random.normal(yearly_mean_kwh, yearly_max_kwh - yearly_min_kwh)
+    value = min(max(value, yearly_min_kwh), yearly_max_kwh)
+    
+    # Apply seasonality
+    if date.month in [6, 7, 8]:
+        value *= summer_mean_kwh / yearly_mean_kwh
+    elif date.month in [12, 1, 2]:
+        value *= winter_mean_kwh / yearly_mean_kwh
+    
+    data.append(f"{date.strftime('%Y-%m-%d')} {hour:02d}:{value:.6f}")
+
+# Print the dataset
+print('\n'.join(data))

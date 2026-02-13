@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Building metadata and annual summary statistics (2016)
+building_id = 1246
+primary_use = "Office"
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate electricity consumption data (kWh) at 1-hour intervals,
+# starting on 01 January 2016, for exactly 720 measurements.
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=719)
+consumption_data = []
+
+for i in range(int((end_date - start_date).days) * 24):
+    current_time = start_date + timedelta(seconds=i*3600)
+    hour_of_day = int(current_time.hour)
+
+    # Determine the season based on the hour of day
+    if (current_time.month == 6 or current_time.month == 7 or current_time.month == 8) and hour_of_day >= 6:
+        usage_value = summer_mean_kwh
+    elif (current_time.month in [12, 1, 2] and hour_of_day < 9):
+        usage_value = winter_mean_kwh
+    else:
+        usage_value = yearly_mean_kwh
+
+    # Add random variation to the consumption value
+    variation = np.random.uniform(-0.01 * yearly_mean_kwh, 0.01 * yearly_mean_kwh)
+    updated_usage_value = usage_value + variation
+
+    if updated_usage_value > yearly_max_kwh:
+        updated_usage_value = yearly_max_kwh
+    elif updated_usage_value < yearly_min_kwh:
+        updated_usage_value = yearly_min_kwh
+
+    consumption_data.append((current_time.strftime("%Y-%m-%d %H:%M"), updated_usage_value))
+
+# Create a DataFrame from the generated data
+df = pd.DataFrame(consumption_data, columns=['Date', 'Consumption (kWh)'])
+
+# Print the output
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Consumption (kWh)']}")

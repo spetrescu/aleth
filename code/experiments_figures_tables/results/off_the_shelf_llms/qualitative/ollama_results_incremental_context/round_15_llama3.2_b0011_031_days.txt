@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Generate time series data
+start_date = '2016-01-01 00:00'
+end_date = '2017-12-31 23:59'
+
+date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+
+# Split the date range into summer and winter months
+summer_months = date_range[(date_range.month >= 6) & (date_range.month <= 8)]
+winter_months = date_range[(date_range.month >= 12) & (date_range.month <= 2)]
+
+# Generate a random value for each hour based on the yearly_mean_kwh, 
+# with some adjustments to mimic summer and winter patterns
+values = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(date_range))
+for i, date in enumerate(date_range):
+    if (date.month >= 6) & (date.month <= 8):  
+        values[i] *= 1.05 # increase by 5%
+    elif (date.month >= 12) & (date.month <= 2): 
+        values[i] *= 0.95 # decrease by 5%
+
+# Create the dataset
+dataset = [f"{d.strftime('%Y-%m-%d %H:%M')}, {value}" for d, value in zip(date_range, values)]
+
+# Print the dataset
+print("\n".join(dataset))

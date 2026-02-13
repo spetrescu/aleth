@@ -1,0 +1,42 @@
+import random
+from datetime import datetime, timedelta
+
+# Set parameters
+building_id = 1073
+primary_use = 'Office'
+square_feet = 194111
+yearly_mean_kwh = 179.21414
+yearly_min_kwh = 0.0
+yearly_max_kwh = 853.0
+summer_mean_kwh = 118.158516
+winter_mean_kwh = 230.26053
+hours_per_measurement = 1
+
+# Set dates
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=432 * hours_per_measurement)
+
+# Initialize list to store measurements
+measurements = []
+
+# Loop through each hour
+current_date = start_date
+while current_date <= end_date:
+    # Randomly select a value between yearly_min_kwh and yearly_max_kwh
+    kwh_consumption = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 6)
+    
+    # Check if the month is summer or winter based on daylight saving time rules
+    if (current_date.month >= 3 and current_date.month <= 5) or (current_date.month >= 10 and current_date.month <= 12):
+        kwh_consumption = round(random.uniform(yearly_min_kwh, yearly_max_kwh), 6)
+    else:
+        kwh_consumption = round(summer_mean_kwh if current_date.month >= 3 and current_date.month <= 5 or current_date.month >= 10 and current_date.month <= 12 else winter_mean_kwh, 6)
+
+    # Append the measurement to the list
+    measurements.append((current_date.strftime("%Y-%m-%d %H:%M"), kwh_consumption))
+    
+    # Increment the date by one hour
+    current_date += timedelta(hours=1)
+
+# Print the data in the desired format
+for measurement in measurements:
+    print(f"{measurement[0]},{measurement[1]}")

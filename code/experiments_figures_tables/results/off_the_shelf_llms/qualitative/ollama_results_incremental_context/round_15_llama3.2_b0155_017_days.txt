@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Define the parameters
+building_id = 155
+primary_use = 'Office'
+square_feet = 51688
+yearly_mean_kwh = 81.997604
+yearly_min_kwh = 23.5
+yearly_max_kwh = 159.0
+summer_mean_kwh = 73.1753
+winter_mean_kwh = 91.38757
+
+# Generate the dates and hours for the measurements
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=408*30) # 408 measurements at 1 hour intervals over a year
+dates = [start_date + timedelta(hours=i) for i in range(int((end_date-start_date).total_seconds()/3600)+1)]
+
+# Initialize lists to store the consumption values
+consumption_values = []
+
+# Loop through each date and generate random consumption values based on the season
+for i, d in enumerate(dates):
+    hour = int(d.hour)
+    
+    if (d.month == 6 or d.month == 7 or d.month == 8) and year == 2016:
+        mean_kwh = summer_mean_kwh
+    elif (d.month == 12 or d.month == 1 or d.month == 2) and year == 2016:
+        mean_kwh = winter_mean_kwh
+    else:
+        mean_kwh = yearly_mean_kwh
+    
+    if np.random.uniform(0,1) < 0.05: # Randomly introduce minor deviations in consumption for some days to mimic real-world variability
+        mean_kwh += (np.random.uniform(-0.01,0.01))*mean_kwh
+        
+    consumption_value = round(mean_kwh + (yearly_min_kwh - mean_kwh) * np.random.uniform(0,1), 3)
+    
+    if consumption_value < yearly_min_kwh:
+        consumption_value = yearly_min_kwh
+    elif consumption_value > yearly_max_kwh:
+        consumption_value = yearly_max_kwh
+
+    consumption_values.append(consumption_value)
+
+# Create the output dataset
+output_dataset = [f"{d.strftime('%Y-%m-%d %H:%M')},{consumption_value}" for d, consumption_value in zip(dates, consumption_values)]
+
+print('\n'.join(output_dataset))

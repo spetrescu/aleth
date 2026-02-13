@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Define time intervals
+start_date = '2016-01-01'
+end_date = f'2016-12-31'
+hours = [i for i in range(len(pd.date_range(start=start_date, end=end_date, freq='h')))]
+
+# Generate random values around yearly_mean_kwh within the valid range
+yearly_min_kwh = 125.06
+yearly_max_kwh = 479.897
+yearly_mean_kwh = 263.43817
+
+values = np.random.normal(yearly_mean_kwh, (yearly_max_kwh - yearly_min_kwh) / 10, len(hours))
+
+# Ensure values don't go below or above the valid range
+values = np.clip(values, yearly_min_kwh, yearly_max_kwh)
+
+# Generate summer and winter values separately
+summer_months = pd.date_range(start=start_date, end=end_date, freq='h', month=[6, 7, 8], period=len(hours) // 3)
+winter_months = pd.date_range(start=start_date, end=end_date, freq='h', month=[12, 1, 2], period=len(hours) // 3)
+
+summer_values = np.random.normal(yearly_mean_kwh, (yearly_max_kwh - yearly_min_kwh) / 10, len(summer_months))
+winter_values = np.random.normal(yearly_mean_kwh, (yearly_max_kwh - yearly_min_kwh) / 10, len(winter_months))
+
+# Interleave summer and winter values with non-seasonal values
+for i in range(len(hours)):
+    if pd.to_datetime(hours[i]).month in [6, 7, 8]:
+        values[i] = summer_values[i]
+    elif pd.to_datetime(hours[i]).month in [12, 1, 2]:
+        values[i] = winter_values[i]
+
+# Create a DataFrame
+df = pd.DataFrame({
+    'YYYY-MM-DD HH:MM': hours,
+    'VALUE': values
+})
+
+# Print the output
+for index, row in df.iterrows():
+    print(f"{row['YYYY-MM-DD HH:MM']}, {row['VALUE']}")

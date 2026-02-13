@@ -1,0 +1,44 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Set seed for reproducibility
+import random
+random.seed(0)
+
+# Build a date range from 01 January 2016 to 01 January 2017 with 432 measurements
+date_range = []
+current_date = datetime(2016, 1, 1)
+for _ in range(432):
+    date_range.append(current_date.strftime('%Y-%m-%d %H:%M'))
+    current_date += timedelta(hours=1)
+
+# Generate random values that follow the given statistics
+values = []
+yearly_mean_kwh = 6.4528236
+winter_mean_kwh = 6.7815933
+summer_mean_kwh = 6.342618
+
+for value in date_range:
+    hour = int(value[11:13])
+    month = int(value[5:7])
+    
+    if (month < 8 and month >= 1) or (month > 12):
+        avg_kwh = summer_mean_kwh
+    else:
+        avg_kwh = winter_mean_kwh
+        
+    # Generate a value between yearly_min_kwh and yearly_max_kwh, 
+    # with a bias towards yearly_mean_kwh
+    std_deviation = (yearly_max_kwh - yearly_min_kwh) / 2.0
+    mean_offset = (yearly_mean_kwh - avg_kwh) / std_deviation * std_deviation
+    value_with_bias = random.gauss(avg_kwh, std_deviation)
+    
+    # Ensure the generated value is within min and max kWh values
+    if yearly_min_kwh < value_with_bias < yearly_max_kwh:
+        values.append(f"{value},{value_with_bias:.2f}")
+    else:
+        values.append(f"{value},{yearly_max_kwh if value_with_bias > yearly_max_kwh else yearly_min_kwh}")
+
+# Output the dataset
+for value in values:
+    print(value)

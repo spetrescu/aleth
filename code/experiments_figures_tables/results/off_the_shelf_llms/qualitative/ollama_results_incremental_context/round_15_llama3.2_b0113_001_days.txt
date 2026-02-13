@@ -1,0 +1,67 @@
+Here's a Python script to generate the electricity consumption data for building 113:
+
+```python
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+import random
+
+# Set seed for reproducibility
+np.random.seed(0)
+
+def generate_electricity_consumption_data(building_id, square_feet, yearly_mean_kwh,
+                                          yearly_min_kwh, yearly_max_kwh,
+                                          summer_mean_kwh, winter_mean_kwh,
+                                          num_measurements):
+    # Initialize data frame with time and consumption values
+    df = pd.DataFrame({
+        'Date': [],
+        'Consumption (kWh)': []
+    })
+
+    # Set start date for generation
+    start_date = datetime(2016, 1, 1)
+
+    # Generate data points at 1-hour intervals until num_measurements are reached
+    while len(df) < num_measurements:
+        # Determine consumption type based on month of the year
+        if (start_date.month > 5 and start_date.month <= 8):
+            consumption = summer_mean_kwh + random.uniform(-10, 10)
+        elif (start_date.month >= 12 and start_date.month <= 2):
+            consumption = winter_mean_kwh + random.uniform(-10, 10)
+        else:
+            # Generate values near yearly_mean_kwh
+            consumption = yearly_mean_kwh + np.random.normal(0, 50)
+
+        # Ensure value is within valid range
+        consumption = max(yearly_min_kwh, min(consumption, yearly_max_kwh))
+
+        # Append data point to dataframe
+        df.loc[len(df)] = [start_date.strftime('%Y-%m-%d %H:%M'), consumption]
+
+        # Increment date by 1 hour
+        start_date += timedelta(hours=1)
+
+    return df
+
+# Generate electricity consumption data for building 113
+building_id = 113
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+num_measurements = 24
+
+df = generate_electricity_consumption_data(building_id, square_feet, yearly_mean_kwh,
+                                          yearly_min_kwh, yearly_max_kwh,
+                                          summer_mean_kwh, winter_mean_kwh,
+                                          num_measurements)
+
+# Print data as required
+for index, row in df.iterrows():
+    print(f"{row['Date']}, {row['Consumption (kWh)']}")
+```
+
+Please let me know if you need any further changes.

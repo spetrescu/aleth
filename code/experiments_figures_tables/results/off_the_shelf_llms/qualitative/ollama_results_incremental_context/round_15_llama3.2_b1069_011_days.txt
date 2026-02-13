@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+
+# Building metadata
+building_id = 1069
+primary_use = 'Office'
+square_feet = 20864
+yearly_mean_kwh = 6.4528236
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+
+# Create a date range for the measurements
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + pd.Timedelta(days=264*24)
+
+# Initialize an empty list to store the data
+data = []
+
+# Loop through each hour in the measurement period
+for i in range(0, int((end_date - start_date).days)):
+    # Generate a random consumption value between yearly_min_kwh and yearly_max_kwh
+    if (start_date + pd.Timedelta(days=i)).month in [6, 7, 8]:
+        consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+    else:
+        consumption = np.random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+    # Append the data to the list
+    data.append((start_date + pd.Timedelta(days=i), consumption))
+
+# Convert the list to a pandas DataFrame and format as required
+df = pd.DataFrame(data, columns=['Date', 'Consumption (kWh)'])
+formatted_df = df.apply(lambda row: f"{row['Date'].strftime('%Y-%m-%d %H:%M')},{row['Consumption (kWh)']:.4f}", axis=1)
+
+# Print the formatted data
+print(formatted_df)

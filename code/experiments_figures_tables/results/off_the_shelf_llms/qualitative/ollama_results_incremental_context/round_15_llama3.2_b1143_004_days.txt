@@ -1,0 +1,58 @@
+Here's a Python script that generates synthetic building electricity meter readings:
+
+```python
+import random
+from datetime import datetime, timedelta
+
+# Constants
+BUILDING_ID = 1143
+YEARLY_MEAN_KWH = 79.257515
+YEARLY_MIN_KWH = 25.0
+YEARLY_MAX_KWH = 187.0
+SUMMER_MEAN_KWH = 85.378174
+WINTER_MEAN_KWH = 74.83288
+
+# Function to generate random kwh value within the specified range
+def generate_random_kwh(min_val, max_val):
+    return round(random.uniform(min_val, max_val), 3)
+
+# Function to generate synthetic electricity consumption data
+def generate_electricity_data(building_id, yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh,
+                             summer_mean_kwh, winter_mean_kwh, num_measurements):
+    # Initialize current date and kwh value
+    current_date = datetime(2016, 1, 1)
+    kwh_value = random.uniform(yearly_min_kwh, yearly_max_kwh)
+
+    # Generate data for each measurement
+    while num_measurements > 0:
+        num_measurements -= 1
+
+        # Convert current date to string format (YYYY-MM-DD HH:MM)
+        date_str = current_date.strftime("%Y-%m-%d %H:%M")
+
+        # Randomly decide whether it's summer or winter month
+        if (current_date.month == 6 or current_date.month == 7 or current_date.month == 8) and \
+           ((current_date.weekday() >= 2 and current_date.weekday() <= 4) or current_date.weekday() == 5):
+            # Summer months should average around summer_mean_kwh
+            kwh_value = generate_random_kwh(summer_mean_kwh - 10, summer_mean_kwh + 10)
+        elif (current_date.month == 12 or current_date.month == 1 or current_date.month == 2) and \
+             ((current_date.weekday() >= 0 and current_date.weekday() <= 5) or current_date.weekday() == 6):
+            # Winter months should average around winter_mean_kwh
+            kwh_value = generate_random_kwh(winter_mean_kwh - 10, winter_mean_kwh + 10)
+        else:
+            # Other months should average around yearly_mean_kwh
+            kwh_value = generate_random_kwh(yearly_mean_kwh - 20, yearly_mean_kwh + 20)
+
+        print(f"{date_str}, {kwh_value}")
+
+        # Increment current date by 1 hour
+        current_date += timedelta(hours=1)
+
+# Generate synthetic electricity consumption data for 96 measurements
+generate_electricity_data(BUILDING_ID, YEARLY_MEAN_KWH, YEARLY_MIN_KWH, YEARLY_MAX_KWH,
+                         SUMMER_MEAN_KWH, WINTER_MEAN_KWH, num_measurements=96)
+```
+
+This script uses a combination of random number generation and conditional statements to ensure that the generated values are consistent with the provided summary statistics. The `generate_random_kwh` function is used to generate random kwh values within a specified range.
+
+Please note that the actual output will vary due to the randomness in the kwh value generation process.

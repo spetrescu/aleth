@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, date
+
+# Generate data for all days in a year (2016)
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+
+data = []
+for n in range(144):
+    day = start_date + str(n*30)
+    
+    # Determine if it's summer or winter
+    if (date(int(day[5:]),int(day[6:]),int(day[7:])),12) >= (date(2016,6,15),3) and \
+       (date(int(day[5:]),int(day[6:]),int(day[7:])),12) <= (date(2016,8,31),11):
+        summer_mean_kwh = 81.22173
+    else:
+        winter_mean_kwh = 83.83176
+    
+    # Generate random values near yearly mean kWh
+    kwh = round(summer_mean_kwh*np.random.uniform(0.9,1.1) + (yearly_mean_kwh - summer_mean_kwh)*np.random.uniform(-0.01,0.01))
+    
+    # Ensure the value is within the allowed range
+    if kwh < yearly_min_kwh:
+        kwh = yearly_min_kwh
+    elif kwh > yearly_max_kwh:
+        kwh = yearly_max_kwh
+    
+    data.append([day+" "+str(int((n*30)%24))+":00", round(kwh,2)])
+
+# Convert the data into a pandas DataFrame and print it.
+pd.DataFrame(data).to_csv('electricity_data.csv', index=False)

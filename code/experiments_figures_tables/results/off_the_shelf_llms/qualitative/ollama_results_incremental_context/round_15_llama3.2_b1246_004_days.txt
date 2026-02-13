@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+
+# Set the seed for reproducibility
+np.random.seed(0)
+
+# Define the building metadata
+building_id = 1246
+primary_use = 'Office'
+square_feet = 50327
+yearly_mean_kwh = 46.317394
+yearly_min_kwh = 0.0
+yearly_max_kwh = 82.0
+summer_mean_kwh = 42.024456
+winter_mean_kwh = 46.382324
+
+# Generate dates for the first 96 hours of 2016
+start_date = '01/01/16'
+end_date = '31/12/15'
+
+dates = pd.date_range(start=start_date, end=end_date, freq='h')
+
+# Create a DataFrame with the generated dates and random values
+df = pd.DataFrame(dates, columns=['Date'])
+df['Value'] = np.random.uniform(yearly_min_kwh, yearly_max_kwh, size=len(df))
+
+# Ensure that summer months average around summer_mean_kwh and winter months around winter_mean_kwh
+summer_months = [i for i, date in enumerate(dates) if (date.month == 6 or date.month == 7 or date.month == 8)]
+winter_months = [i for i, date in enumerate(dates) if (date.month >= 12 and date.month <= 2)]
+
+# Adjust values in summer months to average around summer_mean_kwh
+df.loc[summer_months, 'Value'] = np.random.uniform(summer_mean_kwh * 0.8, summer_mean_kwh * 1.2)
+
+# Adjust values in winter months to average around winter_mean_kwh
+df.loc[winter_months, 'Value'] = np.random.uniform(winter_mean_kwh * 0.8, winter_mean_kwh * 1.2)
+
+# Print the DataFrame as desired output format
+for index, row in df.iterrows():
+    print(f"{row['Date'].strftime('%Y-%m-%d %H:%M')}, {row['Value']}")

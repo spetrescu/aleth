@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Constants
+building_id = 1223
+primary_use = 'Office'
+square_feet = 52141
+yearly_mean_kwh = 76.72134
+yearly_min_kwh = 0.0
+yearly_max_kwh = 174.64
+summer_mean_kwh = 81.22173
+winter_mean_kwh = 83.83176
+
+# Initialize lists to hold data
+start_date = '2016-01-01'
+end_date = start_date
+dates = [start_date]
+values = []
+
+# Generate data for each day
+for i in range(720):
+    date = end_date
+    # Calculate the offset from the mean value
+    offset = np.random.normal(loc=yearly_mean_kwh, scale=(yearly_max_kwh - yearly_min_kwh) / 2)
+    # Adjust for seasonal variation
+    if datetime.strptime(date[:5], '%Y-%m') >= datetime.strptime('2016-06-01', '%Y-%m'):
+        offset += np.random.normal(loc=summer_mean_kwh, scale=(summer_mean_kwh - yearly_min_kwh) / 2)
+    else:
+        offset += np.random.normal(loc=winter_mean_kwh, scale=(winter_mean_kwh - yearly_min_kwh) / 2)
+
+    # Ensure value is within allowed range
+    value = max(yearly_min_kwh, min(offset + yearly_mean_kwh, yearly_max_kwh))
+    
+    # Calculate date and append to list
+    end_date = add_days(date, 1)
+    values.append(value)
+
+# Convert data to string format
+data_string = '\n'.join(f"{date} {value}" for date, value in zip(dates, values))
+
+print(data_string)

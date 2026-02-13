@@ -1,0 +1,34 @@
+import pandas as pd
+import numpy as np
+
+# Generate random time series data
+np.random.seed(0)
+start_date = '2016-01-01'
+end_date = '2016-12-31'
+dt = pd.date_range(start=start_date, end=end_date, freq='1h')
+
+# Create a DataFrame with the time and corresponding kWh value
+data = {
+    'date': dt,
+    'kWh': np.random.normal(78.12403, 5, len(dt))
+}
+df = pd.DataFrame(data)
+
+# Filter out values below yearly_min_kwh or above yearly_max_kwh
+df = df[(df['kWh'] >= 23.3036) & (df['kWh'] <= 173.945)]
+
+# Create a seasonal component to simulate summer and winter months
+seasonal_component = np.random.normal(78.177864, 2, len(df))
+
+# Split data into summer and winter months
+summer_months = df[(df.index >= '2016-06-01') & (df.index <= '2016-08-31')]
+winter_months = df[(df.index >= '2016-12-01') & (df.index <= '2016-02-28')]
+
+# Adjust the seasonal component to match summer_mean_kwh and winter_mean_kwh
+summer_seasonal_component = seasonal_component * 0.95
+winter_seasonal_component = seasonal_component * 1.05
+
+# Apply the seasonal component to the data
+df['kWh'] = df.apply(lambda row: row['kWh'] + (seasonal_component if row.index >= '2016-06-01' else winter_seasonal_component), axis=1)
+
+print('\n'.join([f"{date} {kWh}" for date, kwh in zip(df['date'], df['kWh'])]))

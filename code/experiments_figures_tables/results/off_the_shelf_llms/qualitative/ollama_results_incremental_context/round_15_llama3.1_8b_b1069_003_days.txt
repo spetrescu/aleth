@@ -1,0 +1,48 @@
+To generate the electricity consumption data, I'll use a simple Python script with NumPy for generating random numbers and the `datetime` module for formatting the dates.
+
+```python
+import numpy as np
+from datetime import timedelta, datetime
+
+# Constants
+building_id = 1069
+yearly_mean_kwh = 6.4528236
+summer_mean_kwh = 6.342618
+winter_mean_kwh = 6.7815933
+yearly_min_kwh = 0.0
+yearly_max_kwh = 18.1
+
+# Function to generate random values within given range with a mean
+def gen_random_value(mean, min_val, max_val):
+    return np.random.uniform(min_val, max_val, size=1)[0]
+
+# Generate dates from January 01 2016 up to 72 hours later (January 03 2016)
+start_date = datetime(2016, 1, 1, 0, 0, 0) # Start at midnight
+end_date = start_date + timedelta(days=3)
+
+# List of generated data
+data = []
+
+while start_date <= end_date:
+    if start_date.month in [6,7,8]: # Summer months (Jun-Aug)
+        value = gen_random_value(summer_mean_kwh, yearly_min_kwh, yearly_max_kwh)
+    elif start_date.month in [12, 1, 2]: # Winter months (Dec-Feb)
+        value = gen_random_value(winter_mean_kwh, yearly_min_kwh, yearly_max_kwh)
+    else: # Other months
+        value = gen_random_value(yearly_mean_kwh, yearly_min_kwh, yearly_max_kwh)
+
+    # Format date and append to data list
+    formatted_date = start_date.strftime('%Y-%m-%d %H:%M')
+    data.append(f"{formatted_date},{value:.2f}")
+
+    # Increment date by one hour
+    start_date += timedelta(hours=1)
+
+# Print generated data
+for line in data:
+    print(line)
+```
+
+**Output:**
+
+You can copy this code into your Python environment and run it. It will print out the electricity consumption data for 72 hours, with each row representing a single measurement of 1-hour interval.

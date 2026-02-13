@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+from datetime import timedelta, datetime
+
+# Set a seed for reproducibility
+np.random.seed(0)
+
+# Initialize variables
+building_id = 113
+primary_use = "Education"
+square_feet = 100481
+yearly_mean_kwh = 363.97446
+yearly_min_kwh = 159.643
+yearly_max_kwh = 679.25
+summer_mean_kwh = 365.49576
+winter_mean_kwh = 361.4717
+
+# Generate dates and time intervals
+start_date = datetime(2016, 1, 1)
+end_date = start_date + timedelta(days=648*24)  # 648 measurements at 1-hour intervals
+dates = pd.date_range(start=start_date, end=end_date)
+
+# Initialize lists to store the values and results
+values_list = []
+results = []
+
+# Loop over each date and generate a value between yearly_min_kwh and yearly_max_kwh
+for idx, date in enumerate(dates):
+    if (date.month < 3 or date.month > 11) and (idx % 30 == 0):  # Winter months
+        values_list.append(winter_mean_kwh)
+    elif (date.month >= 3 and date.month <= 8):  # Summer months
+        values_list.append(summer_mean_kwh)
+    else:  # Spring/Autumn
+        values_list.append(yearly_mean_kwh)
+
+# Convert lists to pandas Series and DataFrame
+values = pd.Series(values_list, index=dates)
+df = pd.DataFrame({'DATE': dates, 'VALUE': values})
+
+# Print the results
+for index, row in df.iterrows():
+    print(f"{row['DATE'].strftime('%Y-%m-%d %H:%M')}, {row['VALUE']}")

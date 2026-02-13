@@ -1,0 +1,21 @@
+import pandas as pd
+import numpy as np
+
+np.random.seed(0)
+
+start_date = '2016-01-01'
+end_date = '2016-09-30'
+
+# Generate time series data
+data = []
+for i in range(504):
+    date = start_date + str(i)
+    if (date[5:7] >= '06' and date[5:7] <= '08') or (date[5:7] >= '12' and date[5:7] <= '02'):
+        value = np.random.uniform(76.72134, 83.83176)
+    else:
+        value = np.random.uniform(76.72134, 174.64)
+    data.append(f"{date} {value:.4f}")
+
+# Print the generated data
+for item in data:
+   print(item)

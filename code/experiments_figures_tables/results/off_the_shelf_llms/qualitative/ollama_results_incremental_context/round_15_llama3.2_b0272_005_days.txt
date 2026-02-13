@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+
+# Define the parameters
+building_id = 272
+primary_use = "Education"
+square_feet = 4583
+yearly_mean_kwh = 17.38018
+yearly_min_kwh = 0.8
+yearly_max_kwh = 74.32
+summer_mean_kwh = 25.539513
+winter_mean_kwh = 11.742976
+
+# Generate a date range for 120 measurements
+start_date = pd.to_datetime('2016-01-01')
+end_date = start_date + pd.DateOffset(minutes=60, days=120)
+dates = pd.date_range(start=start_date, end=end_date)
+
+# Initialize lists to store the values
+values = []
+
+# Loop over each date in the range
+for i, date in enumerate(dates):
+    # Determine whether it's summer or winter based on the month
+    if (date.month >= 6) and (date.month <= 8):
+        value = np.random.normal(summer_mean_kwh, yearly_max_kwh/10)
+    elif (date.month >= 12) and (date.month <= 2):
+        value = np.random.normal(winter_mean_kwh, yearly_min_kwh/5)
+    else:
+        # Otherwise, use the yearly mean
+        value = np.random.normal(yearly_mean_kwh, yearly_max_kwh/10)
+
+    # Make sure the value is within the valid range
+    if value < yearly_min_kwh:
+        value = yearly_min_kwh
+    elif value > yearly_max_kwh:
+        value = yearly_max_kwh
+
+    # Append the value to the list
+    values.append(value)
+
+# Create a dataframe with the date and corresponding value
+df = pd.DataFrame({'VALUE': values})
+df['DATE'] = dates
+
+# Format the output as required
+for index, row in df.iterrows():
+    print(f"{row['DATE'].strftime('%Y-%m-%d %H:%M')},{row['VALUE']}")
