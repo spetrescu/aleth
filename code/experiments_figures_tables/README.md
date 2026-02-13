@@ -36,6 +36,19 @@ Assuming the virtual environment is activated and requirements have been install
 #### Figure 4a_4b_figure.py
 Assuming the virtual environment is activated and requirements have been installed, run: `python 4a_4b_figure.py`
 
+#### Table 4_table.py
+Assuming the virtual environment is activated and requirements have been installed, run: `python 4_table.py`
+
+#### Figure 5a_5b_figure.py
+Assuming the virtual environment is activated and requirements have been installed, run: `python 5a_5b_figure.py`
+
+#### Figure 6a_6b_6c_6d_figure.py
+Assuming the virtual environment is activated and requirements have been installed, run: `python 6a_6b_6c_6d_figure.py`
+
+#### Figure 7a_7b_7c_7d_figure.py
+Assuming the virtual environment is activated and requirements have been installed, run: `python 7a_7b_7c_7d_figure.py`
+
+
 ### Results 1/2 Off the shelf LLMs
 To match the presentation of the paper, we provide the qualitative and quantitative results for the off the shelf LLM experiments (`results/off_the_shelf_llms/qualitative` and `results/off_the_shelf_llms/quantitative`).
 
