@@ -44,7 +44,7 @@ To match the presentation of the paper, we provide the qualitative and quantitat
 Assuming the virtual environment is activated and requirements have been installed, run: `python 4_table.py`
 
 #### Figure 5a_5b_figure.py
-This figure in the paper was one example of how we tested the sheer data ouptut capability of off-the-shelf LLMs. To do so, we ran: `results/off_the_shelf_llms/qualitative/test_data_volume_output_capability.py` (this will generate data for 1-31 days for 3 models; you can run this if you want to reproduce the data itself, however, given the time it takes, we already provide the results in output txt files which can be found in `buildsys_github_submissions/submission_76/code/experiments_figures_tables/results/off_the_shelf_llms/qualitative/qualitative_results_incremental_by_no_days`). Therefore, to plot the results directly and reproduce Figure 5a and 5b, run the command below:
+This figure in the paper was one example of how we tested the sheer data ouptut capability of off-the-shelf LLMs. To do so, we ran: `results/off_the_shelf_llms/qualitative/5_test_data_volume_output_capability.py` (this will generate data for 1-31 days for 3 models; you can run this if you want to reproduce the data itself, however, given the time it takes, we already provide the results in output txt files which can be found in `buildsys_github_submissions/submission_76/code/experiments_figures_tables/results/off_the_shelf_llms/qualitative/qualitative_results_incremental_by_no_days`). Therefore, to plot the results directly and reproduce Figure 5a and 5b, run the command below:
 
 Assuming the virtual environment is activated and requirements have been installed, run: `python 5a_5b_figure.py`
 
