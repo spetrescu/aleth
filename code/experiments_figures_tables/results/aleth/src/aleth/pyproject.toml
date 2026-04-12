@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aleth"
+version = "0.1.0"
+description = "aleth: generative model driven synthetic telemetry generator for building sensors"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.31.0",
+    "matplotlib>=3.7.0",
+    "tqdm>=4.66.0",
+]
+
+[project.scripts]
+aleth = "cli:main"
+
+[tool.setuptools]
+py-modules = ["cli", "config"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["llm_processor*", "model_registry*", "simulation_engine*"]
