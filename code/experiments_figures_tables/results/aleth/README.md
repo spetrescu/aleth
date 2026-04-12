@@ -1,5 +1,18 @@
 # aleth
 
+## Running `aleth`
+To run aleth (assuming you have deployed `ollama` -- see instructions below), simply follow these steps:
+### 1/2 Virtual environment
+Assuming you have `venv` installed, first create a virtual environment to install dependencies required to run code. Therefore:
+1.  Run `python3 -m venv env-aleth`
+2. Run `source env-aleth/bin/activate`
+3. Lastly, navigate to `src/aleth` and run `pip install .`
+### 2/2 Run `aleth`
+Simply run `aleth` using: 
+```
+aleth --scenario "Give me sensor data for a small office electricity usage" --progress
+```
+
 ## Hardware
 All tests were run on two servers: a single-GPU node with an `NVIDIA RTX PRO 6000 (96GB VRAM)` and an `AMD EPYC 9354P CPU (32 cores)`, and a `Dell PowerEdge` server equipped with two `NVIDIA RTX A5000 GPUs (24GB VRAM each)` - both with `Ubuntu 24.04.3 LTS` installed.
 
