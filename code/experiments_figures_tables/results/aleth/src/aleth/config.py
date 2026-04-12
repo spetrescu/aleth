@@ -1,2 +1,4 @@
 MAIN_MODEL_INTENT_PARSING = "gpt-oss:20b"
 MAIN_MODEL_RANGE_ESTIMATOR = "gpt-oss:20b"
+OLLAMA_URL = "http://localhost:11434/api/chat"
+OLLAMA_TIMEOUT = 180
