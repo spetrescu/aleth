@@ -123,7 +123,7 @@ You must extract these operator values:
 Rules:
 - modality is mandatory
 - for known modalities, use one of:
-  temperature, humidity, co2, electricity, power, energy, occupancy, pressure, flow
+  temperature, humidity, co2, electricity, power, energy, pressure, flow
 - if the request clearly specifies a telemetry modality that is not in the known list,
   set modality="other" and set custom_modality to the exact cleaned modality name
 - if the request does not clearly specify any modality, return null for modality and null for custom_modality
@@ -139,7 +139,7 @@ Rules:
 Return schema:
 {{
   "scenario": "cleaned user scenario",
-  "modality": "temperature|humidity|co2|electricity|power|energy|occupancy|pressure|flow|other|null",
+  "modality": "temperature|humidity|co2|electricity|power|energy|pressure|flow|other|null",
   "custom_modality": "free-text modality name when modality is other, otherwise null",
   "unit_hint": "optional unit or null",
   "start_year": 2025,
@@ -196,7 +196,7 @@ If modality is not clearly present, set modality to null.
         if modality is None:
             raise ValueError(
                 "Simulation rejected: no explicit modality was found in the request. "
-                "Please specify a modality such as temperature, humidity, co2, power, energy, occupancy, "
+                "Please specify a modality such as temperature, humidity, co2, power, energy, "
                 "or another telemetry type."
             )
 
@@ -208,7 +208,7 @@ If modality is not clearly present, set modality to null.
 
         resolved_start_year = int(data.get("start_year", start_year or dt.date.today().year))
         resolved_num_years = validate_horizon_years(int(data.get("num_years", num_years or 1)))
-        resolved_freq = validate_granularity_minutes(int(data.get("freq_minutes", freq_minutes or 60)))
+        resolved_freq = validate_granularity_minutes(int(data.get("freq_minutes", freq_minutes or 30)))
         resolved_precision = validate_precision_decimals(int(data.get("precision_decimals", 2)))
         resolved_outage = validate_percentage(float(data.get("outage_pct", 0.0)), "outage")
         resolved_hw_error = validate_percentage(float(data.get("hw_error_pct", 0.0)), "hw_error")
