@@ -380,7 +380,7 @@ Important:
 
 Schema:
 {
-  "sensor_family": "temperature|humidity|co2|electricity|power|energy|occupancy|pressure|flow|generic",
+  "sensor_family": "temperature|humidity|co2|electricity|power|energy|pressure|flow|generic",
   "unit": "kW",
   "annual_cycle_strength": 0.0,
   "annual_cycle_phase_day": 200,
@@ -812,8 +812,6 @@ def infer_unit_from_scenario(scenario: str) -> Optional[str]:
         return "kW"
     if "pressure" in s:
         return "Pa"
-    if "occup" in s or "people count" in s:
-        return "count"
     if "flow" in s:
         return "m3/s"
     return None
@@ -834,7 +832,6 @@ humidity -> %RH
 co2 -> ppm
 power -> kW
 energy -> kWh
-occupancy -> count
 pressure -> Pa
 flow -> m3/s or null if unclear
 voc -> ppb or ppm depending on context, otherwise null
