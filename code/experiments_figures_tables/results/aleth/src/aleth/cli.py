@@ -8,8 +8,9 @@ from typing import Any, Dict, List
 
 import matplotlib.pyplot as plt
 
+from config import OLLAMA_URL
+
 from llm_processor import (
-    OLLAMA_URL,
     IntentParser,
     Observability,
     OllamaClient,
