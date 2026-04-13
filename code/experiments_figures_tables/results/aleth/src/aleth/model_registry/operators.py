@@ -17,7 +17,6 @@ DEFAULT_SUPPORTED_MODALITIES = {
     "electricity",
     "power",
     "energy",
-    "occupancy",
     "pressure",
     "flow",
 }
@@ -26,8 +25,6 @@ MODALITY_ALIASES = {
     "temp": "temperature",
     "carbon dioxide": "co2",
     "electric": "electricity",
-    "people_count": "occupancy",
-    "people count": "occupancy",
 }
 
 
@@ -147,8 +144,6 @@ def normalize_modality(value: Optional[str]) -> Optional[str]:
         "temp": "temperature",
         "carbon dioxide": "co2",
         "electric": "electricity",
-        "people_count": "occupancy",
-        "people count": "occupancy",
     }
     modality = aliases.get(modality, modality)
     return modality if modality in DEFAULT_SUPPORTED_MODALITIES else None
