@@ -16,6 +16,7 @@ from model_registry.operators import (
     validate_horizon_years,
     validate_percentage,
     validate_precision_decimals,
+    resolve_modality,
 )
 
 
@@ -75,6 +76,7 @@ class IntentOllamaClient:
 class ParsedIntent:
     scenario: str
     modality: str
+    custom_modality: Optional[str] = None
     unit_hint: Optional[str] = None
     start_year: int = dataclasses.field(default_factory=lambda: dt.date.today().year)
     num_years: int = 1
@@ -88,6 +90,7 @@ class ParsedIntent:
         return {
             "scenario": self.scenario,
             "modality": self.modality,
+            "custom_modality": self.custom_modality,
             "unit_hint": self.unit_hint,
             "start_year": self.start_year,
             "num_years": self.num_years,
@@ -118,7 +121,12 @@ You must extract these operator values:
 {get_operator_prompt_fragment()}
 
 Rules:
-- modality is mandatory; if the request does not clearly specify a modality, return null for modality
+- modality is mandatory
+- for known modalities, use one of:
+  temperature, humidity, co2, electricity, power, energy, occupancy, pressure, flow
+- if the request clearly specifies a telemetry modality that is not in the known list,
+  set modality="other" and set custom_modality to the exact cleaned modality name
+- if the request does not clearly specify any modality, return null for modality and null for custom_modality
 - granularity means sampling interval in minutes
 - horizon means number of years to generate
 - precision means number of decimal places
@@ -132,6 +140,7 @@ Return schema:
 {{
   "scenario": "cleaned user scenario",
   "modality": "temperature|humidity|co2|electricity|power|energy|occupancy|pressure|flow|other|null",
+  "custom_modality": "free-text modality name when modality is other, otherwise null",
   "unit_hint": "optional unit or null",
   "start_year": 2025,
   "num_years": 1,
@@ -179,11 +188,22 @@ If modality is not clearly present, set modality to null.
         except Exception as exc:
             raise OllamaError(f"Intent parsing failed: {exc}") from exc
 
-        modality = normalize_modality(data.get("modality"))
+        modality, custom_modality = resolve_modality(
+            data.get("modality"),
+            data.get("custom_modality"),
+        )
+
         if modality is None:
             raise ValueError(
-                "Simulation rejected: no explicit supported modality was found in the request. "
-                "Please specify a modality such as temperature, humidity, co2, power, energy, or occupancy."
+                "Simulation rejected: no explicit modality was found in the request. "
+                "Please specify a modality such as temperature, humidity, co2, power, energy, occupancy, "
+                "or another telemetry type."
+            )
+
+        if modality == "other" and not custom_modality:
+            raise ValueError(
+                "Simulation rejected: the request indicates a non-standard modality, "
+                "but its name was not clearly identified."
             )
 
         resolved_start_year = int(data.get("start_year", start_year or dt.date.today().year))
@@ -201,6 +221,7 @@ If modality is not clearly present, set modality to null.
         return ParsedIntent(
             scenario=cleaned_scenario,
             modality=modality,
+            custom_modality=custom_modality,
             unit_hint=resolved_unit_hint,
             start_year=resolved_start_year,
             num_years=resolved_num_years,
