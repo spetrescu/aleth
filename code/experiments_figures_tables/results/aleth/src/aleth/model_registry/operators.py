@@ -4,12 +4,13 @@ import dataclasses
 import datetime as dt
 import math
 import random
-from typing import Any, Dict, List, Optional
+import re
+from typing import Any, Dict, List, Optional, Tuple
 
 from llm_processor.range_estimator import ModalityProfile, Range
 
-
-SUPPORTED_MODALITIES = {
+# these are some default values for common modalities, however, if the requested modality is not in this list, we use other as type and custom_modality, ultimately inferring unit using infer_unit_with_llm
+DEFAULT_SUPPORTED_MODALITIES = {
     "temperature",
     "humidity",
     "co2",
@@ -19,6 +20,14 @@ SUPPORTED_MODALITIES = {
     "occupancy",
     "pressure",
     "flow",
+}
+
+MODALITY_ALIASES = {
+    "temp": "temperature",
+    "carbon dioxide": "co2",
+    "electric": "electricity",
+    "people_count": "occupancy",
+    "people count": "occupancy",
 }
 
 
@@ -35,10 +44,14 @@ def get_operator_definitions() -> List[OperatorDefinition]:
     return [
         OperatorDefinition(
             name="modality",
-            description="Sensor modality to simulate. This is required; if absent, the simulation must be rejected.",
+            description=(
+                "Sensor modality to simulate. This is required. "
+                "Use a canonical known modality when possible; otherwise use 'other' "
+                "and provide the actual free-text modality name separately."
+            ),
             required=True,
             default=None,
-            example_values=["temperature", "co2", "power", "humidity"],
+            example_values=["temperature", "co2", "power", "humidity", "other"],
         ),
         OperatorDefinition(
             name="granularity",
@@ -88,11 +101,47 @@ def get_operator_prompt_fragment() -> str:
     return "\n".join(lines)
 
 
+def _clean_modality_text(value: Optional[str]) -> Optional[str]:
+    if value is None:
+        return None
+    text = str(value).strip().lower()
+    text = re.sub(r"\s+", " ", text)
+    return text or None
+
+
+def resolve_modality(
+    modality_value: Optional[str],
+    custom_modality_value: Optional[str] = None,
+) -> Tuple[Optional[str], Optional[str]]:
+    modality = _clean_modality_text(modality_value)
+    custom = _clean_modality_text(custom_modality_value)
+
+    if modality is None:
+        return None, None
+
+    modality = MODALITY_ALIASES.get(modality, modality)
+
+    if modality in DEFAULT_SUPPORTED_MODALITIES:
+        return modality, None
+
+    if modality == "other":
+        if custom:
+            custom = MODALITY_ALIASES.get(custom, custom)
+            if custom in DEFAULT_SUPPORTED_MODALITIES:
+                return custom, None
+            return "other", custom
+        return "other", None
+
+    if modality:
+        return "other", modality
+
+    return None, None
+
 def normalize_modality(value: Optional[str]) -> Optional[str]:
     if value is None:
         return None
     modality = str(value).strip().lower()
-    if modality in SUPPORTED_MODALITIES:
+    if modality in DEFAULT_SUPPORTED_MODALITIES:
         return modality
     aliases = {
         "temp": "temperature",
@@ -102,7 +151,7 @@ def normalize_modality(value: Optional[str]) -> Optional[str]:
         "people count": "occupancy",
     }
     modality = aliases.get(modality, modality)
-    return modality if modality in SUPPORTED_MODALITIES else None
+    return modality if modality in DEFAULT_SUPPORTED_MODALITIES else None
 
 
 def validate_granularity_minutes(value: int) -> int:
