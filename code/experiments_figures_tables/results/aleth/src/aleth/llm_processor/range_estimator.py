@@ -408,9 +408,15 @@ for this sensor. Keep the profile plausible and conservative.
 """.strip()
 
         data = self._call_with_retry(system, user)
+        resolved_unit = self.resolve_unit(
+            scenario=scenario,
+            unit_hint=unit_hint,
+            llm_unit=data.get("unit"),
+        )
+
         profile = ModalityProfile(
             sensor_family=str(data.get("sensor_family", "generic")),
-            unit=str(data.get("unit", unit_hint or infer_unit_from_scenario(scenario))),
+            unit=resolved_unit,
             annual_cycle_strength=float(data.get("annual_cycle_strength", 0.25)),
             annual_cycle_phase_day=int(data.get("annual_cycle_phase_day", 200)),
             month_drift_strength=float(data.get("month_drift_strength", 0.15)),
@@ -767,7 +773,104 @@ The two periods may overlap, but should reflect realistic diurnal behavior for t
         lo = max(parent.minimum, center - new_width / 2.0)
         hi = min(parent.maximum, center + new_width / 2.0)
         return Range(lo, hi, "Fallback range derived from parent")
+    
+    def resolve_unit(
+        self,
+        scenario: str,
+        unit_hint: Optional[str] = None,
+        llm_unit: Optional[str] = None,
+    ) -> str:
+        if unit_hint and str(unit_hint).strip():
+            return str(unit_hint).strip()
 
+        hardcoded = infer_unit_from_scenario(scenario)
+        if hardcoded:
+            return hardcoded
+
+        if llm_unit and str(llm_unit).strip():
+            return str(llm_unit).strip()
+
+        inferred = self.infer_unit_with_llm(scenario=scenario, unit_hint=unit_hint)
+        if inferred:
+            return inferred
+
+        return "unit"
+
+def infer_unit_from_scenario(scenario: str) -> Optional[str]:
+    s = scenario.lower()
+    if "temperature" in s or "temp" in s:
+        return "°C"
+    if "humidity" in s:
+        return "%RH"
+    if "co2" in s or "carbon dioxide" in s:
+        return "ppm"
+    if "power" in s:
+        return "kW"
+    if "energy" in s:
+        return "kWh"
+    if "electricity" in s or "electric" in s:
+        return "kW"
+    if "pressure" in s:
+        return "Pa"
+    if "occup" in s or "people count" in s:
+        return "count"
+    if "flow" in s:
+        return "m3/s"
+    return None
+
+def infer_unit_with_llm(self, scenario: str, unit_hint: Optional[str] = None) -> Optional[str]:
+    system = """
+You infer the most plausible measurement unit for one building telemetry modality.
+
+Rules:
+- Return strict JSON only.
+- Prefer the externally supplied unit hint if it is already plausible.
+- If the scenario clearly implies a standard unit, return it.
+- If multiple units are plausible and there is not enough context, return null.
+- Do not guess a specific unit when confidence is low.
+- Examples:
+temperature -> °C
+humidity -> %RH
+co2 -> ppm
+power -> kW
+energy -> kWh
+occupancy -> count
+pressure -> Pa
+flow -> m3/s or null if unclear
+voc -> ppb or ppm depending on context, otherwise null
+
+Schema:
+{
+"unit": "string or null",
+"confidence": "high|medium|low",
+"rationale": "brief explanation"
+}
+""".strip()
+
+    user = f"""
+Scenario: {scenario}
+External unit hint: {unit_hint or 'none'}
+
+Task:
+Infer the most plausible measurement unit for the telemetry described in the scenario.
+If the correct unit cannot be determined confidently, return null.
+""".strip()
+
+    data = self._call_with_retry(system, user)
+
+    unit = data.get("unit")
+    if unit is None:
+        return None
+
+    unit = str(unit).strip()
+    if not unit or unit.lower() == "null":
+        return None
+
+    confidence = str(data.get("confidence", "")).strip().lower()
+    if confidence == "low":
+        return None
+
+    return unit
 
 def days_in_month(year: int, month: int) -> int:
     if month == 12:
@@ -793,28 +896,6 @@ def day_numbers_for_bucket(year: int, month: int, week_bucket: int) -> List[int]
     dim = days_in_month(year, month)
     return [d for d in range(1, dim + 1) if week_bucket_for_day(d, dim) == week_bucket]
 
-
-def infer_unit_from_scenario(scenario: str) -> str:
-    s = scenario.lower()
-    if "temperature" in s or "temp" in s:
-        return "°C"
-    if "humidity" in s:
-        return "%RH"
-    if "co2" in s or "carbon dioxide" in s:
-        return "ppm"
-    if "power" in s:
-        return "kW"
-    if "energy" in s:
-        return "kWh"
-    if "electricity" in s or "electric" in s:
-        return "kW"
-    if "pressure" in s:
-        return "Pa"
-    if "occup" in s or "people count" in s:
-        return "count"
-    if "flow" in s:
-        return "m3/s"
-    return "unit"
 
 
 def estimate_total_hierarchy_steps(years: List[int]) -> int:
