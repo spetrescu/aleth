@@ -58,3 +58,4 @@ Assuming the virtual environment is activated and requirements have been install
 For generating this figure, we first had to prompt models to generate OOB and Spikes anomalous regimes. Consequently, if you'd like to see how we did that, the code for this part can be found under `results/off_the_shelf_llms/qualitative/8_prompt_for_anomalous_regimes.py`. The generated data from running this script was saved under `results/off_the_shelf_llms/qualitative/ollama_results_anomalies_b113_round16`. With these data, we then plot the visualizations in figures 8a and 8b. For that, assuming the virtual environment is activated and requirements have been installed, simply run: `python 8a_8b_figure.py`
 
 ### Results 2/2 aleth
+For `aleth` related results, check: [https://github.com/buildsys76/submission_76/tree/main/code/experiments_figures_tables/results/aleth](https://github.com/buildsys76/submission_76/tree/main/code/experiments_figures_tables/results/aleth)
