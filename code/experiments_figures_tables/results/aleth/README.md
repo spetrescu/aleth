@@ -13,6 +13,9 @@ Simply run `aleth` using:
 aleth --scenario "Give me sensor data for a small office electricity usage" --progress
 ```
 
+## Evaluation scripts for `aleth`
+To reproduce results for the `granger` and `ashrae_rmsle` experiments navigate to the evaluation folder.
+
 ## Hardware
 All tests were run on two servers: a single-GPU node with an `NVIDIA RTX PRO 6000 (96GB VRAM)` and an `AMD EPYC 9354P CPU (32 cores)`, and a `Dell PowerEdge` server equipped with two `NVIDIA RTX A5000 GPUs (24GB VRAM each)` - both with `Ubuntu 24.04.3 LTS` installed.
 
