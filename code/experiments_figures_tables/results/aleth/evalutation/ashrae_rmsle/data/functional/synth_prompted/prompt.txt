@@ -1,0 +1,7 @@
+Prompt used:
+# This is what we used to run aleth with aleth --scenario "Energy metering for a school of 5k sqft" --progress
+
+Energy metering for a sensor between <value 1> and <value 2> kWh
+Give me the code to generate such data (over the period of 1 year, with the start date in 2016); also the measurements should be hourly; save the data as a CSV, with the 2016-01-01T00:00 format as timestamp column, and 258.77 as value column;
+Also, visualize the data points using matplotlib, and save the figure as png;
+Return the Python code between <CODE BEGIN> and <CODE END> tokens;
