@@ -3,11 +3,11 @@ To reproduce results for the ASHRAE evaluation, you have to:
 2. Create venv and install dependencies (`python3 -m venv env`, activate it with `source env/bin/activate`and install requirements with `pip install -r requirements.txt`)
 3. Run evaluation file with:
 ```
-python sub3_train.py \
+python evaluation.py \
   --data-dir . \
-  --building-file builds.csv \
-  --n-buildings 13 \
-  --outdir sub3_results \
+  --building-file buildings_considered.csv \
+  --n-buildings 15 \
+  --outdir evaluation_results \
   --random-dir functional/random
 ```
 After successful completion (it should take roughly about 1 minute -- we ran the experiment on an AMD EPYC 9354P CPU with 32 cores), you should obtain the following table:
