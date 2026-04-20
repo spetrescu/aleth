@@ -1,5 +1,5 @@
 To reproduce results for the ASHRAE evaluation, you have to:
-1. Expand the data (run the rebuild_data_files.sh file under data)
+1. Expand the data (run the `rebuild_data_files.sh` file under data; ensure it is executable first by running `chmod +x rebuild_data_files.sh`)
 2. Create venv and install dependencies (`python3 -m venv env`, activate it with `source env/bin/activate`and install requirements with `pip install -r requirements.txt`)
 3. Run evaluation file with:
 ```
