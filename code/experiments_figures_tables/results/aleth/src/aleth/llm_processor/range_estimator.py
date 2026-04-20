@@ -213,6 +213,12 @@ class Observability:
         if self.use_tqdm:
             self._pbar = tqdm(total=total, desc="Hierarchy generation", unit="step")
 
+    def update_total_steps(self, total: int) -> None:
+        self.total_steps = total
+        if self._pbar is not None:
+            self._pbar.total = total
+            self._pbar.refresh()
+
     def close(self) -> None:
         if self._pbar is not None:
             self._pbar.close()
@@ -434,8 +440,24 @@ for this sensor. Keep the profile plausible and conservative.
         years: List[int],
         unit_hint: Optional[str],
         profile: ModalityProfile,
+        user_range: Optional[Range] = None,
     ) -> Dict[int, Range]:
         self.obs.stage("year_ranges", f"years={years}")
+
+        if user_range is not None:
+            result: Dict[int, Range] = {
+                y: Range(
+                    user_range.minimum,
+                    user_range.maximum,
+                    "User-specified range (LLM year estimation skipped)",
+                )
+                for y in years
+            }
+            self.obs.step_done(
+                f"user-specified year range [{user_range.minimum}, {user_range.maximum}] applied to {len(years)} years"
+            )
+            return result
+
         system = """
 You estimate realistic telemetry ranges for one building sensor.
 Assume the scenario is for a single building sensor.
@@ -765,6 +787,118 @@ The two periods may overlap, but should reflect realistic diurnal behavior for t
         self.obs.step_done(f"date={year}-{month:02d}-{day:02d}")
         return out
 
+    def generate_day_night_ranges_batch(
+        self,
+        scenario: str,
+        year: int,
+        month: int,
+        day_ranges_by_day: Dict[int, Range],
+        unit_hint: Optional[str],
+        profile: ModalityProfile,
+        batch_label: str = "batch",
+    ) -> Dict[int, Dict[str, Range]]:
+        days_sorted = sorted(day_ranges_by_day.keys())
+        if not days_sorted:
+            return {}
+        self.obs.stage(
+            "day_night_ranges_batch",
+            f"year={year} month={month} label={batch_label} days={days_sorted}",
+        )
+
+        system = """
+You estimate daytime and nighttime ranges for one building sensor over MULTIPLE days in one call.
+For EACH day listed, return a "day" range and a "night" range.
+Both ranges for a given day must stay inside that day's provided daily min/max.
+Assume south of France if underspecified.
+Return only strict JSON.
+
+Important:
+- Use the provided modality profile.
+- Preserve the same day/night structure across modalities.
+- If the profile implies weak day/night contrast, keep day and night closer together.
+- If the profile implies strong day/night contrast, day and night may differ more.
+- The two periods may overlap.
+- You MUST return one entry per requested day, no more, no less.
+
+Schema:
+{
+  "days": [
+    {
+      "day": 1,
+      "day_range":   {"min": 0.0, "max": 1.0},
+      "night_range": {"min": 0.0, "max": 1.0},
+      "rationale": "..."
+    }
+  ]
+}
+""".strip()
+
+        days_payload = [
+            {
+                "day": d,
+                "daily_min": day_ranges_by_day[d].minimum,
+                "daily_max": day_ranges_by_day[d].maximum,
+            }
+            for d in days_sorted
+        ]
+
+        user = f"""
+Scenario: {scenario}
+Year: {year}
+Month: {month} ({MONTH_NAMES[month]})
+Unit hint: {unit_hint or 'infer from scenario'}
+Modality profile: {json.dumps(profile.to_dict(), ensure_ascii=False)}
+
+Days and their daily min/max:
+{json.dumps(days_payload, ensure_ascii=False)}
+
+Task:
+For each day, estimate one day range and one night range.
+Both must stay inside that day's given daily min/max.
+Reflect realistic diurnal behavior consistent with the modality profile.
+Return exactly {len(days_sorted)} entries under "days".
+""".strip()
+
+        data = self._call_with_retry(system, user)
+
+        out: Dict[int, Dict[str, Range]] = {}
+        for item in data.get("days", []):
+            try:
+                d = int(item["day"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if d not in day_ranges_by_day:
+                continue
+            parent = day_ranges_by_day[d]
+            day_obj = item.get("day_range") or {}
+            night_obj = item.get("night_range") or {}
+            try:
+                day_r = Range(
+                    float(day_obj["min"]),
+                    float(day_obj["max"]),
+                    str(item.get("rationale", "")),
+                ).clamp_within(parent)
+                night_r = Range(
+                    float(night_obj["min"]),
+                    float(night_obj["max"]),
+                    str(item.get("rationale", "")),
+                ).clamp_within(parent)
+            except (KeyError, TypeError, ValueError):
+                continue
+            out[d] = {"day": day_r, "night": night_r}
+
+        missing = [d for d in days_sorted if d not in out]
+        if missing:
+            raise OllamaError(
+                f"Batched day/night response missing days {missing} "
+                f"(year={year}, month={month}, label={batch_label})"
+            )
+
+        self.obs.step_done(
+            f"year={year} month={month} label={batch_label} days={len(out)}"
+        )
+        return out
+
     @staticmethod
     def _fallback_child_range(parent: Range, shrink: float = 0.1) -> Range:
         width = max(parent.width(), 1e-9)
@@ -895,7 +1029,7 @@ def day_numbers_for_bucket(year: int, month: int, week_bucket: int) -> List[int]
 
 
 
-def estimate_total_hierarchy_steps(years: List[int]) -> int:
+def estimate_total_hierarchy_steps(years: List[int], speed: str = "full") -> int:
     total = 0
     total += 1
     for year in years:
@@ -905,5 +1039,10 @@ def estimate_total_hierarchy_steps(years: List[int]) -> int:
         total += 12
         for month in range(1, 13):
             total += 4
-            total += days_in_month(year, month)
+            if speed == "monthly":
+                total += 1
+            elif speed == "weekly":
+                total += 4
+            else:
+                total += days_in_month(year, month)
     return total
