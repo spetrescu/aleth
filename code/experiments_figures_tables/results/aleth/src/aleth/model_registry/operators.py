@@ -85,7 +85,63 @@ def get_operator_definitions() -> List[OperatorDefinition]:
             default=0.0,
             example_values=[0.0, 0.5, 1.0, 3.0],
         ),
+        OperatorDefinition(
+            name="speed",
+            description=(
+                "Hierarchical generation speed. 'full' issues one LLM call per day for the "
+                "day/night ranges, 'weekly' batches those ranges across each week-bucket, "
+                "'monthly' batches them across the whole month. Batching only changes how "
+                "many prompts are sent; per-day day/night granularity is preserved."
+            ),
+            required=False,
+            default="full",
+            example_values=["full", "weekly", "monthly"],
+        ),
+        OperatorDefinition(
+            name="user_range",
+            description=(
+                "Explicit numeric value bounds for the sensor when the user states them. "
+                "Parse phrases like 'between X and Y', 'from X to Y', 'X to Y', 'X-Y <unit>' "
+                "into {\"min\": X, \"max\": Y}. Strip units; return numbers in the same unit "
+                "as unit_hint. Return null if no range is stated, or if only one bound is "
+                "given (for example 'below 30', 'above 10'). When provided, this range "
+                "becomes the root of the hierarchy and the year-level LLM call is skipped; "
+                "all downstream ranges are clamped inside it."
+            ),
+            required=False,
+            default=None,
+            example_values=[{"min": 22.0, "max": 25.0}, {"min": 0.0, "max": 100.0}, None],
+        ),
     ]
+
+
+SPEED_OPTIONS = {"full", "weekly", "monthly"}
+
+
+def validate_speed(value: Optional[str]) -> str:
+    if value is None:
+        return "full"
+    v = str(value).strip().lower()
+    if v not in SPEED_OPTIONS:
+        return "full"
+    return v
+
+
+def validate_user_range(value: Any) -> Tuple[Optional[float], Optional[float]]:
+    if not isinstance(value, dict):
+        return None, None
+    lo = value.get("min")
+    hi = value.get("max")
+    if lo is None or hi is None:
+        return None, None
+    try:
+        lo_f = float(lo)
+        hi_f = float(hi)
+    except (TypeError, ValueError):
+        return None, None
+    if lo_f > hi_f:
+        lo_f, hi_f = hi_f, lo_f
+    return lo_f, hi_f
 
 
 def get_operator_prompt_fragment() -> str:
