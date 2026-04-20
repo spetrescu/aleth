@@ -16,6 +16,8 @@ from model_registry.operators import (
     validate_horizon_years,
     validate_percentage,
     validate_precision_decimals,
+    validate_speed,
+    validate_user_range,
     resolve_modality,
 )
 
@@ -84,6 +86,9 @@ class ParsedIntent:
     precision_decimals: int = 2
     outage_pct: float = 0.0
     hw_error_pct: float = 0.0
+    user_range_min: Optional[float] = None
+    user_range_max: Optional[float] = None
+    speed: str = "full"
     rationale: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
@@ -98,6 +103,9 @@ class ParsedIntent:
             "precision_decimals": self.precision_decimals,
             "outage_pct": self.outage_pct,
             "hw_error_pct": self.hw_error_pct,
+            "user_range_min": self.user_range_min,
+            "user_range_max": self.user_range_max,
+            "speed": self.speed,
             "rationale": self.rationale,
         }
 
@@ -134,6 +142,10 @@ Rules:
 - hw_error means percentage of improbable faulty values
 - preserve any unit hint if supplied externally
 - keep the cleaned scenario text focused on the building telemetry request
+- speed controls how many LLM calls are used for generation. If the user asks for faster
+  results, fewer prompts, batched generation, or says things like "less prompting",
+  "faster", "quick", pick "weekly" or "monthly" (monthly is the fastest). If the user
+  asks for maximum detail or does not mention speed, use "full".
 - return strict JSON only
 
 Return schema:
@@ -148,6 +160,8 @@ Return schema:
   "precision_decimals": 2,
   "outage_pct": 0.0,
   "hw_error_pct": 0.0,
+  "user_range": {{"min": 22.0, "max": 25.0}} or null,
+  "speed": "full|weekly|monthly",
   "rationale": "brief explanation"
 }}
 """.strip()
@@ -218,6 +232,9 @@ If modality is not clearly present, set modality to null.
         if resolved_unit_hint is not None:
             resolved_unit_hint = str(resolved_unit_hint).strip() or None
 
+        user_range_min, user_range_max = validate_user_range(data.get("user_range"))
+        resolved_speed = validate_speed(data.get("speed"))
+
         return ParsedIntent(
             scenario=cleaned_scenario,
             modality=modality,
@@ -229,5 +246,10 @@ If modality is not clearly present, set modality to null.
             precision_decimals=resolved_precision,
             outage_pct=resolved_outage,
             hw_error_pct=resolved_hw_error,
+            user_range_min=user_range_min,
+            user_range_max=user_range_max,
+            speed=resolved_speed,
             rationale=str(data.get("rationale", "")).strip(),
         )
+
+
