@@ -29,7 +29,7 @@ done
 
 # nohup ./launch_aleth.sh > launcher.log 2>&1 &
 ```
-This was to automate the collection of measurements from `aleth` (we added the logs for the execution under `data/functional/synth_aleth/logs`).
+This was to automate the collection of measurements from `aleth` (we added the logs for the execution under `data/functional/synth_aleth/logs` -- latencies may differ from reported performance in the paper, as some of the runs were concurrently deployed).
 
 2. `synth_basic`: here, we used the script found under `data/functional/synth_basic/generate_building_scripts.py` to prompt models for code (again within bounds from BGDP2 buildings metadata -- subsequently, we parse the responses and save them separately, and ultimately run `data/functional/synth_basic/run_generated_scripts.py` to actually generate the csv data points (used in the evaluation).
 3. `synth_prompted`: similarly to the point above, we used the script found under `data/functional/synth_prompted/generate_building_scripts.py` to prompt models for code (again within bounds from BGDP2 buildings metadata -- subsequently, we parse the responses and save them separately, and ultimately run `data/functional/synth_prompted/run_generated_scripts.py` to actually generate the csv data points used in the evaluation). The only diffence here is that the model is also explicitely asked to make the data as realistic as possible.
