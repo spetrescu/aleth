@@ -1,3 +1,42 @@
+## Information about how data was obtained (for baselines and `aleth`)
+You will find the for the experiment (the synthetic telemetry) under `data/functional`, and the real BGDP2 energy telemetry can be found under archive_files (make sure to expand it -- see instructions below). For how the synthetic data was obtained, we provide details below (for reproducibility):
+1. `aleth`: for the `data/functional/synth_aleth` telemetry, we prompted `aleth` with ranges (known before-hand from the metadata information from each of the considered BGDP2 buildings in the experiment -- the ranges in this file `building_min_max_real_buildings_bgdp2.csv`). Specifically, we used the following script to generate the points (the prompt itself can be found at the `scenario=...` line:
+```
+set -euo pipefail
+
+CSV_FILE="building_min_max_real_buildings_bgdp2.csv"
+DELAY_SECONDS=$((220 * 60))   # 1h15m = 4500 seconds
+
+tail -n +2 "$CSV_FILE" | while IFS=, read -r building_id min_meter_reading max_meter_reading; do
+
+    building_id=$(echo "$building_id" | xargs)
+    min_meter_reading=$(echo "$min_meter_reading" | xargs)
+    max_meter_reading=$(echo "$max_meter_reading" | xargs)
+
+    log_file="output_building${building_id}.log"
+    scenario="Energy metering for a sensor between ${min_meter_reading} and ${max_meter_reading} kWh"
+
+    echo "[$(date)] Launching building ${building_id}"
+    echo "Scenario: $scenario"
+    echo "Log: $log_file"
+
+    nohup aleth --scenario "$scenario" --progress > "$log_file" 2>&1 &
+
+    echo "[$(date)] Started PID $!"
+    echo "Sleeping for ${DELAY_SECONDS} seconds..."
+    sleep "$DELAY_SECONDS"
+done
+
+# nohup ./launch_aleth.sh > launcher.log 2>&1 &
+```
+This was to automate the collection of measurements from `aleth` (we added the logs for the execution under `data/functional/synth_aleth/logs`).
+
+2. `synth_basic`: here, we used the script found under `data/functional/synth_basic/generate_building_scripts.py` to prompt models for code (again within bounds from BGDP2 buildings metadata -- subsequently, we parse the responses and save them separately, and ultimately run `data/functional/synth_basic/run_generated_scripts.py` to actually generate the csv data points (used in the evaluation).
+3. `synth_prompted`: similarly to the point above, we used the script found under `data/functional/synth_prompted/generate_building_scripts.py` to prompt models for code (again within bounds from BGDP2 buildings metadata -- subsequently, we parse the responses and save them separately, and ultimately run `data/functional/synth_prompted/run_generated_scripts.py` to actually generate the csv data points used in the evaluation). The only diffence here is that the model is also explicitely asked to make the data as realistic as possible.
+4. `random`: we used the script found under `data/functional/synth_prompted/generate_random_data_within_bounds.py` to generate the points for random data (again within bounds from BGDP2 buildings metadata). The random variable is uniformly samples between the bounds to produce hourly samples.
+
+
+## Reproduce experiment
 To reproduce results for the ASHRAE evaluation, you have to:
 1. Expand the data (run the `rebuild_data_files.sh` file under data; ensure it is executable first by running `chmod +x rebuild_data_files.sh`)
 2. Create venv and install dependencies (`python3 -m venv env`, activate it with `source env/bin/activate`and install requirements with `pip install -r requirements.txt`)
