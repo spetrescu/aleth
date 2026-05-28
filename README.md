@@ -1,5 +1,4 @@
-# aleth
-
+# <img width="200" alt="aleth_logo" src="https://github.com/user-attachments/assets/0b89d8df-3601-40a1-9745-45974da18ea2" /> <br>
 `aleth` was born out of a research innitiative to lower the barrier to synthetic sensor telemetry in buildings.
 
 ## Citation
@@ -13,3 +12,4 @@ To cite this work, feel free to use the following BibTeX entry:
   series = {BuildSys '26}
 }
 ```
+
